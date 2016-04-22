@@ -50,14 +50,6 @@ public class DetailsJobActivity extends Activity {
         setContentView(R.layout.activity_details_job);
         Intent intent = getIntent();
         Feedback = (ImageButton) findViewById(R.id.button2);
-        Feedback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent a = new Intent(DetailsJobActivity.this, FeedbackActivity.class);
-                startActivity(a);
-                finish();
-            }
-        });
 
         if (null != intent)
         {
@@ -105,6 +97,16 @@ public class DetailsJobActivity extends Activity {
         breakTIme.setText(" বিরতির সময়: ");
         landmark.setText(" কাছাকাছি পরিচিত স্থান: ");
 
+        Feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent a = new Intent(DetailsJobActivity.this, FeedbackActivity.class);
+                a.putExtra("NodeId", jobServiceProviderItem.getIdentifierId());
+                a.putExtra("CatId", jobServiceProviderItem.getCategoryId());
+                startActivity(a);
+                finish();
+            }
+        });
 
        // website.setText("ওয়েবসাইটঃ "+jobServiceProviderItem.getWebsiteLink());
        /// fb.setText("ফেসবুকঃ "+jobServiceProviderItem.getFbLink());
@@ -114,16 +116,18 @@ public class DetailsJobActivity extends Activity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(AppUtils.isNetConnected(getApplicationContext())) {
+                        if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
 
                             String lat = jobServiceProviderItem.getLatitude().toString();
                             // double latitude = Double.parseDouble(lat);
                             String lon = jobServiceProviderItem.getLongitude().toString();
+                            String name= jobServiceProviderItem.getAddress().toString();
                             // double longitude = Double.parseDouble(lon);
                             SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
                             SharedPreferences.Editor editor = pref.edit();
                             editor.putString("Latitude", lat);
                             editor.putString("Longitude", lon);
+                            editor.putString("Name", name);
                             editor.commit();
 
 
@@ -133,7 +137,7 @@ public class DetailsJobActivity extends Activity {
                             if (Latitude != null && Longitude != null) {
                                 Double Lon = Double.parseDouble(Longitude);
                                 Double Lat = Double.parseDouble(Latitude);
-                               // Toast.makeText(getApplicationContext(), "Your Longitude is " + Lon, Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(getApplicationContext(), "Your Longitude is " + Lon, Toast.LENGTH_SHORT).show();
                                 //Toast.makeText(getApplicationContext(), "Your Latitude is " + Lat, Toast.LENGTH_SHORT).show();
                                 // implementFragment();
 
@@ -143,7 +147,11 @@ public class DetailsJobActivity extends Activity {
 
                             finish();
                         }
+                        else if(!AppUtils.displayGpsStatus(getApplicationContext())){
 
+                            AppUtils.showSettingsAlert(DetailsJobActivity.this);
+
+                        }
                         else
                         {
                             AlertDialog alertDialog = new AlertDialog.Builder(DetailsJobActivity.this, AlertDialog.THEME_HOLO_LIGHT).create();

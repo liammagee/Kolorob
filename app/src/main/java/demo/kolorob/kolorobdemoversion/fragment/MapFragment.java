@@ -142,8 +142,11 @@ public class MapFragment extends Fragment implements
         int width = displayMetrics.widthPixels;
         int height = displayMetrics.heightPixels;
         View rootView;
+        if(height>1700)
+            rootView = inflater.inflate(R.layout.fragment_map1, container,
+                    false);
 
-        if(height>1000)
+       else if(height>1000)
             rootView = inflater.inflate(R.layout.fragment_map, container,
                     false);
         else
@@ -151,11 +154,12 @@ public class MapFragment extends Fragment implements
                     false);
 
         mMapView = (MapView) rootView.findViewById(R.id.mapView);
-        locName = (TextView) rootView.findViewById(R.id.tv_location_name);
+
         mapIndicator = (TextView) rootView.findViewById(R.id.tv_map_indicator);
-        locName.setText(locationName);
+
         mapIndicator.setText(Html.fromHtml("সব " + mapIndicatorText + " এর স্থান ম্যাপ এ দেখানো হয়েছে"));
         mMapView.onCreate(savedInstanceState);
+
         mMapView.onResume();
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());

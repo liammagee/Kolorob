@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -66,7 +67,7 @@ public class DetailsInfoActivityHealth extends Activity  {
     private LinearLayout ll1;
     private LinearLayout ll2;
     private LinearLayout ll3;
-
+Activity con;
 
     //TODO Declare object for each subcategory item. Different for each category. Depends on the database table.
     HealthServiceProviderItem healthServiceProviderItem;
@@ -81,20 +82,14 @@ public class DetailsInfoActivityHealth extends Activity  {
         setContentView(R.layout.health_details_info1);
         Intent intent = getIntent();
         Feedback = (ImageButton) findViewById(R.id.button2);
-        Feedback.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent a = new Intent(DetailsInfoActivityHealth.this, FeedbackActivity.class);
-                startActivity(a);
-                finish();
-            }
-        });
+
         if (null != intent)
         {
             healthServiceProviderItem = (HealthServiceProviderItem)intent.getSerializableExtra(AppConstants.KEY_DETAILS_HEALTH);
 
         }
         k=1;
+        con=this;
         String node_id = healthServiceProviderItem.getNodeId();
 //        int node_ids = Integer.parseInt(node_id.toString());
 
@@ -263,7 +258,7 @@ public class DetailsInfoActivityHealth extends Activity  {
 
 
 
-        itemName.setText(" "+healthServiceProviderItem.getNodeName());
+        itemName.setText(" "+healthServiceProviderItem.getNameBn());
         itemAddress.setText("  ঠিকানা: "+healthServiceProviderItem.getArea());
         itemType.setText("  ধরন: ");
         itemContact.setText("  মোবাইল/মুঠোফোন নম্বর: "+healthServiceProviderItem.getNodeContact());
@@ -277,24 +272,35 @@ public class DetailsInfoActivityHealth extends Activity  {
         email.setText("  ইমেইল: " + healthServiceProviderItem.getNodeEmail());
         website.setText("  ওয়েবসাইট: "+healthServiceProviderItem.getNodeWebsite());
         fb.setText("  ফেসবুক: "+healthServiceProviderItem.getNodeFacebook());
-
+        Feedback.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent a = new Intent(DetailsInfoActivityHealth.this, FeedbackActivity.class);
+                a.putExtra("NodeId", healthServiceProviderItem.getNodeId());
+                a.putExtra("CatId", healthServiceProviderItem.getCategoryId());
+                startActivity(a);
+                finish();
+            }
+        });
         kivabejabenHealth.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
-                if (AppUtils.isNetConnected(getApplicationContext())) {
+
+                if (AppUtils.isNetConnected(getApplicationContext()) && AppUtils.displayGpsStatus(getApplicationContext())) {
 
                     String lat = healthServiceProviderItem.getLatitude().toString();
                     // double latitude = Double.parseDouble(lat);
 
-
+                    String name= healthServiceProviderItem.getNameBn();
                     String lon = healthServiceProviderItem.getLongitude().toString();
                     // double longitude = Double.parseDouble(lon);
                     SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
                     SharedPreferences.Editor editor = pref.edit();
                     editor.putString("Latitude", lat);
                     editor.putString("Longitude", lon);
+                    editor.putString("Name", name);
                     editor.commit();
 
 
@@ -314,6 +320,20 @@ public class DetailsInfoActivityHealth extends Activity  {
 
                     finish();
 
+                }
+                else if(!AppUtils.displayGpsStatus(getApplicationContext())){
+
+                    AppUtils.showSettingsAlert(DetailsInfoActivityHealth.this);
+//                    AlertDialog alertDialog = new AlertDialog.Builder(DetailsInfoActivityHealth.this, AlertDialog.THEME_HOLO_LIGHT).create();
+//                    alertDialog.setTitle("GPS Disabled ");
+//                    alertDialog.setMessage(" GPS সচল করুন।  ");
+//                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                }
+//                            });
+//                    alertDialog.show();
                 }
 
                 else
@@ -354,6 +374,40 @@ public class DetailsInfoActivityHealth extends Activity  {
             }
         });
 
+    }
+
+
+
+    public void showSettingsAlert() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(con);
+
+        // Setting Dialog Title
+        alertDialog.setTitle("GPS is Disabled!");
+
+        // Setting Dialog Message
+        alertDialog
+                .setMessage("GPS is not enabled. Do you want to go to settings menu?");
+
+        // On pressing Settings button
+        alertDialog.setPositiveButton("Settings",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(
+                                Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        con.startActivity(intent);
+                    }
+                });
+
+        // on pressing cancel button
+        alertDialog.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        // Showing Alert Message
+        alertDialog.show();
     }
 
     @Override

@@ -81,7 +81,7 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
         //TODO Declare object for each subcategory item. Different for each category. Depends on the database table.
         FinancialServiceProviderItem financialServiceProviderItem;
-
+ArrayList<FinancialServiceProviderItem>finfromsearch;
     ArrayList<FinancialBillsItem> financialBillsItems;
     ArrayList<FinancialInsuranceItem> financialInsuranceItems;
     ArrayList<FinancialLoanItem> financialLoanItems;
@@ -101,17 +101,10 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
             setContentView(R.layout.activity_details_financial);
             Intent intent = getIntent();
             Feedback = (ImageButton) findViewById(R.id.button2);
-            Feedback.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent a = new Intent(DetailsFinancialActivity.this, FeedbackActivity.class);
-                    startActivity(a);
-                    finish();
-                }
-            });
 
             if (null != intent)
             {
+
                 financialServiceProviderItem = (FinancialServiceProviderItem)intent.getSerializableExtra(AppConstants.KEY_DETAILS_FINANCIAL);
 
             }
@@ -176,6 +169,16 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
 
 
+            Feedback.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent a = new Intent(DetailsFinancialActivity.this, FeedbackActivity.class);
+                    a.putExtra("NodeId",financialServiceProviderItem.getNodeId());
+                    a.putExtra("CatId", financialServiceProviderItem.getCategoryId());
+                    startActivity(a);
+                    finish();
+                }
+            });
 
 
 
@@ -430,20 +433,25 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
 
 
+
             btnroute.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    if(AppUtils.isNetConnected(getApplicationContext())) {
+
+
+                    if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
 
                         String lat = financialServiceProviderItem.getLatitude().toString();
                         // double latitude = Double.parseDouble(lat);
                         String lon = financialServiceProviderItem.getLongitude().toString();
+                        String name= financialServiceProviderItem.getNamebn().toString();
                         // double longitude = Double.parseDouble(lon);
                         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putString("Latitude", lat);
                         editor.putString("Longitude", lon);
+                        editor.putString("Name", name);
                         editor.commit();
 
 
@@ -464,7 +472,11 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
                         finish();
 
                     }
+                    else if(!AppUtils.displayGpsStatus(getApplicationContext())){
 
+                        AppUtils.showSettingsAlert(DetailsFinancialActivity.this);
+
+                    }
                     else
                     {
 
@@ -506,9 +518,9 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
         }
 
-        @Override
-        public void onBackPressed() {
-            finish();
-            super.onBackPressed();
-        }
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
 }

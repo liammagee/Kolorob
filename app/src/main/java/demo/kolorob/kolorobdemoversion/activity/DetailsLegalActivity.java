@@ -69,14 +69,6 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
             setContentView(R.layout.activity_details_legal);
             Intent intent = getIntent();
             Feedback = (ImageButton) findViewById(R.id.button2);
-            Feedback.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent a = new Intent(DetailsLegalActivity.this, FeedbackActivity.class);
-                    startActivity(a);
-                    finish();
-                }
-            });
 
             if (null != intent)
             {
@@ -133,6 +125,16 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
             landmark.setText(" কাছাকাছি পরিচিত স্থান: " +legalAidServiceProviderItem.getLandmark());
           //  itemarea.setText("এলাকা: " +legalAidServiceProviderItem.getAddress());
             String la= legalAidServiceProviderItem.getIdentifierId();
+            Feedback.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent a = new Intent(DetailsLegalActivity.this, FeedbackActivity.class);
+                    a.putExtra("NodeId", legalAidServiceProviderItem.getIdentifierId());
+                    a.putExtra("CatId", legalAidServiceProviderItem.getCategoryId());
+                    startActivity(a);
+                    finish();
+                }
+            });
 
 
             LegalAidtypeServiceProviderLegalAdviceTable legalAidtypeServiceProviderLegalAdviceTable1=new LegalAidtypeServiceProviderLegalAdviceTable(this);
@@ -216,16 +218,18 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
                 public void onClick(View v) {
 
 
-                    if(AppUtils.isNetConnected(getApplicationContext())) {
+                    if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
 
                         String lat = legalAidServiceProviderItem.getLatitude().toString();
                         // double latitude = Double.parseDouble(lat);
                         String lon = legalAidServiceProviderItem.getLongitude().toString();
+                        String name= legalAidServiceProviderItem.getLegalaidNameBan().toString();
                         // double longitude = Double.parseDouble(lon);
                         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
                         SharedPreferences.Editor editor = pref.edit();
                         editor.putString("Latitude", lat);
                         editor.putString("Longitude", lon);
+                        editor.putString("Name", name);
                         editor.commit();
 
 
@@ -245,7 +249,11 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
                         finish();
                     }
+                    else if(!AppUtils.displayGpsStatus(getApplicationContext())){
 
+                        AppUtils.showSettingsAlert(DetailsLegalActivity.this);
+
+                    }
 
                     else
                     {
@@ -287,9 +295,9 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
         }
 
-        @Override
-        public void onBackPressed() {
-            finish();
-            super.onBackPressed();
-        }
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
+    }
 }
