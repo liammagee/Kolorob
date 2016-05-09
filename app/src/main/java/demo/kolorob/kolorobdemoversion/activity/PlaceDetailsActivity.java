@@ -222,14 +222,16 @@ public class PlaceDetailsActivity extends BaseActivity implements View.OnClickLi
         int width = displayMetrics.widthPixels;
         height = displayMetrics.heightPixels;
 
-        Log.d(">>>>","test_dpi "+dpi);
+
        // svSubCategoryListHolder=(HorizontalScrollView)findViewById(R.id.svSubCategoryListHolder);
 
         HorizontalScrollView svSubCategoryListHolder = new HorizontalScrollView(this);
-        if(dpi>300)
-            setContentView(R.layout.placedetailsactivitysupermobile);
+//        if(dpi>300)
+//            setContentView(R.layout.placedetailsactivitysupermobile);
+//
+//        else
 
-        else
+        Log.d(">>>>","Height "+height);
         if(height>1000)
             setContentView(R.layout.place_details_activity);
         else {
@@ -273,11 +275,11 @@ public class PlaceDetailsActivity extends BaseActivity implements View.OnClickLi
         ///this code will change the background of the layout for two places.
         if(locationNameId==AppConstants.PLACE_BAUNIABADH)
         {
-            placeDetailsLayout.setBackgroundResource(R.drawable.place_details_bg_baunia);
+            placeDetailsLayout.setBackgroundResource(R.drawable.backplacedetails);
         }
         else if(locationNameId==AppConstants.PLACE_PARIS_ROAD)
         {
-            placeDetailsLayout.setBackgroundResource(R.drawable.place_details_bg);
+            placeDetailsLayout.setBackgroundResource(R.drawable.backplacedetails);
         }
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
@@ -1067,7 +1069,7 @@ public class PlaceDetailsActivity extends BaseActivity implements View.OnClickLi
 
     public static void subCatInsGone()
     {
-        insSubCat.setVisibility(View.GONE);
+
     }
     @Override
     public void onClick(View v) {
@@ -1133,7 +1135,7 @@ public class PlaceDetailsActivity extends BaseActivity implements View.OnClickLi
 
         // BE CAREFUL :: Category ID is being mapped as to the icon serial no.
         // in the AppConstants.ALL_CAT_ICONS array
-        ivIcon.setImageResource(AppConstants.ALL_CAT_ICONS[ci.getId() - 1]);
+        ivIcon.setImageResource(AppConstants.ALL_CAT_ICONS_NEW[ci.getId() - 1]);
         ViewGroup.LayoutParams lpIv = ivIcon.getLayoutParams();
         lpIv.width = (int) (primaryIconWidth * dwPercentage);
         ivIcon.setLayoutParams(lpIv);
@@ -1280,7 +1282,7 @@ public class PlaceDetailsActivity extends BaseActivity implements View.OnClickLi
                 insSubCat.setVisibility(View.VISIBLE);
                 seeMap.setVisibility(View.GONE);
                 ArrayList<SubCategoryItem> subCatList = getSubCategoryList(ci.getId());
-                placeDetailsLayout.setBackgroundResource(R.drawable.cool_crash_ui_backdrop);
+                placeDetailsLayout.setBackgroundResource(R.drawable.backplacedetails);
                 // categoryHeader.setText(ci.getCatName());
                 categoryHeaderIcon.setImageResource(AppConstants.ALL_CAT_ICONS[ci.getId() - 1]);
                 if (isCatExpandedOnce)
@@ -1794,7 +1796,7 @@ public class PlaceDetailsActivity extends BaseActivity implements View.OnClickLi
     public void implementRouteDrawingFragment()
     {
         MapRouteDrawingFragment mapRouteDrawingFragment = new MapRouteDrawingFragment();
-map.setVisibility(View.VISIBLE);
+        map.setVisibility(View.VISIBLE);
         FragmentManager fragmentManager=getFragmentManager();
         FragmentTransaction fragmentTransaction =fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.map_fragment, mapRouteDrawingFragment);

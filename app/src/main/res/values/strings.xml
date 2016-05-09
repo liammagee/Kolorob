@@ -17,9 +17,16 @@
     <string name="Headen">Write Name Here!</string>
     <string name="MiddleSearchen">Search for efficiently!</string>
     <string name="time">সময়</string>
+    <string name="loading">একটু অপেক্ষা করেন \n কলরব তৈরি হচ্ছে </string>
+    <string name="roam"> আর লাট্টুর মত ঘুরতে হবে না </string>
     <string name="title_activity_details_info_activity_entertainment">
         DetailsInfoActivityEntertainment
     </string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
     <string name="title_activity_review">ReviewActivity</string>
     <string name="title_activity_feedback">FeedbackActivity</string>
+    <string name="title_activity_place_choice2">PlaceChoiceActivity2</string>
 </resources>

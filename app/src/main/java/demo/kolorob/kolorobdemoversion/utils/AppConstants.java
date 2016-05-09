@@ -1,7 +1,8 @@
 package demo.kolorob.kolorobdemoversion.utils;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+
+import org.osmdroid.util.GeoPoint;
 
 import demo.kolorob.kolorobdemoversion.R;
 
@@ -22,6 +23,9 @@ public class AppConstants {
     public static final int[] ALL_CAT_ICONS = {R.drawable.but_porashuna_small, R.drawable.but_chikitsha_small,R.drawable.but_ananda_small,
             R.drawable.but_shorkari_small,R.drawable.but_ain_small,  R.drawable.but_taka_small,R.drawable.but_chakri_small
             };
+    public static final int[] ALL_CAT_ICONS_NEW = {R.drawable.turned_off_porashona, R.drawable.turned_off_chikitsha,R.drawable.turned_off_anondo_furti,
+            R.drawable.turned_off_shorkari_shubidha,R.drawable.turned_off_ain_kanun,  R.drawable.turned_off_taka_poisha,R.drawable.turned_off_chakri_bakri
+    };
     public static final int[] ALL_CAT_MARKER_ICONS = {R.drawable.pin_blue,R.drawable.pin_red,R.drawable.pin_pink,
         R.drawable.pin_green,R.drawable.pin_brown,R.drawable.pin_feroza,R.drawable.pin_yellow,R.drawable.pin_orange};
     public static final int[] ALL_CAT_MARKER_ICONS1 = {R.drawable.pin_blue1,R.drawable.pin_red1,R.drawable.pin_pink1,
@@ -38,13 +42,15 @@ public class AppConstants {
     public static final String[] SUB_CAT_LAW_BN = {"আইনজীবী", "আইন-কেন্দ্র", "সালিশ কেন্দ্র"};
     public static final String[] SUB_CAT_MONEY_BN = {"sub-category-1", "sub-category-2", "sub-category-3"};
 
+    public static final GeoPoint BAUNIA1 = new GeoPoint(23.8197971,90.3803564);
+    public static final GeoPoint PARIS1 = new GeoPoint(23.8135117,90.3707107);
     public static final LatLng BAUNIA = new LatLng(23.8197971,90.3803564);
     public static final LatLng PARIS = new LatLng(23.8135117,90.3707107);
-
     public static final String[][] SUB_CATEGORIES = {SUB_CAT_EDU_BN, SUB_CAT_FUN_BN, SUB_CAT_GOVT_BN,
             SUB_CAT_HEALTH_BN, SUB_CAT_JOB_BN, SUB_CAT_LAW_BN, SUB_CAT_MONEY_BN};
 
     public static final double CAT_LIST_LG_WIDTH_PERC = 0.15;
+    public static final double CAT_LIST_LG_WIDTH_PERC_NEW = 0.20;
     public static final double CAT_LIST_SM_WIDTH_PERC = 0.11;
 
 

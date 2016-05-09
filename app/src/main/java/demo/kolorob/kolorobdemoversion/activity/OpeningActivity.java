@@ -19,6 +19,9 @@ import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -117,7 +120,7 @@ public class OpeningActivity extends Activity {
     ProgressDialog pd;
     public int height,width;
     Boolean  firstRun;
-
+    private static final int ANIM_INTERVAL = 200;
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -204,8 +207,10 @@ public class OpeningActivity extends Activity {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
-                            Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity.class);
+                            Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                            overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                             startActivity(i);
+
                             dialog.dismiss();
                             finish();
                         }
@@ -231,7 +236,8 @@ public class OpeningActivity extends Activity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
-                                                Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity.class);
+                                                Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                                                overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                                 startActivity(i);
                                                 dialog.dismiss();
                                                 finish();
@@ -404,7 +410,8 @@ public class OpeningActivity extends Activity {
                 db3=db.getReadableDatabase();
                 if (db.isTableExists(db3,EDU_PROVIDER_TABLE)){
                     pd.dismiss();
-                    Intent a = new Intent(getApplicationContext(),PlaceChoiceActivity.class);//Default Activity
+                    Intent a = new Intent(getApplicationContext(),PlaceChoiceActivity2.class);//Default Activity
+                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                     a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     //getApplicationContext().startActivity(a);
                     (getApplicationContext()).startActivity(a);
@@ -839,13 +846,16 @@ public class OpeningActivity extends Activity {
         if (firstRun == false)//if running for first time
         {
             pd.dismiss();
-            Intent i = new Intent(OpeningActivity.this, LocationAskActivity.class);//Activity to be     launched For the First time
+            Intent i = new Intent(OpeningActivity.this, LocationAskActivity.class);
+            overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+            //Activity to be     launched For the First time
             // Intent i = new Intent(OpeningActivity.this, FeedbackActivity.class);//Activity to be     launched For the First time
             startActivity(i);
 
         } else {
             pd.dismiss();
-            Intent a = new Intent(OpeningActivity.this, PlaceChoiceActivity.class);//Default Activity
+            Intent a = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);//Default Activity
+            overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
             //Intent a = new Intent(OpeningActivity.this, FeedbackActivity.class);
             startActivity(a);
 
@@ -893,7 +903,35 @@ public class OpeningActivity extends Activity {
         super.onPause();
 
     }
+    private Animation slideInFromRightAnim() {
 
+        Animation inFromRight = new TranslateAnimation(
+                Animation.RELATIVE_TO_PARENT, +1.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f
+        );
+        inFromRight.setDuration(ANIM_INTERVAL *
+                        (int) (200 *
+                                (AppConstants.CAT_LIST_LG_WIDTH_PERC
+                                        - AppConstants.CAT_LIST_SM_WIDTH_PERC)
+                        )
+        );
+        inFromRight.setInterpolator(new AccelerateInterpolator());
+        return inFromRight;
+    }
+
+    @Override
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        slideInFromRightAnim();
+        super.onStart();
+
+        System.out.println("----main activity---onStart---");
+
+
+        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+    }
     @Override
     protected void onRestart() {
         super.onRestart();
