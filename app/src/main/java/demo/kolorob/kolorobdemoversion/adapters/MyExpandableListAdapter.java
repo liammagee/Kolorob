@@ -2,10 +2,12 @@ package demo.kolorob.kolorobdemoversion.adapters;
 
 /**
  * Created by israt.jahan on 1/17/16.
+ * Modified by Arafat
  */
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,11 +21,20 @@ import java.util.Vector;
 
 import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.activity.DetailsFinancialActivity;
+import demo.kolorob.kolorobdemoversion.activity.DetailsFinancialActivity_new;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivity;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEducation;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEntertainment;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEntertainmentNew;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEntertainment_new;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityFinancialNew;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityHealth;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityHealthNew;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityHealth_new;
+import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityLegalNew;
 import demo.kolorob.kolorobdemoversion.activity.DetailsJobActivity;
 import demo.kolorob.kolorobdemoversion.activity.DetailsLegalActivity;
+import demo.kolorob.kolorobdemoversion.activity.DetailsLegalActivity_new;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceProviderItem;
@@ -106,12 +117,13 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
             final EducationServiceProviderItem det = groups.get(groupPosition).getchildren().get(childPosition);
             text = (TextView) v.findViewById(R.id.textView1);
             text.setText(det.getEduNameBan());
+
             v.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
 
-                    Intent ii = new Intent(getActivity(), DetailsInfoActivity.class);
+                    Intent ii = new Intent(getActivity(), DetailsInfoActivityEducation.class);
                     ii.putExtra(AppConstants.KEY_DETAILS_VIEW, det);
                     activity.startActivity(ii);
 
@@ -130,7 +142,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                     public void onClick(View v) {
 
 
-                        Intent iient = new Intent(getActivity(), DetailsInfoActivityEntertainment.class);
+                        Intent iient = new Intent(getActivity(), DetailsInfoActivityEntertainmentNew.class);
                         iient.putExtra(AppConstants.KEY_DETAILS_ENT, detent);
                         activity.startActivity(iient);
 
@@ -147,7 +159,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                     public void onClick(View v) {
 
 
-                        Intent iihea = new Intent(getActivity(), DetailsInfoActivityHealth.class);
+                        Intent iihea = new Intent(getActivity(), DetailsInfoActivityHealthNew.class);
                         iihea.putExtra(AppConstants.KEY_DETAILS_HEALTH, dethea);
                         activity.startActivity(iihea);
 
@@ -164,7 +176,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent iifin = new Intent(getActivity(), DetailsFinancialActivity.class);
+                        Intent iifin = new Intent(getActivity(), DetailsInfoActivityFinancialNew.class);
                         iifin.putExtra(AppConstants.KEY_DETAILS_FINANCIAL, detfin);
                         activity.startActivity(iifin);
 
@@ -180,7 +192,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                     public void onClick(View v) {
 
 
-                        Intent iileg = new Intent(getActivity(), DetailsLegalActivity.class);
+                        Intent iileg = new Intent(getActivity(), DetailsInfoActivityLegalNew.class);
                         iileg.putExtra(AppConstants.KEY_DETAILS_LEGAL, detleg);
                         activity.startActivity(iileg);
 
@@ -268,8 +280,24 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.listrow_groups, null);
         }
         Group group = (Group) getGroup(groupPosition);
+        Log.d(">>>>>>","Group Value "+catid);
+
+        if(catid==1)
+               ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_5);
+        else if(catid==2)
+            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_4);
+        else if(catid==3)
+            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_2);
+        else if(catid==5)
+            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_1);
+        else if(catid==6)
+            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_7);
+
+
+      //
             if(group.string.equals("Govt. Primary School "))
                 ((CheckedTextView) convertView).setText("সরকারী প্রাইমারী স্কুল (Govt. Primary School)");
+
             else if(group.string.equals("Day Care Centres"))
                  ((CheckedTextView) convertView).setText("ডে কেয়ার সেন্টার(Day Care Centres)");
             else if(group.string.equals("Kindergarten"))
@@ -378,8 +406,6 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
 
             else if(group.string.equals("Vetenary"))
                 ((CheckedTextView) convertView).setText("পশু  চিকিৎসা কেন্দ্র (Vetenary)");
-
-
 
 
             else if(group.string.equals("ATM Booth"))
