@@ -64,6 +64,7 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 public class DetailsInfoActivityEntertainmentNew extends Activity {
 
 
+    String address_textx="";
     Dialog dialog;
     LinearLayout upperHand,upperText,left_way,middle_phone,right_email,bottom_bar,linearLayout;
     ImageView left_image,middle_image,right_image,call_btn;
@@ -191,11 +192,17 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         email_text.setText(entertainmentServiceProviderItem.getNodeEmail());
 
 
+
+
+
+
+
+
         RelativeLayout.LayoutParams params_bottom_bar = (RelativeLayout.LayoutParams) bottom_bar.getLayoutParams();
         int  vcc=params_bottom_bar.height = height/13;
         params_bottom_bar.width = width;
         bottom_bar.setLayoutParams(params_bottom_bar);
-
+        result_concate="";
 
         if(!entertainmentServiceProviderItem.getOpeningtime().equals("") )
             concateBasic("  খোলার সময়: ",entertainmentServiceProviderItem.getOpeningtime() );
@@ -206,6 +213,31 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         if(!entertainmentServiceProviderItem.getBreaktime().equals(""))
             concateBasic("  বিরতির সময়: ",entertainmentServiceProviderItem.getBreaktime());
         itemopeningTime.setText(result_concate);
+
+        result_concate="";
+
+
+        if(!entertainmentServiceProviderItem.getRoad().equals(""))
+            concateBasic("রাস্তা: ", entertainmentServiceProviderItem.getRoad());
+
+        if(!entertainmentServiceProviderItem.getBlock().equals(""))
+            concateBasic("ব্লক: ",entertainmentServiceProviderItem.getBlock());
+
+
+
+        if(!entertainmentServiceProviderItem.getAddress().equals(""))
+            concateBasic("",entertainmentServiceProviderItem.getAddress());
+
+
+        if(!entertainmentServiceProviderItem.getLandmark().equals(""))
+            concateBasic(entertainmentServiceProviderItem.getLandmark(), "  এর নিকটে");
+
+        Log.d("===","final Address"+result_concate);
+
+
+
+        address_text.setText(result_concate);
+
 
         EntertainmentBookTable entertainmentBookTable =new EntertainmentBookTable(DetailsInfoActivityEntertainmentNew.this);
         EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(DetailsInfoActivityEntertainmentNew.this);

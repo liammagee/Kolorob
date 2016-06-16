@@ -91,7 +91,6 @@ import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTabl
 import demo.kolorob.kolorobdemoversion.database.Job.JobServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
-import demo.kolorob.kolorobdemoversion.fragment.MapFragment;
 import demo.kolorob.kolorobdemoversion.fragment.MapFragmentOSM;
 import demo.kolorob.kolorobdemoversion.fragment.MapFragmentRouteOSM;
 import demo.kolorob.kolorobdemoversion.model.CategoryItem;
@@ -144,7 +143,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
     private ListView expandableListview;
     private RelativeLayout wholeLayout;
     private int showList;
-    private ImageButton helpicon;
+
     private Button prebutton;
 
     private int sideIndexHeight;
@@ -188,7 +187,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
     private String placeChoice;
     private int indexListSize;
     private ListActivity listView;
-    private ImageButton expandableListShowing;
+    private ImageButton expandableListShowing,more,helpicon;
     private RelativeLayout mapholderr;
     ArrayList<CategoryItem> categoryList;
     private Context con;
@@ -216,7 +215,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
     ListView allitemList;
     String filterword;
     TextView searchtext;
-    ImageButton more;
+
     int snumber=0;
 
     public int getSnumber() {
@@ -240,6 +239,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
     RelativeLayout catholder;
     CheckBox check;
     LinearLayout fholder,fleft,fright;
+
     ArrayList<AllHolder>allHolders=new ArrayList<>();
     ArrayList<AllHolder>catHolders=new ArrayList<>();
     ArrayList<AllHolder>subcatHolders=new ArrayList<>();
@@ -298,46 +298,11 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
         toolbar2 = (Toolbar) findViewById(R.id.categorytoolbar);
         Searchall=(EditText)findViewById(R.id.searchall);
         prebutton=(Button) findViewById(R.id.prebutton);
-        catsearch=(EditText)findViewById(R.id.searchallc);
-        Searchall.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                wholeLayout.setVisibility(View.GONE);
-                searchLayout.setVisibility(View.VISIBLE);
-                calladapter(false);
-                catholder.setVisibility(View.GONE);
-                fholder.setVisibility(View.GONE);
-                catgroup.setVisibility(View.GONE);
-                if(catgroup.getCheckedRadioButtonId()!=-1)catgroup.clearCheck();
-                check.setChecked(false);
-                check.setVisibility(View.GONE);
-                return false;
-            }
-        });
-        catsearch.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                catsearchclicked=true;
-                setFilcatid(currentCategoryID);
-                setSnumber(0);
-                wholeLayout.setVisibility(View.GONE);
-                searchLayout.setVisibility(View.VISIBLE);
-                calladapter(true);
-
-                catholder.setVisibility(View.GONE);
-
-                catgroup.setVisibility(View.GONE);
-                if(catgroup.getCheckedRadioButtonId()!=-1)catgroup.clearCheck();
-
-                check.setChecked(false);
-                check.setVisibility(View.GONE);
-                return false;
+        //catsearch=(EditText)findViewById(R.id.searchallc);
 
 
-            }
-        });
+
+
         header=(TextView)findViewById(R.id.textView15);
         // toolbar.setBackgroundResource(android.R.color.transparent);
         setSupportActionBar(toolbar);
@@ -429,6 +394,8 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
 
                     list_expand=true;
                     listOrMapDisplayText.setText("ম্যাপ দেখতে চাইলে এখানে চাপ দিন");
+                    Log.d("====","CategoryId"+currentCategoryID);
+                    categoryListBuildUp(currentCategoryID);
 
 
                 }
@@ -441,6 +408,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                     list_expand=false;
                     subCatItemList.setVisibility(View.GONE);
                     listOrMapDisplayText.setText("লিস্ট দেখতে চাইলে এখানে চাপ দিন");
+                    //constructCategoryList(categoryList);
 
                 }
 
@@ -772,14 +740,14 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
 
             }
         });
-        prebutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                PlaceDetailsActivityNew.this.onBackPressed();
-
-            }
-        });
+//        prebutton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                PlaceDetailsActivityNew.this.onBackPressed();
+//
+//            }
+//        });
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1117,30 +1085,37 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                     case AppConstants.EDUCATION:
                         educlicked=true;
                         ivIcon.setImageResource(0);
+                        ArrayList<EducationServiceProviderItem> educationServiceProvider;
+                        educationServiceProvider = constructEducationListItem(ci.getId());
                         ivIcon.setImageResource(R.drawable.turned_on_porashona);
+                        callMapFragmentWithEducationInfo(ci.getCatName(), ci.getId(), educationServiceProvider);
+                        mapcalledstatus=true;
                         if(showList==1) {
+
                             explist.setVisibility(View.VISIBLE);
                             explist.setAnimation(slideOutFromLeftAnim());
                             llSubCatListHolder.setVisibility(View.GONE);
                             subCatItemList.setVisibility(View.VISIBLE);
+
+
+
                         }
                         else
                         {
-                            mapcalledstatus=true;
+
                             llSubCatListHolder.setVisibility(View.GONE);
                             map.setVisibility(View.VISIBLE);
-                            listholder.startAnimation(slideInFromRightAnim());
+
                             mapholderr.startAnimation(slideInFromRightAnim());
-                            ArrayList<EducationServiceProviderItem> educationServiceProvider;
-                            educationServiceProvider = constructEducationListItem(ci.getId());
                             callMapFragmentWithEducationInfo(ci.getCatName(), ci.getId(), educationServiceProvider);
                         }
+                        listholder.startAnimation(slideInFromRightAnim());
                         toolbar.setVisibility(View.GONE);
                         helpicon.setVisibility(View.GONE);
-                        toolbar2.setVisibility(View.VISIBLE);
+                        //toolbar2.setVisibility(View.VISIBLE);
                         listholder.setBackgroundColor(Color.parseColor("#58BED6"));
-                        toolbar2.setBackgroundColor(Color.parseColor("#58BED6"));
-                        toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_porashona));
+                        //toolbar2.setBackgroundColor(Color.parseColor("#58BED6"));
+                        //toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_porashona));
                         header.setText("Education");
                         toolbar2.startAnimation(slideInFromRightAnim());
                         setSupportActionBar(toolbar2);
@@ -1177,20 +1152,25 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         helclicked=true;
                         ivIcon.setImageResource(0);
                         ivIcon.setImageResource(R.drawable.turned_on_chikitsha);
+                        ArrayList<HealthServiceProviderItem> healthServiceProvider;
+                        healthServiceProvider = constructHealthListItem(ci.getId());
+                        callMapFragmentWithHealthInfo(ci.getCatName(), ci.getId(), healthServiceProvider);
+                        mapcalledstatus=true;
                         if(showList==1) {
+
                             explist.setVisibility(View.VISIBLE);
                             explist.setAnimation(slideOutFromLeftAnim());
                             llSubCatListHolder.setVisibility(View.GONE);
                             subCatItemList.setVisibility(View.VISIBLE);
+
+
                         }
                         else {
-                            mapcalledstatus=true;
+
                             llSubCatListHolder.setVisibility(View.GONE);
                             map.setVisibility(View.VISIBLE);
                             mapholderr.startAnimation(slideInFromRightAnim());
-                            ArrayList<HealthServiceProviderItem> healthServiceProvider;
-                            healthServiceProvider = constructHealthListItem(ci.getId());
-                            callMapFragmentWithHealthInfo(ci.getCatName(), ci.getId(), healthServiceProvider);
+
 
 
                         }
@@ -1200,7 +1180,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         helpicon.setVisibility(View.GONE);
                         toolbar2.setVisibility(View.VISIBLE);
                         toolbar2.setBackgroundColor(Color.parseColor("#DF554E"));
-                        toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_chikitsha));
+                      //  toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_chikitsha));
                         header.setText("Health");
                         toolbar2.startAnimation(slideInFromRightAnim());
                         listholder.setVisibility(View.VISIBLE);
@@ -1240,12 +1220,18 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                     case AppConstants.ENTERTAINMENT:
                         entclicked=true;
                         ivIcon.setImageResource(0);
+                        ArrayList<EntertainmentServiceProviderItem> entertainmentServiceProvider;
+                        entertainmentServiceProvider = constructEntertainmentListItem(ci.getId());
                         ivIcon.setImageResource(R.drawable.turned_on_anondo_furti);
+                        callMapFragmentWithEntertainmentInfo(ci.getCatName(), ci.getId(), entertainmentServiceProvider);
+                        mapcalledstatus=true;
                         if(showList==1) {
+
                             explist.setVisibility(View.VISIBLE);
                             explist.setAnimation(slideOutFromLeftAnim());
                             llSubCatListHolder.setVisibility(View.GONE);
                             subCatItemList.setVisibility(View.VISIBLE);
+
                         }
 
                         else
@@ -1254,10 +1240,6 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                             llSubCatListHolder.setVisibility(View.GONE);
                             map.setVisibility(View.VISIBLE);
                             mapholderr.startAnimation(slideInFromRightAnim());
-                            ArrayList<EntertainmentServiceProviderItem> entertainmentServiceProvider;
-                            entertainmentServiceProvider = constructEntertainmentListItem(ci.getId());
-                            callMapFragmentWithEntertainmentInfo(ci.getCatName(), ci.getId(), entertainmentServiceProvider);
-
                         }
 
 
@@ -1267,7 +1249,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         helpicon.setVisibility(View.GONE);
                         toolbar2.setVisibility(View.VISIBLE);
                         toolbar2.setBackgroundColor(Color.parseColor("#7377B7"));
-                        toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_anondo_furti));
+                      //  toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_anondo_furti));
                         header.setText("Entertainment");
                         toolbar2.startAnimation(slideInFromRightAnim());
                         listholder.setVisibility(View.VISIBLE);
@@ -1336,7 +1318,12 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         legclicked=true;
                         ivIcon.setImageResource(0);
                         ivIcon.setImageResource(R.drawable.turned_on_ain_kanun);
+                        ArrayList<LegalAidServiceProviderItem> legalaidServiceProvider;
+                        mapcalledstatus=true;
+                        legalaidServiceProvider = constructlegalaidListItem(ci.getId());
+                        callMapFragmentWithLegalAidInfo(ci.getCatName(), ci.getId(), legalaidServiceProvider);
                         if(showList==1) {
+
                             explist.setVisibility(View.VISIBLE);
                             explist.setAnimation(slideOutFromLeftAnim());
                             llSubCatListHolder.setVisibility(View.GONE);
@@ -1348,9 +1335,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                             llSubCatListHolder.setVisibility(View.GONE);
                             map.setVisibility(View.VISIBLE);
                             mapholderr.startAnimation(slideInFromRightAnim());
-                            ArrayList<LegalAidServiceProviderItem> legalaidServiceProvider;
-                            legalaidServiceProvider = constructlegalaidListItem(ci.getId());
-                            callMapFragmentWithLegalAidInfo(ci.getCatName(), ci.getId(), legalaidServiceProvider);
+
 
                         }
 
@@ -1363,7 +1348,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         listholder.startAnimation(slideInFromRightAnim());
                         toolbar2.setVisibility(View.VISIBLE);
                         toolbar2.setBackgroundColor(Color.parseColor("#67C3A2"));
-                        toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_ain_kanun));
+                       // toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_ain_kanun));
                         header.setText("Legal Aid");
                         toolbar2.startAnimation(slideInFromRightAnim());
                         setSupportActionBar(toolbar2);
@@ -1397,21 +1382,25 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         finclicked=true;
                         ivIcon.setImageResource(0);
                         ivIcon.setImageResource(R.drawable.turned_on_taka_poisha);
+                        ArrayList<FinancialServiceProviderItem> financialServiceProvider;
+                        financialServiceProvider = constructfinancialListItem(ci.getId());
+                        callMapFragmentWithFinancialInfo(ci.getCatName(), ci.getId(), financialServiceProvider);
+                        mapcalledstatus=true;
+
                         if(showList==1) {
+
                             explist.setVisibility(View.VISIBLE);
                             explist.setAnimation(slideOutFromLeftAnim());
                             llSubCatListHolder.setVisibility(View.GONE);
                             subCatItemList.setVisibility(View.VISIBLE);
+
                         }
                         else
                         {
-                            mapcalledstatus=true;
+
                             llSubCatListHolder.setVisibility(View.GONE);
                             map.setVisibility(View.VISIBLE);
                             mapholderr.startAnimation(slideInFromRightAnim());
-                            ArrayList<FinancialServiceProviderItem> financialServiceProvider;
-                            financialServiceProvider = constructfinancialListItem(ci.getId());
-                            callMapFragmentWithFinancialInfo(ci.getCatName(), ci.getId(), financialServiceProvider);
 
 
                         }
@@ -1421,7 +1410,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                         toolbar.setVisibility(View.GONE);
                         listholder.setVisibility(View.VISIBLE);
                         listholder.setBackgroundColor(Color.parseColor("#7a378b"));
-                        toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_taka_poisha));
+                       // toolbar2.findViewById(R.id.imageView7).setBackgroundDrawable(getResources().getDrawable(R.drawable.turned_on_taka_poisha));
                         header.setText("Financial");
                         listholder.startAnimation(slideInFromRightAnim());
 
@@ -1512,7 +1501,16 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
                 }
 
                 else
-                    categoryListBuildUp(currentCategoryID);
+                {
+                    if (isCatExpandedOnce)
+                        showAnimatedSubcategories(subCatList, 0.5, AppConstants.ALL_CAT_ICONS_NEW[ci.getId() - 1], ci.getId()); // AppConstants.CAT_LIST_SM_WIDTH_PERC);
+                    else
+                        showAnimatedSubcategories(subCatList, 1.0, AppConstants.ALL_CAT_ICONS_NEW[ci.getId() - 1], ci.getId());
+                        categoryListBuildUp(currentCategoryID);
+                }
+
+
+
                 //AppConstants.CAT_LIST_LG_WIDTH_PERC);
             }
         });
@@ -1525,7 +1523,9 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
         subCategoryItems = constructSubCategoryListItem(cat_id,header);
         //     Log.d("cat_id",">>>" +cat_id);
         //   Log.d("header",">>>" +header);
-        //  Log.d("placeChoice",">>>" +cat_id);
+          Log.d("======","catsss Id" +cat_id);
+
+
         createData(cat_id,header,placeChoice);
         ArrayList<String> itemName = new ArrayList<String>();
         currentSubCategoryItem = subCategoryItems;
@@ -1830,7 +1830,7 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
 
         // TODO Inflate the sub-category list from right
         final RelativeLayout rlSubCatHolder = (RelativeLayout) findViewById(R.id.rlSubCatHolder);
-        if(subCatShowFlag==1)
+        if(subCatShowFlag==1&&showList!=1)
         {
             llSubCatListHolder.setVisibility(View.VISIBLE);
         }
@@ -1839,8 +1839,10 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
+                if(showList!=1)
                 llSubCatListHolder.setVisibility(View.VISIBLE);
+
+
                 llSubCatListHolder.startAnimation(slideInFromRightAnim());
                 constructSubCategoryList(subCatList, 1.0, cat_id);
             }
@@ -2124,35 +2126,8 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
 
     /**********************************************************Methods for job*****************************************************/
 
-    private ArrayList<JobServiceProviderItem> constructjobListItem(int cat_id)
-    {
-        ArrayList<JobServiceProviderItem> jobServiceProvider;
-        JobServiceProviderTable jobServiceProviderTable = new JobServiceProviderTable(PlaceDetailsActivityNew.this);
-        jobServiceProvider = jobServiceProviderTable.getAllJobSubCategoriesInfo(cat_id);
-        return jobServiceProvider;
-    }
 
-    private ArrayList<JobServiceProviderItem> constructjobListItemForHeader(int cat_id, String header)
-    {
-        ArrayList<JobServiceProviderItem> jobServiceProvider;
-        JobServiceProviderTable jobServiceProviderTable = new JobServiceProviderTable(PlaceDetailsActivityNew.this);
-        jobServiceProvider = jobServiceProviderTable.getAllJobSubCategoriesInfoWithHead(cat_id, header);
-        return jobServiceProvider;
-    }
 
-    private void callMapFragmentWithJobInfo(String item_name,int cat_id,ArrayList<JobServiceProviderItem> jobServiceProviderItems)
-    {
-        MapFragment mapFragment = new MapFragment();
-        mapFragment.setLocationName(getPlaceChoice());
-        mapFragment.setMapIndicatorText(item_name);
-        mapFragment.setCategoryId(cat_id);
-        mapFragment.setJobServiceProvider(jobServiceProviderItems);
-        mapFragment.setLocationNameId(locationNameId);
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.map_fragment, mapFragment);
-        fragmentTransaction.commit();
-    }
 
     public void implementRouteDrawingFragmentOSM()
     {
@@ -2403,8 +2378,9 @@ public class PlaceDetailsActivityNew extends AppCompatActivity implements View.O
         Boolean valuecheck=pref.getBoolean("Value",false);
         if (valuecheck==false)
         {
-            map.setVisibility(View.GONE);
+          //  map.setVisibility(View.GONE);
         }
+
         searchLayout.setVisibility(View.GONE);
         wholeLayout.setVisibility(View.VISIBLE);
 

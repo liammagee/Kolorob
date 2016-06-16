@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
+        android:name=".google_analytics.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/kolorob_logo_first_page"
         android:label="@string/app_name"
@@ -57,10 +58,12 @@
             android:name=".activity.Information_UpdateActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light" />
-        <activity
+
+        <activity3z
             android:name=".activity.LocationInstructionActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Transparent" />
+
         <activity
             android:name=".activity.ButtonClickBaunia"
             android:label="@string/title_activity_button_click_baunia"
@@ -71,6 +74,10 @@
         <activity
             android:name=".activity.PlaceDetailsActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".activity.PlaceDetailsActivityNewLayout"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".activity.DetailsInfoActivity"
             android:screenOrientation="portrait"
@@ -108,8 +115,8 @@
             android:theme="@style/Theme.Transparent" />
         <activity
             android:name=".activity.PlaceChoiceActivity2"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.DetailsLegalActivity"
             android:screenOrientation="portrait"
@@ -132,11 +139,43 @@
             android:theme="@style/Theme.Transparent" />
         <activity android:name=".activity.DetailsInfoActivityEducation" />
         <activity android:name=".activity.DetailsInfoActivityEntertainmentNew" />
-        <activity android:name=".activity.DetailsInfoActivityHealthNew" />
+        <activity
+            android:name=".activity.DetailsInfoActivityHealthNew"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".activity.DetailsInfoActivityFinancialNew" />
         <activity android:name=".activity.DetailsInfoActivityLegalNew" />
         <activity android:name=".activity.DetailsJobActivityNew" />
-        <activity android:name=".activity.FeedBackActivityNew"></activity>
+        <activity android:name=".activity.FeedBackActivityNew" />
+
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="com.google.android.gms.analytics.AnalyticsService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!--
+             Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
+             installation campaign reporting
+        -->
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+
+        <activity android:name=".activity.CompareActivity"></activity>
     </application>
 
 </manifest>

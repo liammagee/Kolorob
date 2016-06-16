@@ -77,6 +77,8 @@ public class DetailsInfoActivityHealthNew extends Activity {
     private LinearLayout ll3,scrollingPart;
     private int k;
     private Context con;
+    private String basic_part;
+    RelativeLayout background;
 
     /**
      * Created by arafat on 28/05/2016.
@@ -129,6 +131,8 @@ public class DetailsInfoActivityHealthNew extends Activity {
         itemopeningTime=(TextView)findViewById(R.id.opening_time);
         distance_left=(ImageView)findViewById(R.id.distance_left);
         phone_mid=(ImageView)findViewById(R.id.phone_middl);
+        background=(RelativeLayout)findViewById(R.id.background);
+        background.setBackgroundResource(R.drawable.back_drop);
 
 
 
@@ -197,6 +201,28 @@ public class DetailsInfoActivityHealthNew extends Activity {
         healthPharmacyItems=healthPharmacyTable1.getPharmacyforNode(healthServiceProviderItem.getNodeId());
 
         healthSpecialistItems=healthSpecialistTable.getSpecialistforNode(healthServiceProviderItem.getNodeId());
+
+        basic_part="";
+
+
+        if(!healthServiceProviderItem.getRoad().equals(""))
+            concateBasic("রাস্তা: ", healthServiceProviderItem.getRoad());
+
+        if(!healthServiceProviderItem.getBlock().equals(""))
+            concateBasic("ব্লক: ",healthServiceProviderItem.getBlock());
+
+
+
+        if(!healthServiceProviderItem.getAddress().equals(""))
+            concateBasic("",healthServiceProviderItem.getAddress());
+
+
+        if(!healthServiceProviderItem.getLandmark().equals(""))
+            concateBasic(healthServiceProviderItem.getLandmark(), "  এর নিকটে");
+        address_text.setText(basic_part);
+
+        Log.d("===","final Address"+basic_part);
+
 
 
         if(healthPharmacyItems!=null) {
@@ -630,5 +656,17 @@ public class DetailsInfoActivityHealthNew extends Activity {
             return false;
 
         }
+    }
+
+
+    private String concateBasic(String value1,String value2){
+
+        String value= value1+value2;
+        basic_part= basic_part+value + "\n";
+
+        Log.d("....>>>", "Values   " + basic_part);
+
+
+        return basic_part;
     }
 }
