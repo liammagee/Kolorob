@@ -550,33 +550,36 @@ help=(ImageButton)findViewById(R.id.helpicon);
 
     @Override
     public void onBackPressed() {
-        if (doubleBackToExitPressedOnce) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Close")
-                    .setMessage("Are you sure you want to close Kolorob")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
 
-                    })
-                    .setNegativeButton("No", null)
-                    .show();
-        }
-searchmain.setVisibility(View.GONE);
-        placemain.setVisibility(View.VISIBLE);
-        this.doubleBackToExitPressedOnce = true;
+        help();
 
-
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
+//        if (doubleBackToExitPressedOnce) {
+//            new AlertDialog.Builder(this)
+//                    .setTitle("Close")
+//                    .setMessage("Are you sure you want to close Kolorob")
+//                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+//                    {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            finish();
+//                        }
+//
+//                    })
+//                    .setNegativeButton("No", null)
+//                    .show();
+//        }
+//searchmain.setVisibility(View.GONE);
+//        placemain.setVisibility(View.VISIBLE);
+//        this.doubleBackToExitPressedOnce = true;
+//
+//
+//        new Handler().postDelayed(new Runnable() {
+//
+//            @Override
+//            public void run() {
+//                doubleBackToExitPressedOnce=false;
+//            }
+//        }, 2000);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -880,13 +883,13 @@ searchmain.setVisibility(View.GONE);
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 fun2();
-                int buttonId=fgrp2.getCheckedRadioButtonId();
-                RadioButton radioButton=(RadioButton)findViewById(buttonId);
+                int buttonId = fgrp2.getCheckedRadioButtonId();
+                RadioButton radioButton = (RadioButton) findViewById(buttonId);
                 setFilterword((String) radioButton.getText());
-                int num=Findsubcatid(filterword);
+                int num = Findsubcatid(filterword);
                 calladapter(true);
 
-                Log.v("Inside fun1",String.valueOf(num));
+                Log.v("Inside fun1", String.valueOf(num));
             }
         });
     }
@@ -943,12 +946,12 @@ searchmain.setVisibility(View.GONE);
 
         /// Log.d(">>>>>>","You are in onResume");
 
-if(valuecheck==false)
-{
+         if(valuecheck==false)
+       {
 
        allitemList.setVisibility(View.VISIBLE);
 
-}
+        }
         if (valuecheck!=false && getv==10)
         {
             placemain.setVisibility(View.GONE);
@@ -988,6 +991,100 @@ if(valuecheck==false)
         fragmentTransaction.replace(R.id.map_fragment, mapFragmentOSM);
         fragmentTransaction.commit();
     }
+
+    public void back(){
+
+            new AlertDialog.Builder(this)
+                    .setTitle("Close")
+                    .setMessage("Are you sure you want to close Kolorob")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+
+                    })
+                    .setNegativeButton("No", null)
+                    .show();
+
+        searchmain.setVisibility(View.GONE);
+        placemain.setVisibility(View.VISIBLE);
+        this.doubleBackToExitPressedOnce = true;
+
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
+
+    public void help(){
+        LayoutInflater layoutInflater = LayoutInflater.from(PlaceChoiceActivity2.this);
+        View promptView = layoutInflater.inflate(R.layout.help_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PlaceChoiceActivity2.this);
+        alertDialogBuilder.setView(promptView);
+
+        final EditText userfeedback = (EditText) promptView.findViewById(R.id.edittext);
+        final Button submit= (Button)promptView.findViewById(R.id.submit_btn);
+        final Button button= (Button)promptView.findViewById(R.id.phone_call);
+
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String user= SharedPreferencesHelper.getUser(PlaceChoiceActivity2.this);
+                String testUser=SharedPreferencesHelper.getFeedback(PlaceChoiceActivity2.this);
+                if(user.equals(testUser))
+                {
+                    AlertMessage.showMessage(con, "দুঃখিত মতামত গ্রহন করা সম্ভব হচ্ছে না", "আপনি ইতিপূর্বে মতামত দিয়ে ফেলেছেন");
+                }
+
+                else
+                    sendDataToserver(userfeedback.getText().toString());
+
+            }
+        });
+//        prebutton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                PlaceDetailsActivityNewLayout.this.onBackPressed();
+//
+//            }
+//        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                phoneCall();
+                Toast.makeText(PlaceChoiceActivity2.this, "...ok....",Toast.LENGTH_LONG).show();
+            }
+        });
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("ঠিক আছে", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //resultText.setText("Hello, " + userfeedback.getText());
+                        back();
+                    }
+                })
+                .setNegativeButton("বাতিল করুন",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                                back();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
+    }
+
     public void helpDialog(View v){
 
         LayoutInflater layoutInflater = LayoutInflater.from(PlaceChoiceActivity2.this);
@@ -1090,16 +1187,12 @@ if(valuecheck==false)
 
                             if(forms.toString().equals("true"))
                             {
-                                demo.kolorob.kolorobdemoversion.helpers.AlertMessage.showMessage(PlaceChoiceActivity2.this, "মন্তব্যটি পাঠানো হয়ছে",
+                                AlertMessage.showMessage(PlaceChoiceActivity2.this, "মন্তব্যটি পাঠানো হয়ছে",
                                         "মন্তব্য করার জন্য আপনাকে ধন্যবাদ");
                             }
                             else
-                                demo.kolorob.kolorobdemoversion.helpers.AlertMessage.showMessage(PlaceChoiceActivity2.this, "মন্তব্য পাঠানো সফল হয়নি",
+                                AlertMessage.showMessage(PlaceChoiceActivity2.this, "মন্তব্য পাঠানো সফল হয়নি",
                                         "মন্তব্য করার জন্য আপনাকে ধন্যবাদ");
-
-
-
-
 
 
 

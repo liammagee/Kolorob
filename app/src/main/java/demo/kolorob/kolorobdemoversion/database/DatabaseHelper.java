@@ -21,18 +21,22 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     public static final String SERVICE_CATEGORY = "service_category";
     public static final String SUB_CATEGORY = "sub_category";
-
+    public static final String SUB_CATEGORY_NEW = "sub_category_new";
     public static final String EDU_PROVIDER_TABLE = "edu_provider";
     public static final String EDU_PROVIDER_COURSE_TABLE = "edu_provider_course";
     public static final String EDU_PROVIDER_FEE_TABLE = "edu_provider_fee";
+    public static final String EDU_PROVIDER_TABLE_NEW = "edu_provider_new";
     public static final String EDU_PROVIDER_RESULT_TABLE = "edu_provider_result";
-    public static final String EDU_SUB_CAT_TABLE = "edu_sub_category";
-
+    public static final String EDU_TRAINING_TABLE = "edu_training_table";
+    public static final String EDU_TUITION_TABLE = "edu_tuition_table";
     public static final String ENT_PROVIDER_TABLE = "ent_provider";
+    public static final String ENT_PROVIDER_TABLE_NEW = "ent_provider_new";
     public static final String HEALTH_PROVIDER_TABLE = "hel_provider";
+    public static final String HEALTH_PROVIDER_TABLE_NEW = "hel_provider_new";
     public static final String HEALTH_PHARMACY_TABLE = "hel_phermacy";
     public static final String HEALTH_SPECIALIST_TABLE = "hel_specialist";
     public static final String HEALTH_VACCINES_TABLE = "hel_vaccine";
+    public static final String HEALTH_VACCINES_TABLE_DETAILS = "hel_vaccine_details";
 
     public static final String ENT_BOOKSHOP_TABLE = "ent_bookshop";
     public static final String ENT_FIELD = "ent_field";
@@ -44,6 +48,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String ENT_SHISHU_PARK = "ent_shishu_park";
     public static final String ENT_SUB_CATEGORY = "ent_sub_category";
     public static final String ENT_THEATRE = "ent_theatre";
+    public static final String ENT_DETAILS_INFO = "details_info";
+    public static final String Legal_Aid_Details_Table= "legal_details";
     public static final String ENT_TRAINING_CENTER = "ent_training_center";
 
     public static final String LEGAL_AID_SERVICE_PROVIDER_TABLE="legal_aid_provider";
@@ -60,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     //tables for financial services
     public static final String FINANCIAL_SERVICE_PROVIDER_TABLE="financial_provider";
     public static final String FINANCIAL_SERVICE_BILLS="financial_bills";
+    public static final String FINANCIAL_SERVICE_DETAILS="financial_details";
     public static final String FINANCIAL_SERVICE_INSURANCE="financial_insurance";
     public static final String FINANCIAL_SERVICE_LOAN="financial_loan";
     public static final String FINANCIAL_SERVICE_PAYMENT="financial_payment";
@@ -67,7 +74,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String FINANCIAL_SERVICE_TAX="financial_tax";
     public static final String FINANCIAL_SERVICE_TRANSACTION="financial_transaction";
     public static final String FINANCIAL_SERVICE_TUITION="financial_tuition";
-
+    public static final String FINANCIAL_SERVICE_MAP="financial_mapinfo";
+    public static final String FINANCIAL_SERVICE_CONTACT="financial_contactinfo";
+    public static final String FINANCIAL_SERVICE_REGISTRATION="financial_registrationinfo";
+    public static final String FINANCIAL_SERVICE_TIMING="financial_timinginfo";
+    public static final String FINANCIAL_SERVICE_NEW="financial_new";
+    public static final String GOVERNMENT_SERVICE_DETAILS="gov_details";
+    public static final String GOV_MAIN="gov_main";
     public DatabaseHelper(Context context){
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;

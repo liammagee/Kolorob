@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="8dp"
-    android:layout_marginRight="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:layout_marginTop="4dp"
     android:background="@drawable/bg_jp4"
-    android:layout_marginBottom="8dp"
+    android:layout_marginBottom="4dp"
 
     tools:context="demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEducation">
 
@@ -16,33 +16,83 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/upper"
+
+
         >
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:id="@+id/upper_part"
 
-            android:layout_height="wrap_content">
+
+
 
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="match_parent"
                 android:id="@+id/upperText"
-                android:gravity="center">
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                >
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
                     android:layout_height="wrap_content"
-                    android:text="বাউনিয়াবাদ আইডিয়াল হাই স্কুল "
-                    android:textSize="25dp"
-                    android:drawableLeft="@drawable/job"
-                    android:paddingLeft="1dp"
+                    android:gravity="left">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="65dp"
+                        android:id="@+id/iv_kolorob_logo"
+                        android:layout_marginLeft="14dp"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/job_topimge"
+                        />
+                </LinearLayout>
 
-                    android:id="@+id/ups_text"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.8"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="চাকুরীর বিস্তারিত বিবরন "
+                        android:textSize="20dp"
+                        android:gravity="center_horizontal"
+                        android:layout_marginLeft="5dp"
 
-                    />
+                        android:textColor="@color/white"
+                        android:id="@+id/ups_texts"
+
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal|right">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/cross_jb"
+                        android:layout_marginRight="25dp"
+
+                        android:layout_marginTop="13dp"
+                        android:id="@+id/close_button"
+                        />
+
+                </LinearLayout>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -53,148 +103,105 @@
 
 
 
-        </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:id="@+id/bottom"
+            android:layout_marginTop="20dp"
+            android:layout_height="5dp">
+
+        </View>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/scrollingPart"
+            android:layout_marginBottom="80dp"
+
 
             >
 
             <ScrollView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="100dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
 
 
 
+
+
+
+
+
+
                     <LinearLayout
-                        android:orientation="horizontal"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
-                        android:id="@+id/middle_part">
+                        android:orientation="vertical"
+                        android:id="@+id/Job_info">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:id="@+id/mail_address">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:gravity="center_horizontal">
+                            <ImageView
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:id="@+id/address_only">
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:text="@string/address"
-
-                                    android:layout_height="wrap_content" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/address_text"/>
-
-
-                            </LinearLayout>
-
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:id="@+id/phone_email">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/phone"
-                                    />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/phone_text"/>
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/email"
-                                    />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:id="@+id/email_text"/>
-
-
-
-                            </LinearLayout>
-
+                                android:background="@drawable/school_logo_default"
+                                android:id="@+id/JobIcon"/>
 
 
                         </LinearLayout>
 
 
 
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-
-
-                        <View
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:background="@color/black" />
-                    </LinearLayout>
-
-
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:id="@+id/Job_info">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/direction_j"
-                            android:layout_gravity="center_horizontal"
                             android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            />
+                            android:gravity="center_horizontal">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="চাকুরীর বিস্তারিত বিবরন "
+                                android:textSize="20dp"
+                                android:layout_marginLeft="5dp"
+
+                                android:textColor="@color/white"
+                                android:id="@+id/ups_text"
+
+                                />
+
+
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:text="@string/job_description"
-                            android:textSize="28sp"
-                            android:paddingLeft="10dp"
+                            android:textSize="20sp"
+                            android:paddingLeft="20dp"
                             android:padding="5dp"
-                            android:textColor="@color/blue"
+                            android:layout_marginTop="10dp"
 
-                            android:layout_marginLeft="5dp"/>
+                            android:textColor="@color/white"
+
+                            android:layout_marginLeft="20dp"/>
 
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
+                            android:paddingLeft="25dp"
                             android:paddingTop="2dp"
                             android:paddingBottom="4dp"
+                            android:textColor="@color/white"
                             android:text="Job Type: "
                             android:visibility="visible"
                             android:id="@+id/job_type"
@@ -206,19 +213,20 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/organization_time"
-                            android:textSize="28sp"
-                            android:paddingLeft="10dp"
+                            android:textSize="20sp"
+                            android:paddingLeft="20dp"
                             android:padding="5dp"
-                            android:textColor="@color/blue"
-                            android:layout_marginLeft="5dp"/>
+                            android:textColor="@color/white"
+                            android:layout_marginLeft="20dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
+                            android:paddingLeft="25dp"
                             android:paddingTop="2dp"
                             android:paddingBottom="4dp"
                             android:text="Opening Time: "
+                            android:textColor="@color/white"
                             android:visibility="visible"
                             android:id="@+id/opening_time"
 
@@ -229,21 +237,22 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/application_time"
-                            android:textSize="28sp"
-                            android:paddingLeft="10dp"
+                            android:textSize="20sp"
+                            android:paddingLeft="25dp"
                             android:padding="5dp"
-                            android:textColor="@color/blue"
+                            android:textColor="@color/white"
 
-                            android:layout_marginLeft="5dp"/>
+                            android:layout_marginLeft="20dp"/>
 
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
+                            android:paddingLeft="25dp"
                             android:paddingTop="2dp"
                             android:paddingBottom="4dp"
                             android:text="Application post date: "
+                            android:textColor="@color/white"
                             android:visibility="visible"
                             android:id="@+id/post_date"
 
@@ -254,23 +263,24 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/salary_range"
-                            android:textSize="28sp"
-                            android:paddingLeft="10dp"
+                            android:textSize="20sp"
+                            android:paddingLeft="20dp"
                             android:padding="5dp"
-                            android:textColor="@color/blue"
+                            android:textColor="@color/white"
 
-                            android:layout_marginLeft="5dp"/>
+                            android:layout_marginLeft="20dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
+                            android:paddingLeft="25dp"
                             android:paddingTop="2dp"
                             android:paddingBottom="4dp"
                             android:text="Salary Range"
                             android:visibility="visible"
                             android:id="@+id/salary_range"
 
+                            android:textColor="@color/white"
                             />
 
 
@@ -278,20 +288,21 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/info_collector"
-                            android:textSize="28sp"
-                            android:paddingLeft="10dp"
+                            android:textSize="20sp"
+                            android:paddingLeft="20dp"
                             android:padding="5dp"
-                            android:textColor="@color/blue"
+                            android:textColor="@color/white"
 
-                            android:layout_marginLeft="5dp"/>
+                            android:layout_marginLeft="20dp"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="10dp"
+                            android:paddingLeft="20dp"
                             android:paddingTop="2dp"
                             android:paddingBottom="4dp"
                             android:text="Reference Person"
+                            android:textColor="@color/white"
                             android:visibility="visible"
                             android:id="@+id/reference_person"
 
@@ -302,86 +313,10 @@
                     </LinearLayout>
 
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:id="@+id/course_info">
 
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:visibility="gone"
-                            android:id="@+id/lll"
-                            android:layout_below="@+id/tv_fb"
-                            >
-
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=" কোর্স সমূহের তালিকা  "
-                                android:layout_marginLeft="10dp"
-                                android:textColor="@color/blue"
-                                android:textSize="28dp"/>
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/imageViewr"
-                                android:src="@drawable/green_line_horizontal"
-                                android:padding="5dp"
-                                />
-
-                            <ListView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10dp"
-
-
-                                android:id="@+id/courseListView" />
-
-
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=" কোর্স ফি "
-                                android:layout_marginLeft="10dp"
-                                android:textColor="@color/blue"
-                                android:textSize="28dp"/>
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:id="@+id/imageViewrd"
-                                android:src="@drawable/green_line_horizontal"
-                                android:padding="5dp"
-                                />
-
-                            <ListView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10dp"
-
-                                android:id="@+id/listView5" />
-
-
-
-
-                        </LinearLayout>
-
-
-
-
-                    </LinearLayout>
 
 
                 </LinearLayout>
-
-
 
 
             </ScrollView>
@@ -394,19 +329,31 @@
     </LinearLayout>
 
 
+
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_alignParentBottom="true"
+        android:id="@+id/bottomlayoutid"
         android:orientation="horizontal">
+
+        <View
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:id="@+id/bottom2"
+            android:layout_height="5dp">
+
+        </View>
 
         <RelativeLayout
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:id="@+id/left_go_process"
 
-
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/bottom2"
+            android:layout_marginBottom="20dp"
             >
 
             <ImageView
@@ -415,7 +362,9 @@
                 android:id="@+id/distance_left"
                 android:onClick="showdirection"
 
-                android:background="@drawable/direction_j"/>
+                android:layout_marginRight="10dp"
+                android:layout_toLeftOf="@+id/phone_middl"
+                android:background="@drawable/direction_icon"/>
 
 
 
@@ -424,16 +373,18 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/phone_middl"
                 android:layout_centerInParent="true"
-                android:background="@drawable/phone_j"/>
+
+                android:layout_marginRight="10dp"
+                android:background="@drawable/phone_icon"/>
 
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/right_side_email"
-                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@+id/phone_middl"
                 android:onClick="sendemail"
-                android:background="@drawable/email_j"/>
+                android:background="@drawable/email_icon"/>
 
 
         </RelativeLayout>

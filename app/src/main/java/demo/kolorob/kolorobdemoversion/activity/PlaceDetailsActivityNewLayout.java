@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -49,6 +50,7 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -68,22 +70,28 @@ import demo.kolorob.kolorobdemoversion.adapters.MyExpandableListAdapter;
 import demo.kolorob.kolorobdemoversion.adapters.SearchHolder;
 import demo.kolorob.kolorobdemoversion.adapters.Subcatholder;
 import demo.kolorob.kolorobdemoversion.database.CategoryTable;
+import demo.kolorob.kolorobdemoversion.database.Education.EducationNewTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTable;
+import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTableNew;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
+import demo.kolorob.kolorobdemoversion.database.SubCategoryTableNew;
 import demo.kolorob.kolorobdemoversion.fragment.MapFragmentOSM;
 import demo.kolorob.kolorobdemoversion.fragment.MapFragmentRouteOSM;
 import demo.kolorob.kolorobdemoversion.model.CategoryItem;
+import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
+import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.Job.JobServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItem;
+import demo.kolorob.kolorobdemoversion.model.SubCategoryItemNew;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
@@ -99,7 +107,11 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     public int getShowList() {
         return showList;
     }
-
+    EducationServiceProviderTable educationServiceProviderTable;
+    ArrayList<EducationServiceProviderItem> firstDataSet;
+    ArrayList<EducationServiceProviderItem> secondDataSet;
+    ArrayList<HealthServiceProviderItemNew> firstDataSetHealth;
+    ArrayList<HealthServiceProviderItemNew> secondDataSetHealth;
     public void setShowList(int showList) {
         this.showList = showList;
     }
@@ -108,7 +120,7 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     private static final int ANIM_INTERVAL = 200;
     private static double VIEW_WIDTH;
     private static boolean mapcalledstatus;
-    private LinearLayout llCatListHolder,mapnother,listholder,explist;
+    private LinearLayout llCatListHolder,mapnother,listholder,explist,svholder,svsholder;
     CategoryItem ci;
     private LinearLayout llSubCatListHolder;
     private HashMap<String, Integer> sections = new HashMap<String, Integer>();
@@ -128,10 +140,14 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     private RelativeLayout wholeLayout;
     private int showList;
     private String locationNameEng;
-
+    private String comapreData;
+    ScrollView sv,svs;
+    String firstData="",SecondData="";
+    int checker=0;
     private Button prebutton;
-
+    private HealthServiceProviderTableNew healthServiceProviderTableNew;
     private int sideIndexHeight;
+    private LinearLayout compare_layout;
     private List<Object[]> alphabet = new ArrayList<Object[]>();
     Activity act;
     public int layoutstatus;
@@ -139,6 +155,8 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     private TextView listOrMapDisplayText;
     boolean educlicked,helclicked,entclicked,finclicked,govclicked,legclicked,jobclicked=false;
     private Toolbar toolbar,toolbar2;
+    TextView edu_name_ban,edtype,hostel_facility,transport_facility,playground,total_students,total_classes,total_teachers,course_provided,shift,canteen_facility;
+    TextView edu_name_ban1,edtype1,hostel_facility1,transport_facility1,playground1,total_students1,total_classes1,total_teachers1,course_provided1,shift1,canteen_facility1;
 
 
     //TODO Declare object array for each subcategory item. Different for each category. Depends on the database table.
@@ -147,7 +165,7 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     ArrayList<EntertainmentServiceProviderItem> printnamesent;
     ArrayList<JobServiceProviderItem> printnamesjob;
     ArrayList<LegalAidServiceProviderItem> printnamesleg;
-    ArrayList<HealthServiceProviderItem> printnameshea;
+    ArrayList<HealthServiceProviderItemNew> printnameshea;
     ArrayList<FinancialServiceProviderItem> printnamesfin;
     ArrayList<String> allData= new ArrayList<>();
     private DrawerLayout drawer;
@@ -166,7 +184,7 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     }
 
     private ArrayList<SubCategoryItem> currentSubCategoryItem;
-    public static int currentCategoryID;
+    public static int currentCategoryID,currentCategoryIDconverted;
     private  ViewGroup.LayoutParams kk;
     Vector<Group> groups = new Vector<Group>();
     TextView header;
@@ -176,6 +194,8 @@ public class PlaceDetailsActivityNewLayout extends AppCompatActivity implements 
     private ImageButton expandableListShowing,more,MapButton,ListButton,SearchButton,CompareButton;
     private RelativeLayout mapholderr;
     ArrayList<CategoryItem> categoryList;
+    ArrayList<CategoryItem> categoryList2=new ArrayList<>();
+    Boolean SearchClicked=false,MapClicked=false,ListClicked=false,CompareClicked=false;
     private Context con;
     public RelativeLayout getRlSubCatHolder() {
         return rlSubCatHolder;
@@ -313,39 +333,50 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
         ListButton=(ImageButton)findViewById(R.id.listbutton);
         SearchButton=(ImageButton)findViewById(R.id.searchbutton);
         CompareButton=(ImageButton)findViewById(R.id.compare);
-searchviewholder=(RelativeLayout)findViewById(R.id.searchholder);
+        searchviewholder=(RelativeLayout)findViewById(R.id.searchholder);
         int buttonWidth = width/4;
         int buttonHeight = height/20;
         allitemList=(ListView)findViewById(R.id.allitem);
+
         explist=(LinearLayout)findViewById(R.id.explist);
         catholder=(RelativeLayout)findViewById(R.id.categoryfilterholder);
        // SearchButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
       //  CompareButton.setLayoutParams(new RelativeLayout.LayoutParams(buttonWidth, buttonHeight));
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) MapButton.getLayoutParams();
+        final  LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) MapButton.getLayoutParams();
         params.weight = 1;
         params.width=buttonWidth;
+        double d=buttonWidth*0.56;
+        double large=buttonWidth*0.69;
+        final int larg=(int)Math.round(large);
+        final int smal=(int)Math.round(d);
+        params.height=larg;
+
         MapButton.setLayoutParams(params);
-        LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) SearchButton.getLayoutParams();
+        final LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) SearchButton.getLayoutParams();
         params2.weight = 1;
         params2.width=buttonWidth;
+        params2.height=(int)Math.round(d);
         SearchButton.setLayoutParams(params2);
-        LinearLayout.LayoutParams params3 = (LinearLayout.LayoutParams) ListButton.getLayoutParams();
+        final   LinearLayout.LayoutParams params3 = (LinearLayout.LayoutParams) ListButton.getLayoutParams();
         params3.weight = 1;
         params3.width=buttonWidth;
-        ListButton.setLayoutParams(params2);
-        LinearLayout.LayoutParams params4 = (LinearLayout.LayoutParams) CompareButton.getLayoutParams();
+        params3.height=(int)Math.round(d);
+        ListButton.setLayoutParams(params3);
+        ListButton.getHeight();
+        final LinearLayout.LayoutParams params4 = (LinearLayout.LayoutParams) CompareButton.getLayoutParams();
         params4.weight = 1;
         params4.width=buttonWidth;
+        params4.height=(int)Math.round(d);
         CompareButton.setLayoutParams(params4);
        // SearchButton.setMinimumWidth(buttonWidth);
         //ListButton.setLayoutParams(layoutParams);
        // SearchButton.setLayoutParams(layoutParams);
        // CompareButton.setLayoutParams(layoutParams);
 
-mapcalledstatus=false;
+        mapcalledstatus=false;
         toolbar = (Toolbar) findViewById(R.id.categorytoolbar);
 
-
+        SharedPreferencesHelper.setCompareData(PlaceDetailsActivityNewLayout.this,"",0);
         Searchall=(EditText)findViewById(R.id.searchall);
 
         prebutton=(Button) findViewById(R.id.prebutton);
@@ -391,6 +422,14 @@ mapcalledstatus=false;
         // svSubCategoryListHolder=(HorizontalScrollView)findViewById(R.id.svSubCategoryListHolder);
 
         HorizontalScrollView svSubCategoryListHolder = new HorizontalScrollView(this);
+        svholder=(LinearLayout)findViewById(R.id.llCategoryListHolderback);
+        svsholder=(LinearLayout)findViewById(R.id.llSubCategoryListHolderback);
+        svholder.setVisibility(View.GONE);
+        svsholder.setVisibility(View.GONE);
+    sv= (ScrollView)findViewById(R.id.svCategoryListHolder);
+        svs= (ScrollView)findViewById(R.id.svSubCategoryListHolder);
+        sv.setVisibility(View.GONE);
+        svs.setVisibility(View.GONE);
         subCatItemList = (ExpandableListView) findViewById(R.id.listView);
 //        wholeLayout=(RelativeLayout)findViewById(R.id.wholeLayout);
 
@@ -420,7 +459,30 @@ mapcalledstatus=false;
 
 
 
+        edu_name_ban=(TextView)findViewById(R.id.edu_name_ban2);
+        edtype=(TextView)findViewById(R.id.eduType2);
+        hostel_facility=(TextView)findViewById(R.id.hostel_facility2);
+        transport_facility=(TextView)findViewById(R.id.transport_facility2);
+        playground=(TextView)findViewById(R.id.playground2);
+        total_students=(TextView)findViewById(R.id.ttl_students);
+        total_classes=(TextView)findViewById(R.id.total_classes2);
+        total_teachers=(TextView)findViewById(R.id.total_teachers2);
+        course_provided=(TextView)findViewById(R.id.course_provided2);
+        shift=(TextView)findViewById(R.id.shift2);
+        canteen_facility=(TextView)findViewById(R.id.canteen_facility2);
+        compare_layout=(LinearLayout)findViewById(R.id.compare_layout);
 
+        edu_name_ban1=(TextView)findViewById(R.id.edu_name_ban3);
+        edtype1=(TextView)findViewById(R.id.eduType3);
+        hostel_facility1=(TextView)findViewById(R.id.hostel_facility3);
+        transport_facility1=(TextView)findViewById(R.id.transport_facility3);
+        playground1=(TextView)findViewById(R.id.playground3);
+        total_students1=(TextView)findViewById(R.id.total_students3);
+        total_classes1=(TextView)findViewById(R.id.total_classes3);
+        total_teachers1=(TextView)findViewById(R.id.total_teachers3);
+        course_provided1=(TextView)findViewById(R.id.course_provided3);
+        shift1=(TextView)findViewById(R.id.shift3);
+        canteen_facility1=(TextView)findViewById(R.id.canteen_facility3);
 
 
 
@@ -442,9 +504,9 @@ mapcalledstatus=false;
         // insSubCat = (TextView) findViewById(R.id.tvInstructionSubCat);
         //seeMap = (Button) findViewById(R.id.btn_see_map);
         // showSubCatListItem = (Button) findViewById(R.id.btn_show_sub_cat_list_item);
-        VIEW_WIDTH = AppUtils.getScreenWidth(this) * AppConstants.CAT_LIST_LG_WIDTH_PERC_NEW;
+        VIEW_WIDTH = AppUtils.getScreenWidth(this) * AppConstants.CAT_LIST_LG_WIDTH_PERC;
         isCatExpandedOnce = false;
-        primaryIconWidth = (int) Math.floor(VIEW_WIDTH * 0.92); // 80% of the view width
+        primaryIconWidth = (int) Math.floor(VIEW_WIDTH * 0.97); // 80% of the view width
 
         fleft=(LinearLayout)findViewById(R.id.linearLayout1);
         fright=(LinearLayout)findViewById(R.id.linearLayout2) ;
@@ -462,8 +524,8 @@ mapcalledstatus=false;
         FrameLayout.LayoutParams caTsList = (FrameLayout.LayoutParams) llCatListHolder.getLayoutParams();
 
 
-        ViewGroup.LayoutParams exlist= explist.getLayoutParams();
-        RelativeLayout.LayoutParams expnlist = (RelativeLayout.LayoutParams) explist.getLayoutParams();
+        final ViewGroup.LayoutParams exlist= explist.getLayoutParams();
+        final RelativeLayout.LayoutParams expnlist = (RelativeLayout.LayoutParams) explist.getLayoutParams();
 
         expnlist.setMargins((s*9)/10,40,5,40);
 
@@ -486,7 +548,46 @@ mapcalledstatus=false;
          **/
         CategoryTable categoryTable = new CategoryTable(PlaceDetailsActivityNewLayout.this);
         categoryList=categoryTable.getAllCategories();
-        constructCategoryList(categoryList);
+        categoryList2=categoryList;
+        for(int i=0;i<categoryList2.size();i++)
+        {
+
+            int cid=categoryList2.get(i).getId();
+
+            if (cid==1)
+            {
+                categoryList2.get(i).setId(2);
+            }
+            else   if (cid==53)
+            {
+               categoryList2.get(i).setId(7);
+            }
+          else   if (cid==5)
+            {
+                categoryList2.get(i).setId(1);
+            }
+            else   if (cid==14)
+            {
+                categoryList2.get(i).setId(3);
+            }
+            else  if (cid==29)
+            {
+                categoryList2.get(i).setId(5);
+            }
+            else  if (cid==11)
+            {
+                categoryList2.get(i).setId(6);
+            }
+            else  if (cid==33)
+            {
+                categoryList2.get(i).setId(4);
+            }
+
+
+
+        }
+        categoryList2.size();
+        constructCategoryList(categoryList2);
         //rlSubCatHolder = (RelativeLayout) findViewById(R.id.rlSubCatHolder);
         //rlSubCatHolder.setVisibility(View.INVISIBLE);
 
@@ -524,27 +625,94 @@ mapcalledstatus=false;
 
         Populateholder();
         callMapFragment(locationNameId);
-
+        MapButton.setBackgroundResource(R.drawable.map_selected);
 
         SearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SearchClicked=true;
+                MapClicked=false;
+                ListClicked=false;
+                CompareClicked=false;
 
-                map.setVisibility(View.GONE);
-                explist.setVisibility(View.GONE);
-                searchviewholder.setVisibility(View.VISIBLE);
                 populateSearch();
-                if(educlicked==false||helclicked||false||entclicked==false||legclicked==false||finclicked==false)
+                if (CompareClicked==false||MapClicked==false||ListClicked==false)
                 {
+                    SearchButton.setImageResource(0);
+                    MapButton.setImageResource(0);
+                    CompareButton.setImageResource(0);
+                    ListButton.setImageResource(0);
+                    params2.height=larg;
+                    SearchButton.setLayoutParams(params2);
+                    params.height=smal;
+                    MapButton.setLayoutParams(params);
+                    params3.height=smal;
+                    ListButton.setLayoutParams(params3);
+                    params4.height=smal;
+                    CompareButton.setLayoutParams(params4);
+                    SearchButton.setBackgroundResource(R.drawable.search_selected);
+                    ListButton.setBackgroundResource(R.drawable.list);
+                    MapButton.setBackgroundResource(R.drawable.map);
+                    CompareButton.setBackgroundResource(R.drawable.compare);
+                    map.setVisibility(View.GONE);
+                    svs.setVisibility(View.GONE);
+                    svholder.setVisibility(View.GONE);
+                    svsholder.setVisibility(View.GONE);
+                    sv.setVisibility(View.GONE);
+                    explist.setVisibility(View.GONE);
+
+                    compare_layout.setVisibility(View.GONE);
+                    searchviewholder.setVisibility(View.VISIBLE);
+                }
+                if(educlicked==false||helclicked==false||entclicked==false||legclicked==false||finclicked==false)
+                {
+
                     filterholder.setVisibility(View.GONE);
                 }
+                else filterholder.setVisibility(View.VISIBLE);
 
             }
         });
         MapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchviewholder.setVisibility(View.GONE);
+                SearchClicked=false;
+                MapClicked=true;
+                ListClicked=false;
+                CompareClicked=false;
+                if(educlicked==true||helclicked==true||entclicked==true||legclicked==true||finclicked==true)
+                {
+
+                    svs.setVisibility(View.VISIBLE);
+                    svsholder.setVisibility(View.VISIBLE);
+                    llSubCatListHolder.setVisibility(View.VISIBLE);
+                }
+                if (CompareClicked==false||SearchClicked==false||ListClicked==false)
+                {
+                    SearchButton.setImageResource(0);
+                    MapButton.setImageResource(0);
+                    CompareButton.setImageResource(0);
+                    ListButton.setImageResource(0);
+                    params.height=larg;
+                    MapButton.setLayoutParams(params);
+
+                    params2.height=smal;
+                    SearchButton.setLayoutParams(params2);
+                    params3.height=smal;
+                    ListButton.setLayoutParams(params3);
+                    params4.height=smal;
+                    CompareButton.setLayoutParams(params4);
+                    SearchButton.setBackgroundResource(R.drawable.search);
+                    ListButton.setBackgroundResource(R.drawable.list);
+                    MapButton.setBackgroundResource(R.drawable.map_selected);
+                    CompareButton.setBackgroundResource(R.drawable.compare);
+                    subCatItemList.setVisibility(View.GONE);
+
+                   explist.setVisibility(View.GONE);
+                    searchviewholder.setVisibility(View.GONE);
+                    compare_layout.setVisibility(View.GONE);
+                }
+
                 map.setVisibility(View.VISIBLE);
 
 
@@ -555,53 +723,159 @@ mapcalledstatus=false;
         ListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(list_expand.equals(false))
-                {
+                SearchClicked=false;
+                MapClicked=false;
+                ListClicked=true;
+                CompareClicked=false;
+                searchviewholder.setVisibility(View.GONE);
+                if (MapClicked == false || SearchClicked == false || CompareClicked == false) {
+                    SearchButton.setImageResource(0);
+                    MapButton.setImageResource(0);
+                    CompareButton.setImageResource(0);
+                    ListButton.setImageResource(0);
+                    params3.height=larg;
+                    ListButton.setLayoutParams(params3);
+
+                    params2.height=smal;
+                    SearchButton.setLayoutParams(params2);
+                    params.height=smal;
+                    MapButton.setLayoutParams(params);
+                    params4.height=smal;
+                    CompareButton.setLayoutParams(params4);
+                    SearchButton.setBackgroundResource(R.drawable.search);
+                    ListButton.setBackgroundResource(R.drawable.list_selected);
+                    MapButton.setBackgroundResource(R.drawable.map);
+                    CompareButton.setBackgroundResource(R.drawable.compare);
+                    map.setVisibility(View.GONE);
+                }
+                    subCatItemList.setVisibility(View.VISIBLE);
+                    explist.setVisibility(View.VISIBLE);
+                    searchviewholder.setVisibility(View.GONE);
+                    compare_layout.setVisibility(View.GONE);
+
+                svs.setVisibility(View.GONE);
+                svholder.setVisibility(View.GONE);
+                svsholder.setVisibility(View.GONE);
+                sv.setVisibility(View.GONE);
                 llSubCatListHolder.setVisibility(View.GONE);
                 subCatItemList.setVisibility(View.VISIBLE);
                 explist.setVisibility(View.VISIBLE);
-              //  wholeLayout.setBackgroundDrawable( getResources().getDrawable(R.drawable.splash) );
-                map.setVisibility(View.GONE);
+                //  wholeLayout.setBackgroundDrawable( getResources().getDrawable(R.drawable.splash) );
+
                 setShowList(1);
 
-                list_expand=true;
+                list_expand = true;
                 //listOrMapDisplayText.setText("ম্যাপ দেখতে চাইলে এখানে চাপ দিন");
-                Log.d("====","CategoryId"+currentCategoryID);
-                categoryListBuildUp(currentCategoryID);
-                }
-                else
-                {
-                    llSubCatListHolder.setVisibility(View.VISIBLE);
-                    setShowList(0);
-                    map.setVisibility(View.VISIBLE);
-                    list_expand=false;
-                    subCatItemList.setVisibility(View.GONE);
-                   // listOrMapDisplayText.setText("লিস্ট দেখতে চাইলে এখানে চাপ দিন");
-                    //constructCategoryList(categoryList);
 
-                }
+                categoryListBuildUp(1);
+
+//                else
+//                {
+//                    llSubCatListHolder.setVisibility(View.VISIBLE);
+//                    setShowList(0);
+//                    map.setVisibility(View.VISIBLE);
+//                    list_expand=false;
+//                    subCatItemList.setVisibility(View.GONE);
+//                   // listOrMapDisplayText.setText("লিস্ট দেখতে চাইলে এখানে চাপ দিন");
+//                    //constructCategoryList(categoryList);
+//
+//                }
 
             }
+
         });
         CompareButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("====", "CategoryId at compare" + currentCategoryID);
 
-                if(SharedPreferencesHelper.getComapreValue(PlaceDetailsActivityNewLayout.this)==0)
+                if(currentCategoryID==1||currentCategoryID==2)
                 {
-                    demo.kolorob.kolorobdemoversion.helpers.AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
+                    SearchClicked=false;
+                    MapClicked=false;
+                    ListClicked=false;
+                    CompareClicked=true;
+
+
+                    if(currentCategoryID==1&&SharedPreferencesHelper.getComapreValue(PlaceDetailsActivityNewLayout.this)==0)
+                    {
+                        AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
+                                "আপনি কোন সেবা নির্বাচিত করেননি তুলনা করার জন্য");
+                    }
+                   else if(currentCategoryID==2&&SharedPreferencesHelper.getComapreValueHealth(PlaceDetailsActivityNewLayout.this)==0)
+                {
+                    AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
                             "আপনি কোন সেবা নির্বাচিত করেননি তুলনা করার জন্য");
                 }
-                else if(SharedPreferencesHelper.getComapreValue(PlaceDetailsActivityNewLayout.this)==1)
-                {
-                    demo.kolorob.kolorobdemoversion.helpers.AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
-                            "আপনি একটি সেবা নির্বাচিত করেছেন। তুলনা করার জন্য দুটি সেবা নির্বাচন করুন");
-                }
-                else {
-                    Intent compare= new Intent(PlaceDetailsActivityNewLayout.this,CompareActivity.class);
-                    startActivity(compare);
+                    else if(currentCategoryID==1&&SharedPreferencesHelper.getComapreValue(PlaceDetailsActivityNewLayout.this)==1)
+                    {
+                        AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
+                                "আপনি একটি সেবা নির্বাচিত করেছেন। তুলনা করার জন্য দুটি সেবা নির্বাচন করুন");
+                    }
+                    else if(currentCategoryID==2&&SharedPreferencesHelper.getComapreValue(PlaceDetailsActivityNewLayout.this)==1)
+                    {
+                        AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
+                                "আপনি একটি সেবা নির্বাচিত করেছেন। তুলনা করার জন্য দুটি সেবা নির্বাচন করুন");
+                    }
+                    else {
 
+
+
+
+                        if(MapClicked==false||SearchClicked==false||ListClicked==false)
+                        {
+
+                            params4.height=larg;
+                            CompareButton.setLayoutParams(params4);
+
+                            params2.height=smal;
+                            SearchButton.setLayoutParams(params2);
+                            params.height=smal;
+                            MapButton.setLayoutParams(params);
+                            params.height=smal;
+                            ListButton.setLayoutParams(params);
+                            SearchButton.setImageResource(0);
+                            MapButton.setImageResource(0);
+                            CompareButton.setImageResource(0);
+                            ListButton.setImageResource(0);
+
+
+
+                        }
+
+                        compare_layout.setVisibility(View.VISIBLE);
+
+                        // @@@@arafat
+                        // need to add condition for health and add color code for health,
+                        // else educaton color code is okay
+                        if(SearchClicked){
+                            compare_layout.setBackgroundColor(Color.parseColor("#F7FF1E"));
+                        }else{
+                            compare_layout.setBackgroundColor(Color.parseColor("#F7931E"));
+                        }
+                        SearchButton.setBackgroundResource(R.drawable.search);
+                        ListButton.setBackgroundResource(R.drawable.list);
+                        MapButton.setBackgroundResource(R.drawable.map);
+                        CompareButton.setBackgroundResource(R.drawable.compare_selected);
+                        map.setVisibility(View.GONE);
+                        llCatListHolder.setVisibility(View.GONE);
+                        subCatItemList.setVisibility(View.GONE);
+                        explist.setVisibility(View.GONE);
+                        searchviewholder.setVisibility(View.GONE);
+                        svs.setVisibility(View.GONE);
+                        sv.setVisibility(View.GONE);
+                        svholder.setVisibility(View.GONE);
+                        svsholder.setVisibility(View.GONE);
+                        llSubCatListHolder.setVisibility(View.GONE);
+                        compareTool();
+                    }
                 }
+
+                else
+                    AlertMessage.showMessage(con, "তুলনা করা সম্ভব হচ্ছে না",
+                            "বর্তমান ক্যাটাগরির জন্য তুলনা সম্ভব নয়");
+
+
 
             }
         });
@@ -613,13 +887,22 @@ mapcalledstatus=false;
             @Override
             public void onClick(View arg0) {
                 if(toggleButton.isChecked()){
+                    sv.setVisibility(View.VISIBLE);
+                    svholder.setVisibility(View.VISIBLE);
+                    svsholder.setVisibility(View.GONE);
                     llCatListHolder.setVisibility(View.VISIBLE);
                     if(educlicked==true||helclicked==true||entclicked==true||legclicked==true||finclicked==true)
                     {
+                        svsholder.setVisibility(View.VISIBLE);
+                        svs.setVisibility(View.VISIBLE);
                         llSubCatListHolder.setVisibility(View.VISIBLE);
                     }
                 }
                 else {
+                    sv.setVisibility(View.GONE);
+                    svs.setVisibility(View.GONE);
+                    svholder.setVisibility(View.GONE);
+                    svsholder.setVisibility(View.GONE);
                     llCatListHolder.setVisibility(View.GONE);
                     llSubCatListHolder.setVisibility(View.GONE);
                 }
@@ -630,6 +913,124 @@ mapcalledstatus=false;
         });
 
     }
+
+    public void compareTool()
+    {
+
+        if(currentCategoryID==1)
+            comapreData = SharedPreferencesHelper.getComapreData(PlaceDetailsActivityNewLayout.this);
+        else
+            comapreData = SharedPreferencesHelper.getComapreDataHealth(PlaceDetailsActivityNewLayout.this);
+
+        int size=comapreData.length();
+        for(int i=0;i<size;i++)
+        {
+
+            if(checker==1)
+            {
+                SecondData=SecondData+comapreData.charAt(i);
+                Log.d("===","second_data" +SecondData);
+            }
+            else  if(comapreData.charAt(i)==' ')
+            {
+                checker=1;
+            }
+            else
+                firstData=firstData+comapreData.charAt(i);
+            Log.d("===","firstData" +firstData);
+        }
+        if(currentCategoryID==1)
+            compareEducation();
+        else
+            compareHealth();
+
+
+
+
+
+
+
+
+    }
+
+
+    public void compareHealth()
+    {
+        healthServiceProviderTableNew=new HealthServiceProviderTableNew(PlaceDetailsActivityNewLayout.this);
+        firstDataSetHealth=healthServiceProviderTableNew.getHealthData(firstData);
+        secondDataSetHealth=healthServiceProviderTableNew.getHealthData(SecondData);
+
+        for (HealthServiceProviderItemNew healthServiceProviderItemNew: firstDataSetHealth)
+        {
+//            edu_name_ban.setText(healthServiceProviderItemNew.getEduNameEng());
+//            edtype.setText(healthServiceProviderItemNew.getEduType());
+//            hostel_facility.setText(healthServiceProviderItemNew.getHostelFacility());
+//            transport_facility.setText(healthServiceProviderItemNew.getTransportFacility());
+//            playground.setText(healthServiceProviderItemNew.getPlayground());
+//            total_students.setText(String.valueOf(healthServiceProviderItemNew.getTotalStudents()));
+//            total_classes.setText(String.valueOf(healthServiceProviderItemNew.getTotalClasses()));
+//            total_teachers.setText(String.valueOf(healthServiceProviderItemNew.getTotalTeachers()));
+//            course_provided.setText(healthServiceProviderItemNew.getCourseProvided());
+//            shift.setText(healthServiceProviderItemNew.getShift());
+//            canteen_facility.setText(healthServiceProviderItemNew.getCanteenFacility());
+        }
+        for (HealthServiceProviderItemNew healthServiceProviderItemNew: secondDataSetHealth)
+        {
+//            edu_name_ban1.setText(healthServiceProviderItemNew.getEduNameEng());
+//            edtype1.setText(healthServiceProviderItemNew.getEduType());
+//            hostel_facility1.setText(healthServiceProviderItemNew.getHostelFacility());
+//            transport_facility1.setText(healthServiceProviderItemNew.getTransportFacility());
+//            playground1.setText(healthServiceProviderItemNew.getPlayground());
+//            total_students1.setText(String.valueOf(healthServiceProviderItemNew.getTotalStudents()));
+//            total_classes1.setText(String.valueOf(healthServiceProviderItemNew.getTotalClasses()));
+//            total_teachers1.setText(String.valueOf(healthServiceProviderItemNew.getTotalTeachers()));
+//            course_provided1.setText(healthServiceProviderItemNew.getCourseProvided());
+//            shift1.setText(healthServiceProviderItemNew.getShift());
+//            canteen_facility1.setText(healthServiceProviderItemNew.getCanteenFacility());
+        }
+        SharedPreferencesHelper.setCompareDataHealth(PlaceDetailsActivityNewLayout.this,"",0);
+    }
+
+
+    public void compareEducation()
+    {
+        educationServiceProviderTable=new EducationServiceProviderTable(PlaceDetailsActivityNewLayout.this);
+        firstDataSet=educationServiceProviderTable.getEducationData(firstData);
+        secondDataSet=educationServiceProviderTable.getEducationData(SecondData);
+
+
+        for (EducationServiceProviderItem educationServiceProviderItem: firstDataSet)
+        {
+            edu_name_ban.setText(educationServiceProviderItem.getEduNameEng());
+            edtype.setText(educationServiceProviderItem.getEduType());
+            hostel_facility.setText(educationServiceProviderItem.getHostelFacility());
+            transport_facility.setText(educationServiceProviderItem.getTransportFacility());
+            playground.setText(educationServiceProviderItem.getPlayground());
+            total_students.setText(String.valueOf(educationServiceProviderItem.getTotalStudents()));
+            total_classes.setText(String.valueOf(educationServiceProviderItem.getTotalClasses()));
+            total_teachers.setText(String.valueOf(educationServiceProviderItem.getTotalTeachers()));
+            course_provided.setText(educationServiceProviderItem.getCourseProvided());
+            shift.setText(educationServiceProviderItem.getShift());
+            canteen_facility.setText(educationServiceProviderItem.getCanteenFacility());
+        }
+        for (EducationServiceProviderItem educationServiceProviderItem: secondDataSet)
+        {
+            edu_name_ban1.setText(educationServiceProviderItem.getEduNameEng());
+            edtype1.setText(educationServiceProviderItem.getEduType());
+            hostel_facility1.setText(educationServiceProviderItem.getHostelFacility());
+            transport_facility1.setText(educationServiceProviderItem.getTransportFacility());
+            playground1.setText(educationServiceProviderItem.getPlayground());
+            total_students1.setText(String.valueOf(educationServiceProviderItem.getTotalStudents()));
+            total_classes1.setText(String.valueOf(educationServiceProviderItem.getTotalClasses()));
+            total_teachers1.setText(String.valueOf(educationServiceProviderItem.getTotalTeachers()));
+            course_provided1.setText(educationServiceProviderItem.getCourseProvided());
+            shift1.setText(educationServiceProviderItem.getShift());
+            canteen_facility1.setText(educationServiceProviderItem.getCanteenFacility());
+        }
+
+        SharedPreferencesHelper.setCompareData(PlaceDetailsActivityNewLayout.this,"",0);
+    }
+
     public void populateSearch()
     {
 
@@ -660,6 +1061,10 @@ mapcalledstatus=false;
                 EducationServiceProviderTable educationServiceProviderTable = new EducationServiceProviderTable(PlaceDetailsActivityNewLayout.this);
                 ArrayList<String> print = null;
                 groups.removeAllElements();
+
+                subCatItemList.setChildDivider(getResources().getDrawable(R.color.education_color));
+               // subCatItemList.setChildDivider(R.color.black);
+
                 print = subCategoryTable.getSubnameedu(currentCategoryID, head);
                 for (int j = 0; j < print.size(); j++) {
                     Group group = new Group(print.get(j));
@@ -680,6 +1085,7 @@ mapcalledstatus=false;
             case AppConstants.ENTERTAINMENT:
 
                 SubCategoryTable subCategoryTable2 = new SubCategoryTable(PlaceDetailsActivityNewLayout.this);
+                subCatItemList.setChildDivider(getResources().getDrawable(R.color.entertainment_color));
                 currentCategoryID = cat_id;
                 EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(PlaceDetailsActivityNewLayout.this);
                 ArrayList<String> printent = null;
@@ -688,7 +1094,9 @@ mapcalledstatus=false;
                 for (int j = 0; j < printent.size(); j++) {
                     Group group = new Group(printent.get(j));
                     printnamesent = null;
+
                     printnamesent = entertainmentServiceProviderTable.Entnames(currentCategoryID, head, printent.get(j), placeChoice);
+
                     for (int i = 0; i < printnamesent.size(); i++) {
                         group.childrenent.add(i, printnamesent.get(i));
                     }
@@ -697,16 +1105,31 @@ mapcalledstatus=false;
                 break;
             case AppConstants.HEALTH:
 
-                SubCategoryTable subCategoryTable3 = new SubCategoryTable(PlaceDetailsActivityNewLayout.this);
+                //SubCategoryTable subCategoryTable3 = new SubCategoryTable(PlaceDetailsActivityNewLayout.this);
+                SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(PlaceDetailsActivityNewLayout.this);
+                String p="Diagonostic Centre";
+
                 currentCategoryID = cat_id;
+                subCatItemList.setChildDivider(getResources().getDrawable(R.color.health_color));
+                HealthServiceProviderTableNew healthServiceProviderTableNew=new HealthServiceProviderTableNew(PlaceDetailsActivityNewLayout.this);
+
                 HealthServiceProviderTable healthServiceProviderTable = new HealthServiceProviderTable(PlaceDetailsActivityNewLayout.this);
                 ArrayList<String> printhea = null;
+                ArrayList<String> RefHealth=null;
+                ArrayList<SubCategoryItemNew> RefHealthx=null;
                 groups.removeAllElements();
-                printhea = subCategoryTable3.getSubnameedu(currentCategoryID, head);
-                for (int j = 0; j < printhea.size(); j++) {
-                    Group group = new Group(printhea.get(j));
+                RefHealth=subCategoryTableNew.getSubnameedu(1);
+                ArrayList<HealthServiceProviderItemNew> healthServiceProviderItemNews2;
+               // printhea = subCategoryTable3.getSubnameedu(currentCategoryID, head);
+
+                for (int j = 0; j < RefHealth.size(); j++) {
+                    Group group = new Group(RefHealth.get(j));
                     printnameshea = null;
-                    printnameshea = healthServiceProviderTable.Heanames(currentCategoryID, head, printhea.get(j), placeChoice);
+                    int refId=subCategoryTableNew.getRefId(RefHealth.get(j));
+                    ArrayList<SubCategoryItemNew>subCategoryItemNews;
+                   // subCategoryItemNews=subCategoryTableNew.getAllSubCat();
+                    //ealthServiceProviderItemNews2=healthServiceProviderTableNew.getAllHealthSubCategoriesInfo();
+                    printnameshea = healthServiceProviderTableNew.Heanames(currentCategoryID, refId, RefHealth.get(j), placeChoice);
                     for (int i = 0; i <  printnameshea .size(); i++) {
                         group.childrenhea.add(i,printnameshea .get(i));
                     }
@@ -719,6 +1142,7 @@ mapcalledstatus=false;
                 currentCategoryID = cat_id;
                 FinancialServiceProviderTable financialServiceProviderTable = new FinancialServiceProviderTable(PlaceDetailsActivityNewLayout.this);
                 ArrayList<String> printfin = null;
+                subCatItemList.setChildDivider(getResources().getDrawable(R.color.financial_color));
                 groups.removeAllElements();
                 printfin= subCategoryTable4.getSubnameedu(currentCategoryID, head);
                 for (int j = 0; j <  printfin.size(); j++) {
@@ -735,6 +1159,7 @@ mapcalledstatus=false;
 
                 SubCategoryTable subCategoryTable5 = new SubCategoryTable(PlaceDetailsActivityNewLayout.this);
                 currentCategoryID = cat_id;
+                subCatItemList.setChildDivider(getResources().getDrawable(R.color.legal_aid_color));
                 LegalAidServiceProviderTable legalAidServiceProviderTable = new LegalAidServiceProviderTable(PlaceDetailsActivityNewLayout.this);
                 ArrayList<String> printleg = null;
                 groups.removeAllElements();
@@ -962,15 +1387,18 @@ mapcalledstatus=false;
 
 
 
-    private void constructCategoryList(ArrayList<CategoryItem> categoryList) {
-        constructCategoryList(categoryList, 1.0);
+    private void constructCategoryList(ArrayList<CategoryItem> categoryList2) {
+        constructCategoryList(categoryList2, 1.0);
     }
 
-    private void constructCategoryList(ArrayList<CategoryItem> categoryList, double dwPercentage) {
+    private void constructCategoryList(ArrayList<CategoryItem> categoryList2, double dwPercentage) {
         llCatListHolder.removeAllViews();
-        for ( CategoryItem ci : categoryList) {
+        Collections.sort(categoryList2);
+        for ( CategoryItem ci : categoryList2) {
             setCi(ci);
             llCatListHolder.addView(getCategoryListItemView(ci, dwPercentage));
+
+
 
         }
     }
@@ -985,11 +1413,8 @@ mapcalledstatus=false;
 
 
 
-        if( height>1000)
-            v = li.inflate(R.layout.cat_side_list_item, llCatListHolder, false);
-        else
 
-            v = li.inflate(R.layout.cat_list_mobile, llCatListHolder, false);
+            v = li.inflate(R.layout.cat_side_list_item, llCatListHolder, false);
         final ImageView ivIcon = (ImageView) v.findViewById(R.id.ivIconCatList);
 
 
@@ -1027,6 +1452,7 @@ mapcalledstatus=false;
                 clicked.clear();
                 Headerholder.clear();
                 currentCategoryID = ci.getId();
+
                 for(int i= 0; i < llCatListHolder.getChildCount(); i++){
                     ImageView iv = (ImageView) ((ViewGroup)llCatListHolder.getChildAt(i)).getChildAt(0);
 
@@ -1060,28 +1486,32 @@ mapcalledstatus=false;
                 switch (currentCategoryID) {
 
                     case AppConstants.EDUCATION:
+                        MediaPlayer mp_e = MediaPlayer.create(getApplicationContext(), R.raw.education);
+                        mp_e.start();
+
                         EDD.clear();
                         educlicked=true;
                         setFilcatid(currentCategoryID);
                         catstatus=true;
                         calladapter(catstatus);
 
-                        if(showList==1) {
 
+                        if(showList==1) {
+/*
                             explist.setVisibility(View.VISIBLE);
                             explist.setAnimation(slideOutFromLeftAnim());
                             llSubCatListHolder.setVisibility(View.GONE);
                             subCatItemList.setVisibility(View.VISIBLE);
-
+*/
 
                         }
                         else {
 
                             llSubCatListHolder.setVisibility(View.GONE);
 
-                            ArrayList<EducationServiceProviderItem> educationServiceProvider;
-                            educationServiceProvider = constructEducationListItem(ci.getId());
-                            ivIcon.setImageResource(R.drawable.turned_on_porashona);
+                            ArrayList<EducationNewItem> educationServiceProvider;
+                            educationServiceProvider = constructEducationListItem();
+                            ivIcon.setImageResource(R.drawable.education_selected);
                             callMapFragmentWithEducationInfo(ci.getCatName(), ci.getId(), educationServiceProvider);
 
 
@@ -1092,12 +1522,14 @@ mapcalledstatus=false;
                         filterholder.setVisibility(View.VISIBLE);
                         populatefilterwords(getFilcatid());
                         ivIcon.setImageResource(0);
-                        ivIcon.setImageResource(R.drawable.turned_on_porashona);
+                        ivIcon.setImageResource(R.drawable.education_selected);
                         mapcalledstatus=true;
                         llSubCatListHolder.setVisibility(View.GONE);
 
                         break;
                     case AppConstants.HEALTH:
+                        MediaPlayer mp_h = MediaPlayer.create(getApplicationContext(), R.raw.health);
+                        mp_h.start();
                         HEL.clear();
                         helclicked=true;
                         setFilcatid(currentCategoryID);
@@ -1106,7 +1538,7 @@ mapcalledstatus=false;
                         filterholder.setVisibility(View.VISIBLE);
                         populatefilterwords(getFilcatid());
                         ivIcon.setImageResource(0);
-                        ivIcon.setImageResource(R.drawable.turned_on_chikitsha);
+                        ivIcon.setImageResource(R.drawable.health_selected);
                         ArrayList<HealthServiceProviderItem> healthServiceProvider;
                         healthServiceProvider = constructHealthListItem(ci.getId());
                         callMapFragmentWithHealthInfo(ci.getCatName(), ci.getId(), healthServiceProvider);
@@ -1119,6 +1551,7 @@ mapcalledstatus=false;
                     //TODO write necessary codes for health
 
                     case AppConstants.ENTERTAINMENT:
+
                         ENT.clear();
                         entclicked=true;
                         setFilcatid(currentCategoryID);
@@ -1129,7 +1562,7 @@ mapcalledstatus=false;
                         ivIcon.setImageResource(0);
                         ArrayList<EntertainmentServiceProviderItem> entertainmentServiceProvider;
                         entertainmentServiceProvider = constructEntertainmentListItem(ci.getId());
-                        ivIcon.setImageResource(R.drawable.turned_on_anondo_furti);
+                        ivIcon.setImageResource(R.drawable.entertainment_selected);
                         callMapFragmentWithEntertainmentInfo(ci.getCatName(), ci.getId(), entertainmentServiceProvider);
                         mapcalledstatus=true;
 
@@ -1139,7 +1572,8 @@ mapcalledstatus=false;
                             llSubCatListHolder.setVisibility(View.GONE);
 
 
-
+                        MediaPlayer mp_en = MediaPlayer.create(getApplicationContext(), R.raw.entertainment);
+                        mp_en.start();
 
 
 
@@ -1151,12 +1585,14 @@ mapcalledstatus=false;
                     //TODO write necessary codes for entertainment
 
                     case AppConstants.GOVERNMENT:
+                        MediaPlayer mp_g = MediaPlayer.create(getApplicationContext(), R.raw.government);
+                        mp_g.start();
                         govclicked=true;
                         setFilcatid(currentCategoryID);
                         filterholder.setVisibility(View.VISIBLE);
                         populatefilterwords(getFilcatid());
                         ivIcon.setImageResource(0);
-                        ivIcon.setImageResource(R.drawable.turned_on_shorkari_shubidha);
+                        ivIcon.setImageResource(R.drawable.government_selected);
                         mapcalledstatus=true;
                         llSubCatListHolder.setVisibility(View.GONE);
 
@@ -1180,6 +1616,8 @@ mapcalledstatus=false;
                         alertDialog.show();*/
                         break;
                     case AppConstants.LEGAL:
+                        MediaPlayer mp_l = MediaPlayer.create(getApplicationContext(), R.raw.legal);
+                        mp_l.start();
                         LEG.clear();
                         legclicked=true;
                         setFilcatid(currentCategoryID);
@@ -1188,7 +1626,7 @@ mapcalledstatus=false;
                         populatefilterwords(getFilcatid());
                         filterholder.setVisibility(View.VISIBLE);
                         ivIcon.setImageResource(0);
-                        ivIcon.setImageResource(R.drawable.turned_on_ain_kanun);
+                        ivIcon.setImageResource(R.drawable.legal_selected);
                         ArrayList<LegalAidServiceProviderItem> legalaidServiceProvider;
                         mapcalledstatus=true;
                         legalaidServiceProvider = constructlegalaidListItem(ci.getId());
@@ -1208,6 +1646,8 @@ mapcalledstatus=false;
 
                         break;
                     case AppConstants.FINANCIAL:
+                        MediaPlayer mp_f = MediaPlayer.create(getApplicationContext(), R.raw.finance);
+                        mp_f.start();
                         FIN.clear();
                         finclicked=true;
                         setFilcatid(currentCategoryID);
@@ -1216,7 +1656,7 @@ mapcalledstatus=false;
                         filterholder.setVisibility(View.VISIBLE);
                         populatefilterwords(getFilcatid());
                         ivIcon.setImageResource(0);
-                        ivIcon.setImageResource(R.drawable.turned_on_taka_poisha);
+                        ivIcon.setImageResource(R.drawable.finance_selected);
                         ArrayList<FinancialServiceProviderItem> financialServiceProvider;
                         financialServiceProvider = constructfinancialListItem(ci.getId());
                         callMapFragmentWithFinancialInfo(ci.getCatName(), ci.getId(), financialServiceProvider);
@@ -1233,6 +1673,8 @@ mapcalledstatus=false;
 
                         break;
                     case AppConstants.JOB:
+                        MediaPlayer mp_j = MediaPlayer.create(getApplicationContext(), R.raw.job);
+                        mp_j.start();
                         JJOB.clear();
                         jobclicked=true;
                         setFilcatid(currentCategoryID);
@@ -1241,7 +1683,7 @@ mapcalledstatus=false;
                         filterholder.setVisibility(View.VISIBLE);
                         populatefilterwords(getFilcatid());
                         ivIcon.setImageResource(0);
-                        ivIcon.setImageResource(R.drawable.turned_on_chakri_bakri);
+                        ivIcon.setImageResource(R.drawable.job_selected);
                         // mapcalledstatus=false;
                         llSubCatListHolder.setVisibility(View.GONE);
                         //   map.removeAllViews();
@@ -1284,14 +1726,19 @@ mapcalledstatus=false;
 
                 // categoryHeader.setText(ci.getCatName());
 
-
-                if(showList!=1)
+                if(SearchClicked==true)
                 {
+                    svs.setVisibility(View.GONE);
+                }
+                else if(showList!=1 && SearchClicked==false)
+                {
+
                     if (isCatExpandedOnce)
                         showAnimatedSubcategories(subCatList, 0.5, AppConstants.ALL_CAT_ICONS_NEW[ci.getId() - 1], ci.getId()); // AppConstants.CAT_LIST_SM_WIDTH_PERC);
                     else
                         showAnimatedSubcategories(subCatList, 1.0, AppConstants.ALL_CAT_ICONS_NEW[ci.getId() - 1], ci.getId());
                 }
+
 
                 else
                 {
@@ -1384,26 +1831,21 @@ mapcalledstatus=false;
         View v;
         LayoutInflater li = LayoutInflater.from(this);
 
-        if(height>1000)
-            v = li.inflate(R.layout.sub_cat_list_item, llSubCatListHolder, false);
-        else
-            v = li.inflate(R.layout.sub_cat_list_item1, llSubCatListHolder, false);
-        final ImageView ivIcon = (ImageView) v.findViewById(R.id.iv_sub_cat_icon);
+
+            v = li.inflate(R.layout.subcatholderlist, llSubCatListHolder, false);
+
+        final ImageView ivIcon = (ImageView) v.findViewById(R.id.ivIconSCatList);
         tvName = (TextView) v.findViewById(R.id.tv_sub_cat_name);
-        if(height>1000)
-            ivIcon.setImageResource(AppConstants.ALL_CAT_MARKER_ICONS1[ subcategory++]);
-        else{
-            ivIcon.setImageResource(AppConstants.ALL_CAT_MARKER_ICONS1[ subcategory++]);
-        }
+
+            ivIcon.setImageResource(AppConstants.ALL_CAT_MARKER_ICONSBUTTON[ subcategory++]);
+
         ViewGroup.LayoutParams lpIv = ivIcon.getLayoutParams();
-        if(width>720)
+
             lpIv.width = (int) (primaryIconWidth * dwPercentage);
-        else{
-            lpIv.width = (int) (primaryIconWidth * dwPercentage*1.5);
-        }
+
 
         ivIcon.setLayoutParams(lpIv);
-        tvName.setTextColor(Color.MAGENTA);
+        tvName.setTextColor(Color.WHITE);
         tvName.setText(si.getSubcatHeader());
 
         tvName.setTextSize((float) (VIEW_WIDTH * .10 * dwPercentage));
@@ -1430,69 +1872,68 @@ mapcalledstatus=false;
                                      for (int i = 0; i < llSubCatListHolder.getChildCount(); i++) {
                                          if (i == index ) {
                                              if (i == 0) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.blue_button);
+                                                 ivIcon.setImageResource(R.drawable.pin1_selected);
                                                  continue;
                                              } else if (i == 1) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.red_button);
+                                                 ivIcon.setImageResource(R.drawable.pin2_selected);
                                                  continue;
 
                                              } else if (i == 2) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.light_purple_button);
+                                                 ivIcon.setImageResource(R.drawable.pin3_selected);
                                                  continue;
 
                                              } else if (i == 3) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.orange_button);
+                                                 ivIcon.setImageResource(R.drawable.pin4_selected);
                                                  continue;
 
                                              } else if (i == 4) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.brown_button);
+                                                 ivIcon.setImageResource(R.drawable.pin5_selected);
                                                  continue;
 
                                              } else if (i == 5) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.sky_blue_button);
+                                                 ivIcon.setImageResource(R.drawable.pin6_selected);
                                                  continue;
 
                                              } else if (i == 6) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.light_orange_button);
+                                                 ivIcon.setImageResource(R.drawable.pin7_selected);
                                                  continue;
 
                                              } else if (i == 7) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.deep_blue_button);
+                                                 ivIcon.setImageResource(R.drawable.pin8_selected);
                                                  continue;
 
                                              } else if (i == 8) {
-                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                                 ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                                  ivIcon.setImageResource(0);
-                                                 ivIcon.setImageResource(R.drawable.magenta_button);
+                                                 ivIcon.setImageResource(R.drawable.pin9_selected);
                                                  continue;
 
                                              }
 
                                          } else {
-                                             ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.iv_sub_cat_icon));
+                                             ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(i).findViewById(R.id.ivIconSCatList));
                                              // TextView tv=(TextView) ((ViewGroup)llSubCatListHolder.getChildAt(i)).getChildAt(1);
                                              // new background because something has changed
                                              // check if it's not the imageView you just clicked because you don't want to change its background
                                              // tv.setText("as");
 
-                                             ivIcon.setImageResource(0);
-                                             ivIcon.setImageResource(AppConstants.OFF_BUTTON[0]);
+
                                          }
                                      }
                                     Collections.sort(clicked);
@@ -1505,56 +1946,56 @@ mapcalledstatus=false;
                                             int iit = Integer.parseInt(clicked.get(ii));
 
                                             if (iit == 0) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.blue_button);
+                                                ivIcon.setImageResource(R.drawable.pin1_selected);
                                                 continue;
                                             } else if (iit == 1) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.red_button);
+                                                ivIcon.setImageResource(R.drawable.pin2_selected);
                                                 continue;
 
                                             } else if (iit == 2) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.light_purple_button);
+                                                ivIcon.setImageResource(R.drawable.pin3_selected);
                                                 continue;
 
                                             } else if (iit == 3) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.orange_button);
+                                                ivIcon.setImageResource(R.drawable.pin4_selected);
                                                 continue;
 
                                             } else if (iit == 4) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.brown_button);
+                                                ivIcon.setImageResource(R.drawable.pin5_selected);
                                                 continue;
 
                                             } else if (iit == 5) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.sky_blue_button);
+                                                ivIcon.setImageResource(R.drawable.pin6_selected);
                                                 continue;
 
                                             } else if (iit == 6) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.light_orange_button);
+                                                ivIcon.setImageResource(R.drawable.pin7_selected);
                                                 continue;
 
                                             } else if (iit== 7) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.deep_blue_button);
+                                                ivIcon.setImageResource(R.drawable.pin8_selected);
                                                 continue;
 
                                             } else if (iit == 8) {
-                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.iv_sub_cat_icon));
+                                                ImageView ivIcon = (ImageView) (llSubCatListHolder.getChildAt(iit).findViewById(R.id.ivIconSCatList));
                                                 ivIcon.setImageResource(0);
-                                                ivIcon.setImageResource(R.drawable.magenta_button);
+                                                ivIcon.setImageResource(R.drawable.pin9_selected);
                                                 continue;
 
                                             }
@@ -1599,7 +2040,7 @@ mapcalledstatus=false;
                         }
 
 
-                        callMapFragmentWithEducationInfo(si.getSubcatHeader(), cat_id, EDD);
+                       // callMapFragmentWithEducationInfo(si.getSubcatHeader(), cat_id, EDD);
                         break;
                     case AppConstants.HEALTH:
                         //TODO write necessary codes for health
@@ -1722,12 +2163,14 @@ mapcalledstatus=false;
 
     private void showAnimatedSubcategories(final ArrayList<SubCategoryItem> subCatList, double dwPerc, int iconId, final int cat_id) {
         isCatExpandedOnce = true;
-        decCatListWidth(dwPerc);
+
 
         // TODO Inflate the sub-category list from right
         final RelativeLayout rlSubCatHolder = (RelativeLayout) findViewById(R.id.rlSubCatHolder);
         if(subCatShowFlag==1&&showList!=1)
         {
+            svsholder.setVisibility(View.VISIBLE);
+            svs.setVisibility(View.VISIBLE);
             llSubCatListHolder.setVisibility(View.VISIBLE);
         }
         subCatShowFlag=1;
@@ -1736,6 +2179,8 @@ mapcalledstatus=false;
             @Override
             public void run() {
                 if(showList!=1)
+                    svsholder.setVisibility(View.VISIBLE);
+                    svs.setVisibility(View.VISIBLE);
                 llSubCatListHolder.setVisibility(View.VISIBLE);
 
 
@@ -1819,11 +2264,11 @@ mapcalledstatus=false;
 
     /*********************************************************methods for education**********************************************/
 
-    private ArrayList<EducationServiceProviderItem> constructEducationListItem(int cat_id)
+    private ArrayList<EducationNewItem> constructEducationListItem()
     {
-        ArrayList<EducationServiceProviderItem> educationServiceProvider;
-        EducationServiceProviderTable educationServiceProviderTable = new EducationServiceProviderTable(PlaceDetailsActivityNewLayout.this);
-        educationServiceProvider = educationServiceProviderTable.getAllEducationSubCategoriesInfo(cat_id);
+        ArrayList<EducationNewItem> educationServiceProvider;
+        EducationNewTable educationNewTable = new EducationNewTable(PlaceDetailsActivityNewLayout.this);
+        educationServiceProvider = educationNewTable.getAllEducationSubCategoriesInfo();
         return educationServiceProvider;
     }
 
@@ -1835,7 +2280,7 @@ mapcalledstatus=false;
         return educationServiceProvider;
     }
 
-    private void callMapFragmentWithEducationInfo(String item_name,int cat_id,ArrayList<EducationServiceProviderItem> educationServiceProviderItems)
+    private void callMapFragmentWithEducationInfo(String item_name,int cat_id,ArrayList<EducationNewItem> educationServiceProviderItems)
     {
         MapFragmentOSM mapFragment = new MapFragmentOSM();
         mapFragment.setLocationName(getPlaceChoice());
@@ -1857,10 +2302,10 @@ mapcalledstatus=false;
         mapFragment.setLocationNameId(locationNameId);
         if (mapcalledstatus == true) {
           if(educlicked){
-              educlicked=false;
+              //educlicked=false;
               mapFragment.setCategoryId(1);
-              ArrayList<EducationServiceProviderItem> educationServiceProviderItems;
-              educationServiceProviderItems = constructEducationListItem(1);
+              ArrayList<EducationNewItem> educationServiceProviderItems;
+              educationServiceProviderItems = constructEducationListItem();
              mapFragment.setEducationServiceProvider(educationServiceProviderItems);
             FragmentManager fragmentManager = getFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -1868,7 +2313,7 @@ mapcalledstatus=false;
             fragmentTransaction.commit();
           }
             if(helclicked){
-                helclicked=false;
+                //helclicked=false;
                 mapFragment.setCategoryId(2);
                 ArrayList<HealthServiceProviderItem> healthServiceProviderItems;
                 healthServiceProviderItems = constructHealthListItem(2);
@@ -1879,7 +2324,7 @@ mapcalledstatus=false;
                 fragmentTransaction.commit();
             }
             if(entclicked){
-                entclicked=false;
+              //  entclicked=false;
                 mapFragment.setCategoryId(3);
                 ArrayList<EntertainmentServiceProviderItem> entertainmentServiceProviderItems;
                 entertainmentServiceProviderItems = constructEntertainmentListItem(3);
@@ -1890,7 +2335,7 @@ mapcalledstatus=false;
                 fragmentTransaction.commit();
             }
             if(legclicked){
-                legclicked=false;
+               // legclicked=false;
                 mapFragment.setCategoryId(5);
                 ArrayList<LegalAidServiceProviderItem> legalAidServiceProviderItems;
                 legalAidServiceProviderItems = constructlegalaidListItem(5);
@@ -1901,7 +2346,7 @@ mapcalledstatus=false;
                 fragmentTransaction.commit();
             }
             if(finclicked){
-                finclicked=false;
+               // finclicked=false;
                 mapFragment.setCategoryId(6);
                 ArrayList<FinancialServiceProviderItem> financialServiceProviderItems;
                 financialServiceProviderItems = constructfinancialListItem(6);

@@ -3,7 +3,7 @@
 	android:orientation="horizontal"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:background="@drawable/emergency_row_bg"
+	android:background="@drawable/emergency_bg"
 	>
 
 	<TextView
@@ -33,7 +33,7 @@
 		<ImageButton
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:background="@drawable/distance_btn"
+			android:background="@drawable/distance_icon"
 			android:layout_gravity="left"
 			android:layout_marginLeft="15dp"
 			android:id="@+id/distance_id"

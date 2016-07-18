@@ -4,6 +4,7 @@ package demo.kolorob.kolorobdemoversion.adapters;
  * Created by israt.jahan on 1/17/16.
  * Modified by Arafat
  */
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,31 +15,23 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Vector;
 
 import demo.kolorob.kolorobdemoversion.R;
-import demo.kolorob.kolorobdemoversion.activity.DetailsFinancialActivity;
-import demo.kolorob.kolorobdemoversion.activity.DetailsFinancialActivity_new;
-import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivity;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEducation;
-import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEntertainment;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEntertainmentNew;
-import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityEntertainment_new;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityFinancialNew;
-import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityHealth;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityHealthNew;
-import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityHealth_new;
 import demo.kolorob.kolorobdemoversion.activity.DetailsInfoActivityLegalNew;
 import demo.kolorob.kolorobdemoversion.activity.DetailsJobActivity;
-import demo.kolorob.kolorobdemoversion.activity.DetailsLegalActivity;
-import demo.kolorob.kolorobdemoversion.activity.DetailsLegalActivity_new;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
+import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.Job.JobServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
@@ -56,6 +49,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
     public Activity activity;
     private int catid;
     private Context ctx;
+    private LinearLayout linearLayout;
 
     public MyExpandableListAdapter(Activity act, Vector<Group> groups,int categoryid) {
         activity = act;
@@ -112,11 +106,14 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         if (v == null) {
             v = inflater.inflate(R.layout.listrow_details, null);
         }
+        linearLayout=(LinearLayout)v.findViewById(R.id.row_view);
         switch (catid) {
             case AppConstants.EDUCATION:
             final EducationServiceProviderItem det = groups.get(groupPosition).getchildren().get(childPosition);
             text = (TextView) v.findViewById(R.id.textView1);
             text.setText(det.getEduNameBan());
+                linearLayout.setBackgroundResource(R.color.education_color);
+
 
             v.setOnClickListener(new OnClickListener() {
                 @Override
@@ -137,6 +134,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                 final EntertainmentServiceProviderItem detent = groups.get(groupPosition).getChildrenent().get(childPosition);
                 text = (TextView) v.findViewById(R.id.textView1);
                 text.setText(detent.getNodeNameBn());
+                linearLayout.setBackgroundResource(R.color.entertainment_color);
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -151,16 +149,17 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                 });
                 break;
             case AppConstants.HEALTH:
-                final HealthServiceProviderItem dethea = groups.get(groupPosition).getChildrenhea().get(childPosition);
+                final HealthServiceProviderItemNew dethea = groups.get(groupPosition).getChildrenhea().get(childPosition);
                 text = (TextView) v.findViewById(R.id.textView1);
-                text.setText(dethea.getNameBn());
+                text.setText(dethea.getNode_name());
+                linearLayout.setBackgroundResource(R.color.health_color);
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
 
                         Intent iihea = new Intent(getActivity(), DetailsInfoActivityHealthNew.class);
-                        iihea.putExtra(AppConstants.KEY_DETAILS_HEALTH, dethea);
+                        iihea.putExtra(AppConstants.KEY_DETAILS_HEALTH_NEW, dethea);
                         activity.startActivity(iihea);
 
 
@@ -173,6 +172,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                 final FinancialServiceProviderItem detfin = groups.get(groupPosition).getChildrenfin().get(childPosition);
                 text = (TextView) v.findViewById(R.id.textView1);
                 text.setText(detfin.getNamebn());
+                linearLayout.setBackgroundResource(R.color.financial_color);
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -187,6 +187,7 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
                 final LegalAidServiceProviderItem detleg = groups.get(groupPosition).getChildrenleg().get(childPosition);
                 text = (TextView) v.findViewById(R.id.textView1);
                 text.setText(detleg.getLegalaidNameBan());
+                linearLayout.setBackgroundResource(R.color.legal_aid_color);
                 v.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -283,15 +284,15 @@ public class MyExpandableListAdapter extends BaseExpandableListAdapter {
         Log.d(">>>>>>","Group Value "+catid);
 
         if(catid==1)
-               ((CheckedTextView) convertView).setBackgroundResource(R.color.green);
+               ((CheckedTextView) convertView).setBackgroundResource(R.color.education_color);
         else if(catid==2)
-            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_4);
+            ((CheckedTextView) convertView).setBackgroundResource(R.color.health_color);
         else if(catid==3)
-            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_2);
+            ((CheckedTextView) convertView).setBackgroundResource(R.color.entertainment_color);
         else if(catid==5)
-            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_1);
+            ((CheckedTextView) convertView).setBackgroundResource(R.color.legal_aid_color);
         else if(catid==6)
-            ((CheckedTextView) convertView).setBackgroundResource(R.drawable.color_box_7);
+            ((CheckedTextView) convertView).setBackgroundResource(R.color.financial_color);
 
 
       //

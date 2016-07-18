@@ -1,11 +1,13 @@
 package demo.kolorob.kolorobdemoversion.activity;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,7 +22,7 @@ import demo.kolorob.kolorobdemoversion.database.Job.JobAdvertisementTable;
 import demo.kolorob.kolorobdemoversion.model.Job.JobAdvertisementItem;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 
-public class DetailsJobActivityNew extends AppCompatActivity {
+public class DetailsJobActivityNew extends Activity {
     Dialog dialog;
     LinearLayout upperHand,upperText,left_way,middle_phone,right_email,bottom_bar,linearLayout;
     ImageView left_image,middle_image,right_image;
@@ -56,18 +58,16 @@ public class DetailsJobActivityNew extends AppCompatActivity {
         con = this;
 
         linearLayout=(LinearLayout)findViewById(R.id.lll);
-        upperHand=(LinearLayout)findViewById(R.id.upper_part);
+        //upperHand=(LinearLayout)findViewById(R.id.upper_part);
         upperText=(LinearLayout)findViewById(R.id.upperText);
-        left_way=(LinearLayout)findViewById(R.id.left_go_process);
+//        left_way=(LinearLayout)findViewById(R.id.left_go_process);
         middle_phone=(LinearLayout)findViewById(R.id.middle_phone);
         right_email=(LinearLayout)findViewById(R.id.right_email);
         left_image=(ImageView)findViewById(R.id.distance_left);
         bottom_bar=(LinearLayout)findViewById(R.id.bottom_bar);
         middle_image=(ImageView)findViewById(R.id.phone_middl);
         right_image=(ImageView)findViewById(R.id.right_side_email);
-        address_text=(TextView)findViewById(R.id.address_text);
-        phone_text=(TextView)findViewById(R.id.phone_text);
-        email_text=(TextView)findViewById(R.id.email_text);
+
         close_button=(ImageView)findViewById(R.id.close_button);
         break_time=(TextView)findViewById(R.id.break_time);
        // off_day=(TextView)findViewById(R.id.off_day);
@@ -84,6 +84,8 @@ public class DetailsJobActivityNew extends AppCompatActivity {
         //collector_name=(TextView)findViewById(R.id.collector_name);
         salary_range=(TextView)findViewById(R.id.salary_range);
 
+        Log.d("position","===="+position);
+
         JobAdvertisementTable jobAdvertisementTable= new JobAdvertisementTable(DetailsJobActivityNew.this);
         jobAdvertisementItems=jobAdvertisementTable.getSpecificJobElement(position);
 
@@ -92,8 +94,7 @@ public class DetailsJobActivityNew extends AppCompatActivity {
             ups_text=(TextView)findViewById(R.id.ups_text);
             ups_text.setTextSize(width/25);
             ups_text.setText(jobAdvertisementItem.getInstitute_name_bangla());
-            phone_text.setText(jobAdvertisementItem.getMobile1());
-            email_text.setText(jobAdvertisementItem.getEmail());
+
 
             if(!jobAdvertisementItem.getJob_type().equals(""))
             {
@@ -158,42 +159,42 @@ public class DetailsJobActivityNew extends AppCompatActivity {
 
 
 
-        LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) upperHand.getLayoutParams();
-        int upperhad_height=params2.height = height/6;
-        upperHand.setLayoutParams(params2);
+//        LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) upperHand.getLayoutParams();
+//        int upperhad_height=params2.height = height/6;
+//        upperHand.setLayoutParams(params2);
 
         LinearLayout.LayoutParams params_upperText = (LinearLayout.LayoutParams) upperText.getLayoutParams();
-        int  vd=params_upperText.height = height/24;
+        int  vd=params_upperText.height = height/12;
         params_upperText.width = width;
         upperText.setLayoutParams(params_upperText);
 
-        LinearLayout.LayoutParams params_left_way = (LinearLayout.LayoutParams) left_way.getLayoutParams();
-        int lett_img=params_left_way.height = (height*3)/24;
-        int right_img=params_left_way.width = width/3;
-        left_way.setLayoutParams(params_left_way);
+//        LinearLayout.LayoutParams params_left_way = (LinearLayout.LayoutParams) left_way.getLayoutParams();
+//        int lett_img=params_left_way.height = (height*3)/24;
+//        int right_img=params_left_way.width = width/3;
+//        left_way.setLayoutParams(params_left_way);
 
 
-        left_image.getLayoutParams().height= (lett_img*2)/3;
-        left_image.getLayoutParams().width=right_img/2;
+//        left_image.getLayoutParams().height= (lett_img*2)/3;
+//        left_image.getLayoutParams().width=right_img/2;
 
 
-        LinearLayout.LayoutParams params_middle_phone = (LinearLayout.LayoutParams) middle_phone.getLayoutParams();
-        int  vx=params_middle_phone.height = (height*3)/24;
-        params_middle_phone.width = width/3;
-        middle_phone.setLayoutParams(params_middle_phone);
+//        LinearLayout.LayoutParams params_middle_phone = (LinearLayout.LayoutParams) middle_phone.getLayoutParams();
+//        int  vx=params_middle_phone.height = (height*3)/24;
+//        params_middle_phone.width = width/3;
+//        middle_phone.setLayoutParams(params_middle_phone);
 
-        middle_image.getLayoutParams().height= (lett_img*2)/3;
-        middle_image.getLayoutParams().width=right_img/2;
+//        middle_image.getLayoutParams().height= (lett_img*2)/3;
+//        middle_image.getLayoutParams().width=right_img/2;
+//
+//        right_image.getLayoutParams().height= (lett_img*2)/3;
+//        right_image.getLayoutParams().width=right_img/2;
 
-        right_image.getLayoutParams().height= (lett_img*2)/3;
-        right_image.getLayoutParams().width=right_img/2;
 
-
-        scrollingPart=(LinearLayout)findViewById(R.id.scrollingPart);
-        LinearLayout.LayoutParams params_right_email = (LinearLayout.LayoutParams) right_email.getLayoutParams();
-        int  vc=params_right_email.height = (height*3)/24;
-        params_right_email.width = width/3;
-        right_email.setLayoutParams(params_right_email);
+          scrollingPart=(LinearLayout)findViewById(R.id.scrollingPart);
+//        LinearLayout.LayoutParams params_right_email = (LinearLayout.LayoutParams) right_email.getLayoutParams();
+//        int  vc=params_right_email.height = (height*3)/24;
+//        params_right_email.width = width/3;
+//        right_email.setLayoutParams(params_right_email);
 
 
 
@@ -206,12 +207,12 @@ public class DetailsJobActivityNew extends AppCompatActivity {
 
 
 
-        RelativeLayout.LayoutParams params_bottom_bar = (RelativeLayout.LayoutParams) bottom_bar.getLayoutParams();
-        int  vcc=params_bottom_bar.height = height/13;
-        params_bottom_bar.width = width;
-        bottom_bar.setLayoutParams(params_bottom_bar);
-        LinearLayout.LayoutParams expnlist = (LinearLayout.LayoutParams) scrollingPart.getLayoutParams();
-        expnlist.setMargins(0,0,0,vcc);
+//        RelativeLayout.LayoutParams params_bottom_bar = (RelativeLayout.LayoutParams) bottom_bar.getLayoutParams();
+//        int  vcc=params_bottom_bar.height = height/13;
+//        params_bottom_bar.width = width;
+//        bottom_bar.setLayoutParams(params_bottom_bar);
+//        LinearLayout.LayoutParams expnlist = (LinearLayout.LayoutParams) scrollingPart.getLayoutParams();
+//        expnlist.setMargins(0,0,0,vcc);
 
 
     }
@@ -234,8 +235,6 @@ public class DetailsJobActivityNew extends AppCompatActivity {
 
         String value= value1+value2;
         result_concate= result_concate+value + "\n";
-
-
 
 
         return result_concate;
