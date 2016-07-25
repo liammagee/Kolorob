@@ -15,6 +15,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -162,7 +163,7 @@ public class OpeningActivity extends Activity {
     Boolean  firstRun;
     private int EntDataSize,HealthDatSize;
     private static final int ANIM_INTERVAL = 200;
-int countofDb;
+    int countofDb;
     ArrayList<SubCategoryItem>si2=new ArrayList<>();
     ArrayList<SubCategoryItemNew>si3=new ArrayList<>();
 
@@ -274,6 +275,7 @@ int countofDb;
 
 
         super.onCreate(savedInstanceState);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_opening);
 
@@ -370,7 +372,7 @@ int countofDb;
                             dialog.dismiss();
 
                             if (AppUtils.isNetConnected(getApplicationContext())) {
-                                countofDb=0 ;
+                                countofDb = 0 ;
                                 SharedPreferences settings = getSharedPreferences("prefs", 0);
                                 SharedPreferences.Editor editor = settings.edit();
                                 editor.putInt("KValue", countofDb);
@@ -379,11 +381,11 @@ int countofDb;
                                 pd.setIndeterminate(true);
                                 pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
 
-
                                 LoadData();
                                 // Hack to get things working
                                 editor.putInt("KValue", 7);
                                 editor.commit();
+
                             } else {
                                 AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
                                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
@@ -1220,7 +1222,21 @@ int countofDb;
     }
 
     // ASYNC TASKS
-    class SaveCategoryListTask extends AsyncTask<JSONArray, Integer, Long> {
+    abstract class GenericSaveDBTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+        protected void onPostExecute(Result result) {
+            if (((Long)result).longValue() == 0.0) {
+                SharedPreferences settings = getSharedPreferences("prefs", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                int countofDb = settings.getInt("countofDb", 0);
+                countofDb++;
+                editor.putInt("countofDb", countofDb);
+                editor.commit();
+            }
+        }
+    }
+
+    class SaveCategoryListTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        @Override
         protected Long doInBackground(JSONArray... categoryArrays) {
             JSONArray categoryArray = categoryArrays[0];
             CategoryTable catTable = new CategoryTable(OpeningActivity.this);
@@ -1231,16 +1247,12 @@ int countofDb;
                     JSONObject jo = categoryArray.getJSONObject(i);
                     CategoryItem ci = CategoryItem.parseCategoryItem(jo);
                     catTable.insertItem(ci);
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
-            return new Long(OpeningActivity.this.countofDb++);
-        }
-
-        protected void onPostExecute(Long result) {
+            return new Long(0);
         }
     }
 
@@ -1259,12 +1271,10 @@ int countofDb;
                     subCategoryTableNew.insertItem(et);
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
-            return new Long(OpeningActivity.this.countofDb++);
-        }
-
-        protected void onPostExecute(Long result) {
+            return new Long(0);
         }
     }
 
@@ -1282,15 +1292,12 @@ int countofDb;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
-            countofDb++;
-            si2=subCatTable.getAllSubCategories(1);
+            si2 = subCatTable.getAllSubCategories(1);
             si2.size();
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1329,6 +1336,7 @@ int countofDb;
 
                 }catch(JSONException e){
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
             return new Long(0);
@@ -1361,9 +1369,6 @@ int countofDb;
             }
 
         }
-
-        protected void onPostExecute(Long result) {
-        }
     }
 
 
@@ -1385,25 +1390,20 @@ int countofDb;
                         JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
                         int rspot_detailsSize=rspot_details.length();
 
-
                         for (int v=0;v<rspot_detailsSize;v++)
                         {
                             JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
                             Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
-
                         }
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
             return new Long(0);
         }
 
-        protected void onPostExecute(Long result) {
-        }
     }
 
 
@@ -1444,12 +1444,10 @@ int countofDb;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1474,7 +1472,6 @@ int countofDb;
                     GovernmentNewItem et =GovernmentNewItem.parseGovernmentNewItem(jo);
                     governmentNewTable.insertItem(et);
 
-
                     if(jo.has("govservice_details"))// need id in fin_service_details
                     {
                         JSONArray service_details = jo.getJSONArray("govservice_details");
@@ -1483,20 +1480,14 @@ int countofDb;
                             JSONObject joes= service_details.getJSONObject(j);
                             GovernmentServiceDetailsItem governmentServiceDetailsItem = GovernmentServiceDetailsItem.parseGovernmentServiceDetailsItem(joes);
                             governmentServiceDetailsTable.insertItem(governmentServiceDetailsItem);
-
                         }
-
                     }
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1528,10 +1519,9 @@ int countofDb;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
-
-
-            }
+        }
             return new Long(0);
         }
 
@@ -1548,9 +1538,6 @@ int countofDb;
                 e.printStackTrace();
             }
 
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1587,7 +1574,7 @@ int countofDb;
                         }
 
                     }
-                    if(jo.has("EduExamFees"))
+                    if (jo.has("EduExamFees"))
                     {
                         JSONArray eduExamFees = jo.getJSONArray("EduExamFees");
 
@@ -1597,22 +1584,14 @@ int countofDb;
 
                             Etf = EducationFeeItem.parseEducationFeeItem(joes);
                             educationFeeTable.insertItem(Etf);
-
                         }
-
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
-
             }
-
-            countofDb++;
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1680,13 +1659,10 @@ int countofDb;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
-            countofDb++;
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1766,13 +1742,10 @@ int countofDb;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
-            countofDb++;
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 
@@ -1839,12 +1812,10 @@ int countofDb;
 
                 } catch (JSONException e) {
                     e.printStackTrace();
+                    return new Long(-1);
                 }
             }
             return new Long(0);
-        }
-
-        protected void onPostExecute(Long result) {
         }
     }
 }
