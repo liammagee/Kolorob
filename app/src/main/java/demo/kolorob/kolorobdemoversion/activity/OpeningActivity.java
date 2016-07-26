@@ -409,7 +409,6 @@ public class OpeningActivity extends Activity {
                                         });
                                 alertDialog.show();
 
-
                             }
 
                         }
@@ -425,21 +424,28 @@ public class OpeningActivity extends Activity {
         moving wheel while loading data into local database
 
          */
-        final Activity activity = this;
+        final OpeningActivity activity = this;
         rotateImage = (ImageView) findViewById(R.id.rotate_image);
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        final Handler handler = new Handler();
+        Runnable runner = new Runnable() {
             @Override
             public void run() {
-                        /* start the activity */
 
-                //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                overridePendingTransition(0, 0);
-                finish();
+                if (activity.countofDb >= 7) {
+                    //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                    overridePendingTransition(0, 0);
+                    handler.removeCallbacks(this);
+                    finish();
+                    return;
+                }
+                //Create a loop
+                handler.postDelayed(this, 1000);
             }
-        }, 6000);
 
-        setImage();
+        };
+        handler.postDelayed(runner, 1000);
+
+//        setImage();
 
 
         if ((AppUtils.isNetConnected(getApplicationContext())) && (ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED)
