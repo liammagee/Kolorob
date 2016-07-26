@@ -26,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,6 +51,7 @@ import java.util.Map;
 import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTableDetails;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccineTableDetails;
+import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItemDetails;
@@ -56,6 +59,8 @@ import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccineItemDetails;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
+
+import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
 
 /**
  * Created by arafat on 28/05/2016.
@@ -70,6 +75,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
     TextView ups_text;
     ListView courseListView, listView;
     Context con;
+    Float rating;
     HealthServiceProviderItemNew healthServiceProviderItemNew;
     ArrayList<HealthServiceProviderItem> healthServiceProviderItems;
     ArrayList<HealthServiceProviderItem> healthServiceProviderItemsz;
@@ -90,6 +96,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
     String result_concate = "";
     private CheckBox checkBox;
     EditText feedback_comment;
+    RatingBar ratingBar;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -162,7 +169,8 @@ public class DetailsInfoActivityHealthNew extends Activity {
         email_btn = (ImageView) findViewById(R.id.right_side_email);
         feedback = (ImageView) findViewById(R.id.feedback);
         checkBox = (CheckBox) findViewById(R.id.compare);
-
+        ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        setRatingBar();
 
         CheckConcate("প্রতিস্টানের ধরন", healthServiceProviderItemNew.getInstitute_type());
         CheckConcate("ধারন ক্ষমতা", healthServiceProviderItemNew.getCapacity());
@@ -181,6 +189,19 @@ public class DetailsInfoActivityHealthNew extends Activity {
         CheckConcate("এভিনিউ", healthServiceProviderItemNew.getAvenue());
         CheckConcate("পোস্ট অফিস", healthServiceProviderItemNew.getPost_office());
         CheckConcate("পুলিশ স্টেশন", healthServiceProviderItemNew.getPolice_station());
+        CheckConcate("বিনামূল্যে সেবা", healthServiceProviderItemNew.getGeneral_free_for());
+        CheckConcate("বিনামূল্যে সেবার ধরন", healthServiceProviderItemNew.getGeneral_free_services());
+
+        CheckConcate("বিনামূল্যে সেবা", healthServiceProviderItemNew.getGeneral_free_services());
+        CheckConcate("সাধারন খরচ", healthServiceProviderItemNew.getGeneral_cost());
+        CheckConcate("সাধারন অনন্য তথ্য", healthServiceProviderItemNew.getGeneral_remark());
+        CheckConcate("এ্যাম্বুলেন্সের খরচ", healthServiceProviderItemNew.getAmbulance_cost());
+        CheckConcate("এ্যাম্বুলেন্সের অনন্য তথ্য", healthServiceProviderItemNew.getAmbulance_remark());
+        CheckConcate("মাতৃত্ব জনিত সেবার খরচ", healthServiceProviderItemNew.getMaternity_cost());
+        CheckConcate("মাতৃত্ব জনিত সেবার অন্যন্য তথ্য", healthServiceProviderItemNew.getMaternity_remark());
+        CheckConcate("জরুরী সেবার খরচ", healthServiceProviderItemNew.getEmergency_cost());
+        CheckConcate("জরুরী সেবার অনন্য খরচ", healthServiceProviderItemNew.getEmergency_remark());
+
 
 
         timeProcessing("খোলার সময়", healthServiceProviderItemNew.getOpening_time());
@@ -193,9 +214,9 @@ public class DetailsInfoActivityHealthNew extends Activity {
         if (specialist_size != 0) {
             for (HealthSpecialistItemDetails healthSpecialistItemDetails : healthSpecialistItemDetailses) {
                 Log.d("It's Specialist", "====" + specialist_size);
-                result_concate = "";
-                specialist.setVisibility(View.VISIBLE);
-                CheckConcate("সেবার ধরন", healthSpecialistItemDetails.getSpecialisttype());
+             //   result_concate = "";
+            //    specialist.setVisibility(View.VISIBLE);
+                CheckConcate("বিশেষজ্ঞ ডাক্তারের ধরন ", healthSpecialistItemDetails.getSpecialisttype());
                 CheckConcate("ডাক্তারের সংখা", healthSpecialistItemDetails.getSpecialistId());
                 CheckConcate("প্রথম ভিজিট ফি", healthSpecialistItemDetails.getSpecialistfees());
                 CheckConcate("এক সপ্তাহের মধ্যে ভিজিট ফি", healthSpecialistItemDetails.getWeek_fee());
@@ -213,13 +234,13 @@ public class DetailsInfoActivityHealthNew extends Activity {
         int healthVaccineSize = healthVaccineItemDetailses.size();
         if (healthVaccineSize != 0) {
             Log.d("It's Vaccine", "====" + healthVaccineSize);
-            health_vaccine.setVisibility(View.VISIBLE);
-            result_concate = "";
+          //  health_vaccine.setVisibility(View.VISIBLE);
+           // result_concate = "";
 
             for (HealthVaccineItemDetails healthVaccineItemDetails : healthVaccineItemDetailses) {
-                CheckConcate("সেবার ধরন", healthVaccineItemDetails.getVaccinename());
-                CheckConcate("ডাক্তারের সংখা", healthVaccineItemDetails.getVaccinefee());
-                CheckConcate("প্রথম ভিজিট ফি", healthVaccineItemDetails.getVaccineremarks());
+                CheckConcate("ভ্যাকসিনের নাম", healthVaccineItemDetails.getVaccinename());
+                CheckConcate("ভ্যাকসিনের ফী", healthVaccineItemDetails.getVaccinefee());
+                CheckConcate("ভ্যাকসিনের অন্যন্য তথ্য", healthVaccineItemDetails.getVaccineremarks());
 
             }
 
@@ -228,7 +249,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
         }
 
 
-        serviceDetails.setText(result_concate);
+
 
         close_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -260,7 +281,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
             }
         });
 
-
+        serviceDetails.setText(result_concate);
 
 
         LinearLayout.LayoutParams params2 = (LinearLayout.LayoutParams) upperHand.getLayoutParams();
@@ -438,6 +459,46 @@ public class DetailsInfoActivityHealthNew extends Activity {
         client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
+
+    public void setRatingBar()
+    {
+        getRequest(DetailsInfoActivityHealthNew.this, "http://kolorob.net/demo/api/get_sp_rating/health", new VolleyApiCallback() {
+                    @Override
+                    public void onResponse(int status, String apiContent) {
+                        if (status == AppConstants.SUCCESS_CODE) {
+                            try {
+                                JSONArray jo = new JSONArray(apiContent);
+                                int size= jo.length();
+                                for(int i=0;i<size;i++)
+                                {
+                                    JSONObject ratingH=jo.getJSONObject(i);
+                                    String id= ratingH.getString("id");
+                                    if(id.equals(healthServiceProviderItemNew.getId()))
+                                    {
+
+
+                                        rating=Float.parseFloat(ratingH.getString("avg"));
+                                        ratingBar.setRating(rating);
+                                        break;
+
+                                    }
+
+
+                                }
+
+
+
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
     public void verifyRegistration(View v) {
 
         String  register = SharedPreferencesHelper.getNumber(DetailsInfoActivityHealthNew.this);
@@ -492,25 +553,25 @@ public class DetailsInfoActivityHealthNew extends Activity {
 
 
     public void sendReviewToServer() {
-        int rating;
-        if (status.equals("ভাল"))
+        int rating=0;
+        if (status.equals("খুবই অসন্তুষ্ট"))
             rating = 1;
-        else if (status.equals("মোটামোট"))
+        else if (status.equals("অসন্তুষ্ট"))
             rating = 2;
-        else
+        else if (status.equals("বিশেষ অনুভূতি নেই"))
+
             rating = 3;
+        else if (status.equals("সন্তুষ্ট "))
+
+            rating =4;
+        else if (status.equals("খুবই সন্তুষ্ট"))
+
+            rating = 5;
 
         String comment="";
-
-
-
-
-
-
         comment=feedback_comment.getText().toString();
         Log.d("status ","======"+status);
-       // http://kolorob.net/demo/api/sp_rating/1?phone=01711310912&review=this%20is%20a%20review&rating=4
-        String url = "http://kolorob.net/demo/api/sp_rating/"+healthServiceProviderItemNew.getId()+"?"+"phone=" +phone_num +"&review=" +feedback_comment.getText().toString()+ "&rating="+rating;
+        String url = "http://kolorob.net/demo/api/sp_rating/"+healthServiceProviderItemNew.getId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -525,8 +586,8 @@ public class DetailsInfoActivityHealthNew extends Activity {
                                 AlertMessage.showMessage(DetailsInfoActivityHealthNew.this, "মতামতটি গ্রহন করা হয়েছে",
                                         "মতামত প্রদান করার জন্য আপনাকে ধন্যবাদ করার জন্য আপনাকে ধন্যবাদ");
                             } else
-                                AlertMessage.showMessage(DetailsInfoActivityHealthNew.this, "রেজিস্টেশনটি সফলভাবে সম্পন্ন হয়ে নি",
-                                        "আপনি ইতিপূর্বে রেজিস্ট্রেশন করে ফেলেছেন");
+                                AlertMessage.showMessage(DetailsInfoActivityHealthNew.this, "মতামতটি গ্রহন করা হয় নি",
+                                        "অনুগ্রহ পূর্বক পুনরায় চেস্টা করুন।");
 
 
                         } catch (Exception e) {
@@ -556,19 +617,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
         RequestQueue requestQueue = Volley.newRequestQueue(DetailsInfoActivityHealthNew.this);
         requestQueue.add(stringRequest);
     }
-//
-//    public void declareRadiobutton() {
-////        feedRadio=(RadioGroup)findViewById(R.id.feedRadio);
-////        Log.d("Selected ","======");
-////        int selected = feedRadio.getCheckedRadioButtonId();
-////        Log.d("Selected ","======"+selected);
-////        RadioButton rb1 = (RadioButton) findViewById(selected);
-////        status = rb1.getText().toString();
-//
-//      //  Arafat, i set it as static 1, pls change this codes;
-//
-//
-//    }
+
 
     public void requestToRegister() {
         LayoutInflater layoutInflater = LayoutInflater.from(DetailsInfoActivityHealthNew.this);
@@ -588,6 +637,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
             public void onClick(View v) {
 
                 Intent intentPhoneRegistration = new Intent(DetailsInfoActivityHealthNew.this, PhoneRegActivity.class);
+                alert.cancel();
                 startActivity(intentPhoneRegistration);
 
             }

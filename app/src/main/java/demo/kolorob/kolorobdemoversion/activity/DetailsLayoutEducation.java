@@ -60,6 +60,8 @@ import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
  */
 public class DetailsLayoutEducation extends Activity {
     Dialog dialog;
+    String username="kolorobapp";
+    String password="2Jm!4jFe3WgBZKEN";
     LinearLayout upperHand, upperText, left_way, middle_phone, right_email, bottom_bar, linearLayout;
     ImageView left_image, middle_image, right_image, email_btn;
     TextView address_text, phone_text, email_text;
@@ -283,7 +285,7 @@ public class DetailsLayoutEducation extends Activity {
                 } else if (compareValue == 1) {
                     String previous_node;
                     previous_node = SharedPreferencesHelper.getComapreData(DetailsLayoutEducation.this);
-                    previous_node = previous_node + " " + node;
+                    previous_node = previous_node + "," + node;
                     SharedPreferencesHelper.setComapareEdu(DetailsLayoutEducation.this, previous_node, 2);
                 }
 
@@ -521,7 +523,9 @@ public class DetailsLayoutEducation extends Activity {
             rating=4;
         else
             rating=5;
-        String url = "http://www.kolorob.net/KolorobApi/api/rating/save_feedback?phone="+phone_num+"&node="+educationNewItem.getEduId()+"&service="+"5"+"&rating="+rating;
+        String comment="";
+        comment=feedback_comment.getText().toString();
+        String url = "http://kolorob.net/demo/api/sp_rating/"+educationNewItem.getEduId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {

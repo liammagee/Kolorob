@@ -11,11 +11,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.MediaPlayer;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -28,9 +27,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -45,19 +41,11 @@ import java.util.ArrayList;
 import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.database.CategoryTable;
 import demo.kolorob.kolorobdemoversion.database.DatabaseHelper;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationCourseTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationFeeTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationNewTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationResultDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTrainingDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTuitionDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentBookTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFieldTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFitnessTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentTheatreTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmetTypeTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialBillsTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialInsuranceTable;
@@ -72,37 +60,22 @@ import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTransactionTa
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTuitionTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentNewTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentServiceDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthPharmacyTable;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTableDetails;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccineTableDetails;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccinesTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidtypeServiceProviderLegalAdviceTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidtypeServiceProviderSalishiTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTableNew;
 import demo.kolorob.kolorobdemoversion.helpers.AppDialogManager;
 import demo.kolorob.kolorobdemoversion.interfaces.RetryCallBackForNoInternet;
 import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
 import demo.kolorob.kolorobdemoversion.model.CategoryItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationCourseItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationFeeItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationResultItemNew;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTrainingDetailsItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTuitionDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentBookShopItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFieldItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFitnessItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTheatreItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTypeItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialBillsItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialInsuranceItem;
@@ -117,17 +90,10 @@ import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTransactionItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTuitionItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentNewItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentServiceDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthPharmacyItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItemDetails;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccineItemDetails;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccinesItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LeagalAidDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidLegalAdviceItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidSalishiItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItem;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItemNew;
@@ -146,12 +112,16 @@ public class OpeningActivity extends Activity {
     public static final String DB_NAME = "kolorob.db";
     private final static int SPLASH_TIME_OUT = 500;
     private static final int INTERNET_PERMISSION = 1;
+    String user="kolorobapp";
+    String pass="2Jm!4jFe3WgBZKEN";
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
+    AlertDialog alertDialog;
     private GoogleApiClient client;
+    private AnimationDrawable frameAnimation;
     private Context ctx;
     public static final String EDU_PROVIDER_TABLE = "edu_provider";
     public  SQLiteDatabase db3;
@@ -160,14 +130,14 @@ public class OpeningActivity extends Activity {
     Boolean  firstRun;
     private int EntDataSize,HealthDatSize;
     private static final int ANIM_INTERVAL = 200;
-int countofDb;
+    int countofDb;
     ArrayList<SubCategoryItem>si2=new ArrayList<>();
     ArrayList<SubCategoryItemNew>si3=new ArrayList<>();
 
     public int getCountofDb() {
         return countofDb;
     }
-   // ArrayList<Trialholder>holdertrial=new ArrayList<>();
+    // ArrayList<Trialholder>holdertrial=new ArrayList<>();
     public void setCountofDb(int countofDb) {
         this.countofDb = countofDb;
     }
@@ -181,89 +151,89 @@ int countofDb;
     View view=null;
 
 
-    public RefreshHandler mRedrawHandler = new RefreshHandler();
-
-    class RefreshHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            OpeningActivity.this.setImage();
-        }
-
-        public void sleep(long delayMillis) {
-            this.removeMessages(0);
-            sendMessageDelayed(obtainMessage(0), delayMillis);
-        }
-    };
-
-    private void setImage() {
-        try {
-            in++;
-
-//            if(in == 5) {
-//                rotateImage.setBackgroundResource(R.drawable.glow);
-//                Animation startRotateAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.glow_animation);
-//                rotateImage.startAnimation(startRotateAnimation);
-//            }
-
-        } catch (final Exception e) {
-
-
-        }
-
-        if(in ==1){
-            rotateImage.setBackgroundResource(R.drawable.a1);
-            System.out.println("-----okkkkk1--------");
-
-        }
-        else if(in ==2){
-            rotateImage.setBackgroundResource(R.drawable.a3);
-            System.out.println("-----okkkkk2--------");
-
-        }
-        else if(in ==3){
-            rotateImage.setBackgroundResource(R.drawable.a7);
-            System.out.println("-----okkkkk--------");
-
-        }
-        else if(in ==3){
-            rotateImage.setBackgroundResource(R.drawable.a7);
-            System.out.println("-----okkkkk7--------");
-
-        }
-        else if(in ==4){
-            rotateImage.setBackgroundResource(R.drawable.a12);
-            System.out.println("-----okkkkk12--------");
-
-        }
-        else if(in ==5){
-            rotateImage.setBackgroundResource(R.drawable.a15);
-            System.out.println("-----okkkkk15--------");
-
-        }
-        else if(in ==6){
-            rotateImage.setBackgroundResource(R.drawable.a16);
-            System.out.println("-----okkkkk16-------");
-
-        }
-        else if(in ==7){
-            rotateImage.setBackgroundResource(R.drawable.a18);
-            System.out.println("-----okkkkk18--------");
-
-        }
-
-        else if(in == 8){
-           // rotateImage.setBackgroundResource(R.drawable.glow);
-            rotateImage.setBackgroundResource(R.drawable.a18);
-            startActivity(new Intent(OpeningActivity.this, PlaceChoiceActivity2.class));
-            mRedrawHandler.removeMessages(0);
-            finish();
-            System.out.println("-----okkkkk74--------" );
-            // in=0;
-        }
-
-        mRedrawHandler.sleep(500);
-
-    }
+//    public RefreshHandler mRedrawHandler = new RefreshHandler();
+//
+//    class RefreshHandler extends Handler {
+//        @Override
+//        public void handleMessage(Message msg) {
+//            OpeningActivity.this.setImage();
+//        }
+//
+//        public void sleep(long delayMillis) {
+//            this.removeMessages(0);
+//            sendMessageDelayed(obtainMessage(0), delayMillis);
+//        }
+//    };
+//
+//    private void setImage() {
+//        try {
+//            in++;
+//
+////            if(in == 5) {
+////                rotateImage.setBackgroundResource(R.drawable.glow);
+////                Animation startRotateAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.glow_animation);
+////                rotateImage.startAnimation(startRotateAnimation);
+////            }
+//
+//        } catch (final Exception e) {
+//
+//
+//        }
+//
+//        if(in ==1){
+//            rotateImage.setBackgroundResource(R.drawable.a1);
+//            System.out.println("-----okkkkk1--------");
+//
+//        }
+//        else if(in ==2){
+//            rotateImage.setBackgroundResource(R.drawable.a3);
+//            System.out.println("-----okkkkk2--------");
+//
+//        }
+//        else if(in ==3){
+//            rotateImage.setBackgroundResource(R.drawable.a7);
+//            System.out.println("-----okkkkk--------");
+//
+//        }
+//        else if(in ==3){
+//            rotateImage.setBackgroundResource(R.drawable.a7);
+//            System.out.println("-----okkkkk7--------");
+//
+//        }
+//        else if(in ==4){
+//            rotateImage.setBackgroundResource(R.drawable.a12);
+//            System.out.println("-----okkkkk12--------");
+//
+//        }
+//        else if(in ==5){
+//            rotateImage.setBackgroundResource(R.drawable.a15);
+//            System.out.println("-----okkkkk15--------");
+//
+//        }
+//        else if(in ==6){
+//            rotateImage.setBackgroundResource(R.drawable.a16);
+//            System.out.println("-----okkkkk16-------");
+//
+//        }
+//        else if(in ==7){
+//            rotateImage.setBackgroundResource(R.drawable.a18);
+//            System.out.println("-----okkkkk18--------");
+//
+//        }
+//
+//        else if(in == 8){
+//           // rotateImage.setBackgroundResource(R.drawable.glow);
+//            rotateImage.setBackgroundResource(R.drawable.a18);
+//            startActivity(new Intent(OpeningActivity.this, PlaceSelectionActivity.class));
+//            mRedrawHandler.removeMessages(0);
+//            finish();
+//            System.out.println("-----okkkkk74--------" );
+//            // in=0;
+//        }
+//
+//        mRedrawHandler.sleep(500);
+//
+//    }
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -276,6 +246,7 @@ int countofDb;
         setContentView(R.layout.activity_opening);
 
         ImageView kolorobLogo = (ImageView) findViewById(R.id.iv_kolorob_logo);//need to add bengali
+
 
         context = this;
 
@@ -317,8 +288,9 @@ int countofDb;
             editor.commit();
 
             if(!AppUtils.isNetConnected(getApplicationContext())) {
-                AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+                alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.setMessage(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
@@ -338,23 +310,23 @@ int countofDb;
 
 
             {
-                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
-                pd.setIndeterminate(true);
-                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
+//                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
+//                pd.setIndeterminate(true);
+//                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
                 LoadData();
 
-                pd.dismiss();
+                //   pd.dismiss();
             }
         } else {
             AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
             alertDialog.setTitle("আপনি কি তথ্য হালনাগাদ করতে চান? ");
-
+            alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "না",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             Log.e("open4",String.valueOf(getCountofDb()));
-                            Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                            Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                             startActivity(i);
 
@@ -373,22 +345,24 @@ int countofDb;
                                 SharedPreferences.Editor editor = settings.edit();
                                 editor.putInt("KValue", countofDb);
                                 editor.commit();
-                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
-                                pd.setIndeterminate(true);
-                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
+//                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
+//                                pd.setIndeterminate(true);
+//                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
 
 
                                 LoadData();
                             } else {
                                 AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+
                                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                                alertDialog.setCanceledOnTouchOutside(false);
                                 alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।  ");
                                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
                                                 Log.e("open3",String.valueOf(countofDb));
-                                                Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                                                Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                                                 overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                                 startActivity(i);
                                                 dialog.dismiss();
@@ -404,6 +378,7 @@ int countofDb;
                     });
 
             alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(false);
         }
     }
     public void LoadData()
@@ -412,47 +387,104 @@ int countofDb;
         /*
         @@@@ arafat, you have to control wheel from here
         moving wheel while loading data into local database
-
          */
-        rotateImage = (ImageView) findViewById(R.id.rotate_image);
+
+
+
+
+
+
+
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                                /* start the activity */
+                                  /* start the activity */
 
-                //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 overridePendingTransition(0, 0);
-                finish();
+                Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
+                startActivity(a);
+
+                //  finish();
             }
-        }, 6000);
+        }, 60000);
+        //setImage();
 
-        setImage();
 
+
+        rotateImage = (ImageView) findViewById(R.id.rotate_image);
+        rotateImage.setBackgroundResource(R.drawable.frame_animation_list);
+        frameAnimation = (AnimationDrawable) rotateImage.getBackground();
+        frameAnimation.setOneShot(false);
+        frameAnimation.start();
 
         if ((AppUtils.isNetConnected(getApplicationContext()) )&&(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED )
                 ) {
-          getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories", new VolleyApiCallback() {
-                       @Override
-                      public void onResponse(int status, String apiContent) {
-                           if (status == AppConstants.SUCCESS_CODE) {
+
+
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+                @Override
+                public void onResponse(int status, String apiContent) {
+                    try {
+                        JSONArray allData=new JSONArray(apiContent);
+                        HealthDatSize=allData.length();
+                        for(int i=0;i<HealthDatSize;i++)
+                        {
+                            JSONObject jsonObject=allData.getJSONObject(i);
+                            SaveHealthtData(jsonObject);
+
+                        }
+
+                        //   saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
+
+
+                                try {
+                                    JSONArray jo = new JSONArray(apiContent);
+
+                                    savesubcat2(jo);
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            );
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
 
                                 try {
 
                                     JSONArray jo = new JSONArray(apiContent);
 
                                     saveCategoryList(jo);
+
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
-                               }
+                                }
                             }
                         }
-                   }
+                    }
             );
 //
 //
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -462,9 +494,8 @@ int countofDb;
                                     JSONArray jo = new JSONArray(apiContent);
 
                                     savesubcat(jo);
-                                    SubCategoryTableNew subCategoryTableNew= new SubCategoryTableNew(OpeningActivity.this);
-                                    si3=subCategoryTableNew.getAllSubCat();
-                                    si3.size();
+
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -472,15 +503,25 @@ int countofDb;
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
                                 try {
                                     JSONArray jo = new JSONArray(apiContent);
-
                                     savenewEdu(jo);
 
+                                    frameAnimation.stop();
+
+//                                    SharedPreferences settings = getSharedPreferences("prefs", 0);
+//                                    SharedPreferences.Editor editor = settings.edit();
+//                                    editor.putInt("KValue", countofDb);
+//                                    editor.commit();
+//                                    Log.e("open2",String.valueOf(countofDb));
+//                                    Log.d("Going to Another ","-------");
+//                                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+//                                    pd.dismiss();
+//            //                        Intent a = new Intent(OpeningActivity.this, FeedbackActivity.class);
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -489,51 +530,28 @@ int countofDb;
                         }
                     }
             );
-           getRequest(OpeningActivity.this, "get_sub_categories", new VolleyApiCallback() {
-                       @Override
-                        public void onResponse(int status, String apiContent) {
-                           if (status == AppConstants.SUCCESS_CODE) {
 
 
-                                try {
-                                    JSONObject jo = new JSONObject(apiContent);
-                                    String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                        saveSubCategoryList(jo.getJSONArray(AppConstants.KEY_DATA));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-//
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                 @Override
                 public void onResponse(int status, String apiContent) {
-
-
-
                     try {
-
                         JSONArray allData=new JSONArray(apiContent);
                         EntDataSize=allData.length();
-
-                        for(int i=0;i<=EntDataSize;i++)
+                        for(int i=0;i<EntDataSize;i++)
                         {
                             JSONObject jsonObject=allData.getJSONObject(i);
                             SaveEntertainmentData(jsonObject,i);
+
                         }
 
-                       //saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                   } catch (JSONException e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                 }
             });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -541,6 +559,8 @@ int countofDb;
                                     JSONArray jo = new JSONArray(apiContent);
 
                                     savenewFinance(jo);
+
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -548,7 +568,7 @@ int countofDb;
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -556,6 +576,8 @@ int countofDb;
                                     JSONArray jo = new JSONArray(apiContent);
 
                                     savenewGov(jo);
+
+
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -565,62 +587,25 @@ int countofDb;
             );
 
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
-
-
-
                             try {
-
                                 JSONArray legal_array= new JSONArray(apiContent);
-
                                 int p= legal_array.length();
-
-
                                 for(int i=0;i<p;i++)
                                 {
                                     JSONObject jsonObject=legal_array.getJSONObject(i);
                                     SaveLegaltData(jsonObject);
 
-
                                 }
-
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
                         }
                     }
             );
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health", new VolleyApiCallback() {
-            @Override
-            public void onResponse(int status, String apiContent) {
-
-
-                    try {
-
-                        JSONArray allData=new JSONArray(apiContent);
-                        HealthDatSize=allData.length();
-
-                        for(int i=0;i<HealthDatSize;i++)
-                        {
-                            JSONObject jsonObject=allData.getJSONObject(i);
-                            SaveHealthtData(jsonObject);
-
-                        }
-
-                     //   saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-            }
-        });
-
-
 
 
 
@@ -633,7 +618,7 @@ int countofDb;
                 if (db.isTableExists(db3,EDU_PROVIDER_TABLE)){
                     pd.dismiss();
                     Log.e("open1",String.valueOf(countofDb));
-                    Intent a = new Intent(getApplicationContext(),PlaceChoiceActivity2.class);//Default Activity
+                    Intent a = new Intent(getApplicationContext(),PlaceSelectionActivity.class);//Default Activity
                     overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                     a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     //getApplicationContext().startActivity(a);
@@ -667,17 +652,6 @@ int countofDb;
     }
 
 
-       /* new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-            }
-        }, SPLASH_TIME_OUT);*/
-
-
-
-    /**
-     * Written by : Touhid
-     */
     private void saveCategoryList(JSONArray categoryArray) {
         CategoryTable catTable = new CategoryTable(OpeningActivity.this);
         catTable.dropTable();
@@ -752,6 +726,8 @@ int countofDb;
             }
 
 
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -805,28 +781,28 @@ int countofDb;
     private void SaveEntertainmentData(JSONObject jsonObject, int i) {
         EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew= new EntertainmentServiceProviderTableNew(OpeningActivity.this);
         //entertainmentServiceProviderTableNew.dropTable();
-            try {
-                EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
-                entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
+        try {
+            EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
+            entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
 
-                if (jsonObject.has("rspot_details"))
+            if (jsonObject.has("rspot_details"))
+            {
+                JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
+                int rspot_detailsSize=rspot_details.length();
+
+
+                for (int v=0;v<rspot_detailsSize;v++)
                 {
-                    JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
-                    int rspot_detailsSize=rspot_details.length();
+                    JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
+                    Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
 
-
-                    for (int v=0;v<rspot_detailsSize;v++)
-                    {
-                        JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
-                        Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
-
-                    }
                 }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
     }
@@ -850,230 +826,16 @@ int countofDb;
 
 
 
-    private void saveSubCategoryList(JSONArray subCategoryArray) {
-        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
-        subCatTable.dropTable();
-        int subCatCount = subCategoryArray.length();
-        for (int i = 0; i < subCatCount; i++) {
-            try {
-                JSONObject jo = subCategoryArray.getJSONObject(i);
-                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
-                subCatTable.insertItem(si);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-        si2=subCatTable.getAllSubCategories(1);
-        si2.size();
-    }
 
 
 
 
 
-
-    private void saveEducationServiceProvider(JSONArray educationServiceProvider) {
-        EducationServiceProviderTable educationServiceProviderTable = new EducationServiceProviderTable(OpeningActivity.this);
-        educationServiceProviderTable.dropTable();
-        EducationFeeTable educationFeeTable = new EducationFeeTable(OpeningActivity.this);
-        EducationCourseTable educationCourseTable = new EducationCourseTable(OpeningActivity.this);
-        educationCourseTable.dropTable();
-        educationFeeTable.dropTable();
-        EducationCourseItem Eci =null;
-        EducationFeeItem Etf=null;
-        EducationServiceProviderItem et=null;
-        int eduServiceProviderCount = educationServiceProvider.length();
-        for (int i = 0; i < eduServiceProviderCount; i++) {
-            try {
-                JSONObject jo = educationServiceProvider.getJSONObject(i);
-                 et = EducationServiceProviderItem.parseEducationServiceProviderItem(jo);
-                educationServiceProviderTable.insertItem(et);
-
-                if(jo.has("EducationServiceProviderCourse"))
-                {
-                    JSONArray eduCourse = jo.getJSONArray("EducationServiceProviderCourse");
-                    for( int k=0;k<eduCourse.length();k++)
-                    {
-                        JSONObject joesCourse= eduCourse.getJSONObject(k);
-
-                        Eci = EducationCourseItem.parseEducationCourseItem(joesCourse);
-                        educationCourseTable.insertItem(Eci);
-
-                    }
-
-                }
-                if(jo.has("EduExamFees"))
-                {
-                    JSONArray eduExamFees = jo.getJSONArray("EduExamFees");
-
-                    for( int j=0;j<eduExamFees.length();j++)
-                    {
-                        JSONObject joes= eduExamFees.getJSONObject(j);
-
-                        Etf = EducationFeeItem.parseEducationFeeItem(joes);
-                        educationFeeTable.insertItem(Etf);
-
-                    }
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        countofDb++;
-    }
     /**
      * Written by : arafat
      */
-    private void saveHealthServiceProvider(JSONArray healthServiceProvider) {
-        HealthServiceProviderTable healthServiceProviderTable = new HealthServiceProviderTable(OpeningActivity.this);
-        healthServiceProviderTable.dropTable();
-        HealthVaccinesTable healthVaccinesTable = new  HealthVaccinesTable(OpeningActivity.this);
-        healthVaccinesTable.dropTable();
-        HealthSpecialistTable healthSpecialistTable  = new  HealthSpecialistTable (OpeningActivity.this);
-        healthSpecialistTable.dropTable();
-        HealthPharmacyTable healthPharmacyTable = new HealthPharmacyTable(OpeningActivity.this);
-        healthPharmacyTable.dropTable();
-        int healthServiceProviderCount = healthServiceProvider.length();
-        for (int i = 0; i < healthServiceProviderCount; i++) {
-            try {
-                JSONObject jo = healthServiceProvider.getJSONObject(i);
-                HealthServiceProviderItem et = HealthServiceProviderItem.parseHealthServiceProviderItem(jo);
-               // healthServiceProviderTable.insertItemHealth(et);
-
-                if(jo.has("specialist"))
-                {
-                    JSONArray specialist = jo.getJSONArray("specialist");
-
-                    for( int m=0;m<specialist.length();m++)
-                    {
-                        JSONObject joes= specialist.getJSONObject(m);
-
-                        HealthSpecialistItem ets =  HealthSpecialistItem.parseHealthSpecialistItem(joes);
-                        healthSpecialistTable.insertItemHealth(ets);
-
-                    }
-
-                }
-                if(jo.has("vaccine"))
-                {
-                    JSONArray vaccine = jo.getJSONArray("vaccine");
-
-                    for( int n=0;n<vaccine.length();n++)
-                    {
-                        JSONObject joes= vaccine.getJSONObject(n);
-
-                        HealthVaccinesItem etd =  HealthVaccinesItem.parseHealthVaccinesItem(joes);
-                        healthVaccinesTable.insertItemHealth(etd);
-
-                    }
-
-                }
-                if(jo.has("pharmacy"))
-                {
-                    JSONArray pharmacy = jo.getJSONArray("pharmacy");
-
-                    for( int k=0;k<pharmacy.length();k++)
-                    {
-                        JSONObject joes= pharmacy.getJSONObject(k);
-                        HealthPharmacyItem etl = HealthPharmacyItem.parseHealthPharmacyItem(joes);
-                        healthPharmacyTable.insertItemHealthPharmacy(etl);
-
-                    }
-
-                }
 
 
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
-    private void saveEntertainmentServiceProvider(JSONArray entertainmentServiceProvider) {
-        EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(OpeningActivity.this);
-        entertainmentServiceProviderTable.dropTable();
-        EntertainmentBookTable entertainmentBookTable = new EntertainmentBookTable(OpeningActivity.this);
-        entertainmentBookTable.dropTable();
-        EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(OpeningActivity.this);
-        entertainmentFieldTable.dropTable();
-        EntertainmentTheatreTable entertainmentTheatreTable = new EntertainmentTheatreTable(OpeningActivity.this);
-        entertainmentTheatreTable.dropTable();
-        EntertainmentFitnessTable entertainmentFitnessTable = new EntertainmentFitnessTable(OpeningActivity.this);
-        entertainmentFitnessTable.dropTable();
-        int entServiceProviderCount = entertainmentServiceProvider.length();
-        for (int i = 0; i < entServiceProviderCount; i++) {
-            try {
-                JSONObject jo = entertainmentServiceProvider.getJSONObject(i);
-                EntertainmentServiceProviderItem et = EntertainmentServiceProviderItem.parseEntertainmentServiceProviderItem(jo);
-                entertainmentServiceProviderTable.insertItem(et);
-
-
-                if(jo.has("EntFitnessBeauty"))
-                {
-                    JSONArray EntFitnessBeauty = jo.getJSONArray("EntFitnessBeauty");
-
-                    for( int m=0;m<EntFitnessBeauty.length();m++)
-                    {
-                        JSONObject joes= EntFitnessBeauty.getJSONObject(m);
-                        EntertainmentFitnessItem ets = EntertainmentFitnessItem.parseEntertainmentFitnessItem(joes);
-                        entertainmentFitnessTable.insertItem(ets);
-
-                    }
-
-                }
-
-                if(jo.has("EntBookShop"))
-                {
-                    JSONArray EntBookShop = jo.getJSONArray("EntBookShop");
-                    for( int j=0;j<EntBookShop.length();j++)
-                    {
-                        JSONObject joes= EntBookShop.getJSONObject(j);
-                        EntertainmentBookShopItem ets = EntertainmentBookShopItem.parseEntertainmentBookShopItem(joes);
-                        entertainmentBookTable.insertItem(ets);
-
-                    }
-
-                }
-
-                if(jo.has("EntField"))
-                {
-                    JSONArray EntField = jo.getJSONArray("EntField");
-                    for( int k=0;k<EntField.length();k++)
-                    {
-                        JSONObject joes= EntField.getJSONObject(k);
-                        EntertainmentFieldItem ets = EntertainmentFieldItem.parseEntertainmentFieldItem(joes);
-                        entertainmentFieldTable.insertItem(ets);
-
-                    }
-
-
-                }
-
-                if(jo.has("EntTheatre"))
-                {
-                    JSONArray EntTheatre = jo.getJSONArray("EntTheatre");
-                    for( int l=0;l<EntTheatre.length();l++)
-                    {
-                        JSONObject joes= EntTheatre.getJSONObject(l);
-                        EntertainmentTheatreItem etc = EntertainmentTheatreItem.parseEntertainmentTheatreItem(joes);
-                        entertainmentTheatreTable.insertItem(etc);
-
-                    }
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
     private void savenewEdu(JSONArray edu ) {
         EducationNewTable educationNewTable= new EducationNewTable(OpeningActivity.this);
         EducationResultDetailsTable educationResultDetailsTable= new EducationResultDetailsTable(OpeningActivity.this);
@@ -1130,6 +892,7 @@ int countofDb;
                     }
 
                 }
+
 
 
             } catch (JSONException e) {
@@ -1216,51 +979,9 @@ int countofDb;
         }
 
     }
-    private void saveLegalaidServiceProvider(JSONArray legalaidServiceProvider) {
-        LegalAidServiceProviderTable legalAidServiceProviderTable = new LegalAidServiceProviderTable(OpeningActivity.this);
-        legalAidServiceProviderTable.dropTable();
-        int legalaidServiceProviderCount = legalaidServiceProvider.length();
-        LegalAidtypeServiceProviderSalishiTable legalAidtypeServiceProviderSalishiTable = new LegalAidtypeServiceProviderSalishiTable(OpeningActivity.this);
-        legalAidtypeServiceProviderSalishiTable.dropTable();
-        LegalAidtypeServiceProviderLegalAdviceTable legalAidtypeServiceProviderLegalAdviceTable = new LegalAidtypeServiceProviderLegalAdviceTable(OpeningActivity.this);
-        legalAidtypeServiceProviderLegalAdviceTable.dropTable();
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = legalaidServiceProvider.getJSONObject(i);
-                LegalAidServiceProviderItem et = LegalAidServiceProviderItem.parseLegalAidServiceProviderItem(jo);
-                legalAidServiceProviderTable.insertItem(et);
 
-                if(jo.has("LegalAdvice"))
-                {
-                    JSONArray LegalAdvice = jo.getJSONArray("LegalAdvice");
-                    for( int j=0;j<LegalAdvice.length();j++)
-                    {
-                        JSONObject joes= LegalAdvice.getJSONObject(j);
-                        LegalAidLegalAdviceItem lasi = LegalAidLegalAdviceItem.parseLegalAidLegalAdviceItem(joes);
-                        legalAidtypeServiceProviderLegalAdviceTable.insertItem(lasi);
 
-                    }
 
-                }
-                if(jo.has("Salishi"))
-                {
-                    JSONArray Salishi = jo.getJSONArray("Salishi");
-                    for( int j=0;j<Salishi.length();j++)
-                    {
-                        JSONObject joes= Salishi.getJSONObject(j);
-                        LegalAidSalishiItem legalAidSalishiItem = LegalAidSalishiItem.parseLegalAidSalishiItem(joes);
-                        legalAidtypeServiceProviderSalishiTable.insertItem(legalAidSalishiItem);
-
-                    }
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
 
     private void savesubcat(JSONArray subcat ) {
         SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(OpeningActivity.this);
@@ -1280,8 +1001,53 @@ int countofDb;
                 e.printStackTrace();
             }
         }
+
+
+
+
+    }
+    private void savesubcat2(JSONArray subcat ) {
+        SubCategoryTable subCategoryTable=new SubCategoryTable(OpeningActivity.this);
+
+
+
+        subCategoryTable.dropTable();
+
+        int legalaidServiceProviderCount = subcat.length();
+
+        for (int i = 0; i < legalaidServiceProviderCount; i++) {
+            try {
+                JSONObject jo = subcat.getJSONObject(i);
+                SubCategoryItem et = SubCategoryItem.parseSubCategoryItem(jo);
+                subCategoryTable.insertItem(et);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
     }
 
+    private void saveSubCategoryList(JSONArray subCategoryArray) {
+        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
+        subCatTable.dropTable();
+        int subCatCount = subCategoryArray.length();
+        for (int i = 0; i < subCatCount; i++) {
+            try {
+                JSONObject jo = subCategoryArray.getJSONObject(i);
+                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
+                subCatTable.insertItem(si);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        countofDb++;
+        si2=subCatTable.getAllSubCategories(1);
+        si2.size();
+    }
 
     private void saveFinancialServiceProvider(JSONArray financialServiceProvider) {
         FinancialServiceProviderTable financialServiceProviderTable = new FinancialServiceProviderTable(OpeningActivity.this);
@@ -1438,27 +1204,11 @@ int countofDb;
 //            startActivity(i);
 //
 //        } else {
-        pd.dismiss();
-        SharedPreferences settings = getSharedPreferences("prefs", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("KValue", countofDb);
-        editor.commit();
-        Log.e("open2",String.valueOf(countofDb));
-        Intent a = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);//Default Activity
-        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-        //Intent a = new Intent(OpeningActivity.this, FeedbackActivity.class);
-        startActivity(a);
+
 
         //    }
 
     }
-
-
-
-
-
-
-
 
 
     @Override
@@ -1510,7 +1260,15 @@ int countofDb;
         inFromRight.setInterpolator(new AccelerateInterpolator());
         return inFromRight;
     }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+            alertDialog = null;
+        }
 
+    }
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub

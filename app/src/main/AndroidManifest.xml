@@ -39,6 +39,11 @@
             android:name=".activity.OpeningActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light" />
+
+        <activity
+            android:name=".activity.PlaceSelectionActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light" />
         <activity
             android:name=".activity.NewEmergency"
             android:screenOrientation="portrait"
@@ -47,10 +52,6 @@
             android:name=".activity.PhoneRegActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light" />
-        <activity
-            android:name=".activity.SearchActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.Information_UpdateActivity"
             android:screenOrientation="portrait"
