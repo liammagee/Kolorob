@@ -13,13 +13,16 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+<<<<<<< HEAD
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+=======
+import android.graphics.drawable.AnimationDrawable;
+>>>>>>> master
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -33,9 +36,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -52,19 +52,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.database.CategoryTable;
 import demo.kolorob.kolorobdemoversion.database.DatabaseHelper;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationCourseTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationFeeTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationNewTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationResultDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTrainingDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTuitionDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentBookTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFieldTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFitnessTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentTheatreTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmetTypeTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialBillsTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialInsuranceTable;
@@ -79,37 +71,22 @@ import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTransactionTa
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTuitionTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentNewTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentServiceDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthPharmacyTable;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTableDetails;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccineTableDetails;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccinesTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidtypeServiceProviderLegalAdviceTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidtypeServiceProviderSalishiTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTableNew;
 import demo.kolorob.kolorobdemoversion.helpers.AppDialogManager;
 import demo.kolorob.kolorobdemoversion.interfaces.RetryCallBackForNoInternet;
 import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
 import demo.kolorob.kolorobdemoversion.model.CategoryItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationCourseItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationFeeItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationResultItemNew;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTrainingDetailsItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTuitionDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentBookShopItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFieldItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFitnessItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTheatreItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTypeItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialBillsItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialInsuranceItem;
@@ -124,17 +101,10 @@ import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTransactionItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTuitionItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentNewItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentServiceDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthPharmacyItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItemDetails;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccineItemDetails;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccinesItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LeagalAidDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidLegalAdviceItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidSalishiItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItem;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItemNew;
@@ -153,12 +123,16 @@ public class OpeningActivity extends Activity {
     public static final String DB_NAME = "kolorob.db";
     private final static int SPLASH_TIME_OUT = 500;
     private static final int INTERNET_PERMISSION = 1;
+    String user="kolorobapp";
+    String pass="2Jm!4jFe3WgBZKEN";
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
+    AlertDialog alertDialog;
     private GoogleApiClient client;
+    private AnimationDrawable frameAnimation;
     private Context ctx;
     public static final String EDU_PROVIDER_TABLE = "edu_provider";
     public  SQLiteDatabase db3;
@@ -178,7 +152,7 @@ public class OpeningActivity extends Activity {
     public int getCountofDb() {
         return countofDb;
     }
-   // ArrayList<Trialholder>holdertrial=new ArrayList<>();
+    // ArrayList<Trialholder>holdertrial=new ArrayList<>();
     public void setCountofDb(int countofDb) {
         this.countofDb = countofDb;
     }
@@ -192,89 +166,6 @@ public class OpeningActivity extends Activity {
     View view=null;
 
 
-    public RefreshHandler mRedrawHandler = new RefreshHandler();
-
-    class RefreshHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            OpeningActivity.this.setImage();
-        }
-
-        public void sleep(long delayMillis) {
-            this.removeMessages(0);
-            sendMessageDelayed(obtainMessage(0), delayMillis);
-        }
-    };
-
-    private void setImage() {
-        try {
-            in++;
-
-//            if(in == 5) {
-//                rotateImage.setBackgroundResource(R.drawable.glow);
-//                Animation startRotateAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.glow_animation);
-//                rotateImage.startAnimation(startRotateAnimation);
-//            }
-
-        } catch (final Exception e) {
-
-
-        }
-
-        if(in ==1){
-            rotateImage.setBackgroundResource(R.drawable.a1);
-            System.out.println("-----okkkkk1--------");
-
-        }
-        else if(in ==2){
-            rotateImage.setBackgroundResource(R.drawable.a3);
-            System.out.println("-----okkkkk2--------");
-
-        }
-        else if(in ==3){
-            rotateImage.setBackgroundResource(R.drawable.a7);
-            System.out.println("-----okkkkk--------");
-
-        }
-        else if(in ==3){
-            rotateImage.setBackgroundResource(R.drawable.a7);
-            System.out.println("-----okkkkk7--------");
-
-        }
-        else if(in ==4){
-            rotateImage.setBackgroundResource(R.drawable.a12);
-            System.out.println("-----okkkkk12--------");
-
-        }
-        else if(in ==5){
-            rotateImage.setBackgroundResource(R.drawable.a15);
-            System.out.println("-----okkkkk15--------");
-
-        }
-        else if(in ==6){
-            rotateImage.setBackgroundResource(R.drawable.a16);
-            System.out.println("-----okkkkk16-------");
-
-        }
-        else if(in ==7){
-            rotateImage.setBackgroundResource(R.drawable.a18);
-            System.out.println("-----okkkkk18--------");
-
-        }
-
-        else if(in == 8){
-           // rotateImage.setBackgroundResource(R.drawable.glow);
-            rotateImage.setBackgroundResource(R.drawable.a18);
-            startActivity(new Intent(OpeningActivity.this, PlaceChoiceActivity2.class));
-            mRedrawHandler.removeMessages(0);
-            finish();
-            System.out.println("-----okkkkk74--------" );
-            // in=0;
-        }
-
-        mRedrawHandler.sleep(500);
-
-    }
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -287,35 +178,12 @@ public class OpeningActivity extends Activity {
 
         ImageView kolorobLogo = (ImageView) findViewById(R.id.iv_kolorob_logo);//need to add bengali
 
+
         context = this;
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         width=displayMetrics.widthPixels;
         height=displayMetrics.heightPixels;
-
-
-//        LinearLayout boy = (LinearLayout) findViewById(R.id.boy);
-//        LinearLayout girl = (LinearLayout) findViewById(R.id.girl);
-
-//        RelativeLayout.LayoutParams kolorob_logo = new RelativeLayout.LayoutParams(width, height / 3);
-//        RelativeLayout.LayoutParams boy_layout = new RelativeLayout.LayoutParams(width / 2, (2 * height) / 3);
-//        RelativeLayout.LayoutParams girl_layout = new RelativeLayout.LayoutParams(width / 2, (2 * height) / 3 - height / 15);
-//
-//        boy_layout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-
-
-//        girl_layout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//        girl_layout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//
-//        boy.setLayoutParams(boy_layout);
-//        girl.setLayoutParams(girl_layout);
-//
-//        boy.bringToFront();
-//        girl.bringToFront();
-
-//        kolorob_logo.setMargins(0, 15, 0, 0);
-//        kolorobLogo.setLayoutParams(kolorob_logo);
-
 
         SharedPreferences settings = getSharedPreferences("prefs", 0);
         firstRun = settings.getBoolean("firstRun", false);
@@ -326,8 +194,9 @@ public class OpeningActivity extends Activity {
             editor.commit();
 
             if(!AppUtils.isNetConnected(getApplicationContext())) {
-                AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+                alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.setMessage(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
@@ -347,23 +216,23 @@ public class OpeningActivity extends Activity {
 
 
             {
-                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
-                pd.setIndeterminate(true);
-                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
+//                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
+//                pd.setIndeterminate(true);
+//                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
                 LoadData();
 
-                pd.dismiss();
+                //   pd.dismiss();
             }
         } else {
             AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
             alertDialog.setTitle("আপনি কি তথ্য হালনাগাদ করতে চান? ");
-
+            alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "না",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             Log.e("open4",String.valueOf(getCountofDb()));
-                            Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                            Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                             startActivity(i);
 
@@ -382,9 +251,9 @@ public class OpeningActivity extends Activity {
                                 SharedPreferences.Editor editor = settings.edit();
                                 editor.putInt("KValue", countofDb);
                                 editor.commit();
-                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
-                                pd.setIndeterminate(true);
-                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
+//                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
+//                                pd.setIndeterminate(true);
+//                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
 
                                 LoadData();
                                 // Hack to get things working
@@ -393,14 +262,16 @@ public class OpeningActivity extends Activity {
 
                             } else {
                                 AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+
                                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                                alertDialog.setCanceledOnTouchOutside(false);
                                 alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।  ");
                                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
                                                 Log.e("open3",String.valueOf(countofDb));
-                                                Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                                                Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                                                 overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                                 startActivity(i);
                                                 dialog.dismiss();
@@ -415,6 +286,7 @@ public class OpeningActivity extends Activity {
                     });
 
             alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(false);
         }
     }
     public void LoadData() {
@@ -422,7 +294,6 @@ public class OpeningActivity extends Activity {
         /*
         @@@@ arafat, you have to control wheel from here
         moving wheel while loading data into local database
-
          */
         final OpeningActivity activity = this;
         rotateImage = (ImageView) findViewById(R.id.rotate_image);
@@ -445,18 +316,37 @@ public class OpeningActivity extends Activity {
         };
         handler.postDelayed(runner, 1000);
 
-//        setImage();
-
-
-        if ((AppUtils.isNetConnected(getApplicationContext())) && (ContextCompat.checkSelfPermission(activity, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED)
+        if ((AppUtils.isNetConnected(getApplicationContext()) )&&(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED )
                 ) {
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories", new VolleyApiCallback() {
+
+
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+                @Override
+                public void onResponse(int status, String apiContent) {
+                    if (status == AppConstants.SUCCESS_CODE) {
+                    try {
+                        JSONArray allData=new JSONArray(apiContent);
+                        HealthDatSize=allData.length();
+                        for(int i=0;i<HealthDatSize;i++)
+                        {
+                            JSONObject jsonObject=allData.getJSONObject(i);
+                            SaveHealthtData(jsonObject);
+
+                        }
+
+                        //   saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
 
-                                try {
 
+                                try {
                                     JSONArray jo = new JSONArray(apiContent);
                                     new SaveCategoryListTask(activity).execute(jo);
 
@@ -467,16 +357,13 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-//
-//
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
 
-
                                 try {
+
                                     JSONArray jo = new JSONArray(apiContent);
 
                                     new SaveSubCategoryNewListTask(activity).execute(jo);
@@ -491,10 +378,15 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education", new VolleyApiCallback() {
+//
+//
+
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
+
+
                                 try {
                                     JSONArray jo = new JSONArray(apiContent);
 
@@ -508,7 +400,7 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "get_sub_categories", new VolleyApiCallback() {
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -526,9 +418,9 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-//
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment", new VolleyApiCallback() {
+
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                 @Override
                 public void onResponse(int status, String apiContent) {
 
@@ -544,7 +436,7 @@ public class OpeningActivity extends Activity {
 
                 }
             });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -560,7 +452,7 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -578,7 +470,7 @@ public class OpeningActivity extends Activity {
             );
 
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             try {
@@ -593,20 +485,6 @@ public class OpeningActivity extends Activity {
                     }
             );
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health", new VolleyApiCallback() {
-                @Override
-                public void onResponse(int status, String apiContent) {
-                    try {
-
-                        JSONArray allData = new JSONArray(apiContent);
-                        new SaveHealthtDataTask(activity).execute(allData);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
 
 
         } else {
@@ -648,7 +526,6 @@ public class OpeningActivity extends Activity {
 
 
     }
-
 
 
     @Override
@@ -856,6 +733,19 @@ public class OpeningActivity extends Activity {
         public SaveHealthtDataTask(Context ctx) {
             super(ctx);
         }
+=======
+    private void SaveEntertainmentData(JSONObject jsonObject, int i) {
+        EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew= new EntertainmentServiceProviderTableNew(OpeningActivity.this);
+        //entertainmentServiceProviderTableNew.dropTable();
+        try {
+            EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
+            entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
+
+            if (jsonObject.has("rspot_details"))
+            {
+                JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
+                int rspot_detailsSize=rspot_details.length();
+>>>>>>> master
 
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray allData = jsonArrays[0];
@@ -880,6 +770,7 @@ public class OpeningActivity extends Activity {
                         JSONArray health_specialist_details = jsonObject.getJSONArray("health_specialist_details");
                         int HealthVaccineDataSize = health_specialist_details.length();
 
+<<<<<<< HEAD
 
                         for (int v = 0; v < HealthVaccineDataSize; v++) {
                             JSONObject healthSpecialistItem = health_specialist_details.getJSONObject(v);
@@ -895,6 +786,15 @@ public class OpeningActivity extends Activity {
             }
             return new Long(0);
         }
+=======
+                for (int v=0;v<rspot_detailsSize;v++)
+                {
+                    JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
+                    Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
+
+                }
+            }
+>>>>>>> master
 
         private void SaveSpecialistData(JSONObject jsonObject,int foreign_key)
         {
@@ -903,9 +803,9 @@ public class OpeningActivity extends Activity {
                 HealthSpecialistItemDetails healthSpecialistItemDetails=HealthSpecialistItemDetails.parseHealthSpecialistItem(jsonObject,foreign_key);
                 healthVaccineTableDetails.insertItemHealth(healthSpecialistItemDetails);
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         }
 
@@ -917,6 +817,7 @@ public class OpeningActivity extends Activity {
                 healthVaccineTableDetails.insertItemHealth(healthVaccineItemDetails);
 
 
+<<<<<<< HEAD
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -930,6 +831,8 @@ public class OpeningActivity extends Activity {
         public SaveEntertainmentDataTask(Context ctx) {
             super(ctx);
         }
+=======
+>>>>>>> master
 
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray allData = jsonArrays[0];
@@ -943,6 +846,7 @@ public class OpeningActivity extends Activity {
                     EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
                     entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
 
+<<<<<<< HEAD
                     if (jsonObject.has("rspot_details"))
                     {
                         JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
@@ -1070,6 +974,24 @@ public class OpeningActivity extends Activity {
             return new Long(0);
         }
     }
+=======
+
+
+    /**
+     * Written by : arafat
+     */
+
+
+    private void savenewEdu(JSONArray edu ) {
+        EducationNewTable educationNewTable= new EducationNewTable(OpeningActivity.this);
+        EducationResultDetailsTable educationResultDetailsTable= new EducationResultDetailsTable(OpeningActivity.this);
+        EducationTrainingDetailsTable educationTrainingDetailsTable=new EducationTrainingDetailsTable(OpeningActivity.this);
+        EducationTuitionDetailsTable educationTuitionDetailsTable=new EducationTuitionDetailsTable(OpeningActivity.this);
+        educationNewTable.dropTable();
+        educationResultDetailsTable.dropTable();
+        educationTrainingDetailsTable.dropTable();
+        educationTuitionDetailsTable.dropTable();
+>>>>>>> master
 
 
     class SaveLegaltDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
@@ -1115,6 +1037,7 @@ public class OpeningActivity extends Activity {
             try {
                 LeagalAidDetailsItem leagalAidDetailsItem=LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject,foreign_key);
                 legalAidDetailsTable.insertItem(leagalAidDetailsItem);
+
 
 
 
@@ -1230,6 +1153,7 @@ public class OpeningActivity extends Activity {
                             HealthVaccinesItem etd =  HealthVaccinesItem.parseHealthVaccinesItem(joes);
                             healthVaccinesTable.insertItemHealth(etd);
 
+<<<<<<< HEAD
                         }
 
                     }
@@ -1242,26 +1166,102 @@ public class OpeningActivity extends Activity {
                             JSONObject joes= pharmacy.getJSONObject(k);
                             HealthPharmacyItem etl = HealthPharmacyItem.parseHealthPharmacyItem(joes);
                             healthPharmacyTable.insertItemHealthPharmacy(etl);
+=======
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+
+
+
+    private void savesubcat(JSONArray subcat ) {
+        SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(OpeningActivity.this);
+
+
+
+        subCategoryTableNew.dropTable();
+
+        int legalaidServiceProviderCount = subcat.length();
+
+        for (int i = 0; i < legalaidServiceProviderCount; i++) {
+            try {
+                JSONObject jo = subcat.getJSONObject(i);
+                SubCategoryItemNew et = SubCategoryItemNew.parseSubCategoryItem(jo);
+                subCategoryTableNew.insertItem(et);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+>>>>>>> master
 
                         }
 
                     }
 
+<<<<<<< HEAD
+=======
+    }
+    private void savesubcat2(JSONArray subcat ) {
+        SubCategoryTable subCategoryTable=new SubCategoryTable(OpeningActivity.this);
 
 
+
+        subCategoryTable.dropTable();
+>>>>>>> master
+
+
+<<<<<<< HEAD
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return new Long(-1);
                 }
+=======
+        for (int i = 0; i < legalaidServiceProviderCount; i++) {
+            try {
+                JSONObject jo = subcat.getJSONObject(i);
+                SubCategoryItem et = SubCategoryItem.parseSubCategoryItem(jo);
+                subCategoryTable.insertItem(et);
+            } catch (JSONException e) {
+                e.printStackTrace();
+>>>>>>> master
             }
             return new Long(0);
         }
+
+
+
+
     }
 
+<<<<<<< HEAD
     class SaveEntertainmentServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SaveEntertainmentServiceProviderTask(Context ctx) {
             super(ctx);
         }
+=======
+    private void saveSubCategoryList(JSONArray subCategoryArray) {
+        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
+        subCatTable.dropTable();
+        int subCatCount = subCategoryArray.length();
+        for (int i = 0; i < subCatCount; i++) {
+            try {
+                JSONObject jo = subCategoryArray.getJSONObject(i);
+                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
+                subCatTable.insertItem(si);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        countofDb++;
+        si2=subCatTable.getAllSubCategories(1);
+        si2.size();
+    }
+>>>>>>> master
 
         protected Long doInBackground(JSONArray... jsonObjects) {
             JSONArray entertainmentServiceProvider = jsonObjects[0];
@@ -1343,6 +1343,7 @@ public class OpeningActivity extends Activity {
             }
             return new Long(0);
         }
+<<<<<<< HEAD
     }
 
 
@@ -1382,6 +1383,57 @@ public class OpeningActivity extends Activity {
                             educationTuitionDetailsTable.insertItem(educationTuitionDetailsItem);
 
                         }
+=======
+
+        countofDb++;
+
+//        if (firstRun == false)//if running for first time
+//        {
+//            pd.dismiss();
+//          //  Intent i = new Intent(OpeningActivity.this, LocationAskActivity.class);
+//         //   overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+//            //Activity to be     launched For the First time
+//            // Intent i = new Intent(OpeningActivity.this, FeedbackActivity.class);//Activity to be     launched For the First time
+//            startActivity(i);
+//
+//        } else {
+
+
+        //    }
+
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
 
                     }
                     if(jo.has("result_details"))//
@@ -1404,6 +1456,35 @@ public class OpeningActivity extends Activity {
                             JSONObject joes= service_details.getJSONObject(j);
                             EducationTrainingDetailsItem educationTrainingDetailsItem = EducationTrainingDetailsItem.parseEducationTrainingDetailsItem(joes);
                             educationTrainingDetailsTable.insertItem(educationTrainingDetailsItem);
+        Animation inFromRight = new TranslateAnimation(
+                Animation.RELATIVE_TO_PARENT, +1.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f,
+                Animation.RELATIVE_TO_PARENT, 0.0f
+        );
+        inFromRight.setDuration(ANIM_INTERVAL *
+                (int) (200 *
+                        (AppConstants.CAT_LIST_LG_WIDTH_PERC
+                                - AppConstants.CAT_LIST_SM_WIDTH_PERC)
+                )
+        );
+        inFromRight.setInterpolator(new AccelerateInterpolator());
+        return inFromRight;
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+            alertDialog = null;
+        }
+
+    }
+    @Override
+    protected void onStart() {
+        // TODO Auto-generated method stub
+        slideInFromRightAnim();
+        super.onStart();
 
                         }
 
