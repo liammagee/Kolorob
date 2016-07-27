@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -128,6 +129,7 @@ public class OpeningActivity extends Activity {
     public static final String DB_NAME = "kolorob.db";
     private final static int SPLASH_TIME_OUT = 500;
     private static final int INTERNET_PERMISSION = 1;
+    private static final int NUMBER_OF_TASKS = 9;
     String user="kolorobapp";
     String pass="2Jm!4jFe3WgBZKEN";
 
@@ -329,12 +331,12 @@ public class OpeningActivity extends Activity {
         Runnable runner = new Runnable() {
             @Override
             public void run() {
-
-                if (OpeningActivity.this.countofDb >= 7) {
+                if (OpeningActivity.this.countofDb >= NUMBER_OF_TASKS) {
                     overridePendingTransition(0, 0);
                     handler.removeCallbacks(this);
                     Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
-                    startActivit    y(a);
+                    frameAnimation.stop();
+                    startActivity(a);
                     return;
                 }
                 //Create a loop
@@ -344,12 +346,12 @@ public class OpeningActivity extends Activity {
         };
         handler.postDelayed(runner, 1000);
 
-
         rotateImage = (ImageView) findViewById(R.id.rotate_image);
         rotateImage.setBackgroundResource(R.drawable.frame_animation_list);
         frameAnimation = (AnimationDrawable) rotateImage.getBackground();
         frameAnimation.setOneShot(false);
         frameAnimation.start();
+
 
         if ((AppUtils.isNetConnected(getApplicationContext()) )&&(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED )
                 ) {
@@ -421,9 +423,6 @@ public class OpeningActivity extends Activity {
                                           JSONArray jo = new JSONArray(apiContent);
 
                                           new SaveSubCategoryNewListTask(OpeningActivity.this).execute(jo);
-                                          SubCategoryTableNew subCategoryTableNew = new SubCategoryTableNew(OpeningActivity.this);
-                                          si3 = subCategoryTableNew.getAllSubCat();
-                                          si3.size();
 
 
                                       } catch (JSONException e) {
@@ -443,7 +442,7 @@ public class OpeningActivity extends Activity {
                                           JSONArray allData = new JSONArray(apiContent);
                                           new SavenewEduTask(OpeningActivity.this).execute(allData);
 
-                                          frameAnimation.stop();
+//                                          frameAnimation.stop();
 
                                       } catch (JSONException e) {
                                           e.printStackTrace();
@@ -1238,8 +1237,8 @@ public class OpeningActivity extends Activity {
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putInt("KValue", countofDb);
                 editor.commit();
-                Log.d("tasks", "Tasks remaining: " + (7 - countofDb));
-                makeToastWithShortbread("Tasks remaining: " + (7 - countofDb));
+                Log.d("tasks", "Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
+                makeToastWithShortbread("Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
             }
         }
 
@@ -1292,6 +1291,10 @@ public class OpeningActivity extends Activity {
                     return new Long(-1);
                 }
             }
+
+            si3 = subCategoryTableNew.getAllSubCat();
+            si3.size();
+
             return new Long(0);
         }
     }
