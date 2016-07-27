@@ -13,12 +13,10 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-<<<<<<< HEAD
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
-=======
 import android.graphics.drawable.AnimationDrawable;
->>>>>>> master
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,6 +36,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
@@ -56,8 +55,8 @@ import demo.kolorob.kolorobdemoversion.database.Education.EducationNewTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationResultDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTrainingDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTuitionDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmetTypeTable;
+import demo.kolorob.kolorobdemoversion.database.Entertainment.*;
+import demo.kolorob.kolorobdemoversion.database.Education.*;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialBillsTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialInsuranceTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialLoanTable;
@@ -71,9 +70,13 @@ import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTransactionTa
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTuitionTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentNewTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentServiceDetailsTable;
+import demo.kolorob.kolorobdemoversion.database.Health.HealthPharmacyTable;
+import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthServiceProviderTableNew;
+import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTableDetails;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccineTableDetails;
+import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccinesTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTableNew;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
@@ -82,11 +85,19 @@ import demo.kolorob.kolorobdemoversion.helpers.AppDialogManager;
 import demo.kolorob.kolorobdemoversion.interfaces.RetryCallBackForNoInternet;
 import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
 import demo.kolorob.kolorobdemoversion.model.CategoryItem;
+import demo.kolorob.kolorobdemoversion.model.Education.EducationCourseItem;
+import demo.kolorob.kolorobdemoversion.model.Education.EducationFeeItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationResultItemNew;
+import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTrainingDetailsItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTuitionDetailsItem;
+import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentBookShopItem;
+import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFieldItem;
+import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFitnessItem;
+import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
+import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTheatreItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTypeItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialBillsItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialInsuranceItem;
@@ -101,9 +112,13 @@ import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTransactionItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTuitionItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentNewItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentServiceDetailsItem;
+import demo.kolorob.kolorobdemoversion.model.Health.HealthPharmacyItem;
+import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
+import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItemDetails;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccineItemDetails;
+import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccinesItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LeagalAidDetailsItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItem;
@@ -114,17 +129,19 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
 
 //import demo.kolorob.kolorobdemoversion.adapters.Trialholder;
+
 /**
  * Created by Yeakub Hassan Rafi on 27-Dec-15.
- * @author mity,arafat
+ *
+ * @author mity, arafat
  */
 
 public class OpeningActivity extends Activity {
     public static final String DB_NAME = "kolorob.db";
     private final static int SPLASH_TIME_OUT = 500;
     private static final int INTERNET_PERMISSION = 1;
-    String user="kolorobapp";
-    String pass="2Jm!4jFe3WgBZKEN";
+    String user = "kolorobapp";
+    String pass = "2Jm!4jFe3WgBZKEN";
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -135,36 +152,40 @@ public class OpeningActivity extends Activity {
     private AnimationDrawable frameAnimation;
     private Context ctx;
     public static final String EDU_PROVIDER_TABLE = "edu_provider";
-    public  SQLiteDatabase db3;
+    public SQLiteDatabase db3;
     ProgressDialog pd;
-    public int height,width;
-    Boolean  firstRun;
-    private int EntDataSize,HealthDatSize;
+    public int height, width;
+    Boolean firstRun;
+    private int EntDataSize, HealthDatSize;
     private static final int ANIM_INTERVAL = 200;
     int countofDb;
-    ArrayList<SubCategoryItem>si2=new ArrayList<>();
-    ArrayList<SubCategoryItemNew>si3=new ArrayList<>();
+    ArrayList<SubCategoryItem> si2 = new ArrayList<>();
+    ArrayList<SubCategoryItemNew> si3 = new ArrayList<>();
 
     // LM's variables
     private Toast t = null;
     static int countOfDBLocal = 0;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client2;
 
     public int getCountofDb() {
         return countofDb;
     }
+
     // ArrayList<Trialholder>holdertrial=new ArrayList<>();
     public void setCountofDb(int countofDb) {
         this.countofDb = countofDb;
     }
 
 
-
     Context context;
     ImageView rotateImage;
     private Handler handler;
     int in = 0;
-    View view=null;
-
+    View view = null;
 
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -182,8 +203,8 @@ public class OpeningActivity extends Activity {
         context = this;
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-        width=displayMetrics.widthPixels;
-        height=displayMetrics.heightPixels;
+        width = displayMetrics.widthPixels;
+        height = displayMetrics.heightPixels;
 
         SharedPreferences settings = getSharedPreferences("prefs", 0);
         firstRun = settings.getBoolean("firstRun", false);
@@ -193,7 +214,7 @@ public class OpeningActivity extends Activity {
             editor.putBoolean("firstRun", true);
             editor.commit();
 
-            if(!AppUtils.isNetConnected(getApplicationContext())) {
+            if (!AppUtils.isNetConnected(getApplicationContext())) {
                 alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
                 alertDialog.setCanceledOnTouchOutside(false);
@@ -210,9 +231,7 @@ public class OpeningActivity extends Activity {
                             }
                         });
                 alertDialog.show();
-            }
-            else
-
+            } else
 
 
             {
@@ -231,7 +250,7 @@ public class OpeningActivity extends Activity {
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
-                            Log.e("open4",String.valueOf(getCountofDb()));
+                            Log.e("open4", String.valueOf(getCountofDb()));
                             Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                             startActivity(i);
@@ -246,7 +265,7 @@ public class OpeningActivity extends Activity {
                             dialog.dismiss();
 
                             if (AppUtils.isNetConnected(getApplicationContext())) {
-                                countofDb = 0 ;
+                                countofDb = 0;
                                 SharedPreferences settings = getSharedPreferences("prefs", 0);
                                 SharedPreferences.Editor editor = settings.edit();
                                 editor.putInt("KValue", countofDb);
@@ -270,7 +289,7 @@ public class OpeningActivity extends Activity {
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
-                                                Log.e("open3",String.valueOf(countofDb));
+                                                Log.e("open3", String.valueOf(countofDb));
                                                 Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                                                 overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                                 startActivity(i);
@@ -288,7 +307,11 @@ public class OpeningActivity extends Activity {
             alertDialog.show();
             alertDialog.setCanceledOnTouchOutside(false);
         }
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client2 = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
     public void LoadData() {
 
         /*
@@ -316,31 +339,26 @@ public class OpeningActivity extends Activity {
         };
         handler.postDelayed(runner, 1000);
 
-        if ((AppUtils.isNetConnected(getApplicationContext()) )&&(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED )
+        if ((AppUtils.isNetConnected(getApplicationContext())) && (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED)
                 ) {
 
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                 @Override
                 public void onResponse(int status, String apiContent) {
                     if (status == AppConstants.SUCCESS_CODE) {
-                    try {
-                        JSONArray allData=new JSONArray(apiContent);
-                        HealthDatSize=allData.length();
-                        for(int i=0;i<HealthDatSize;i++)
-                        {
-                            JSONObject jsonObject=allData.getJSONObject(i);
-                            SaveHealthtData(jsonObject);
+                        try {
 
+                            JSONArray allData = new JSONArray(apiContent);
+                            new SaveHealthtDataTask(activity).execute(allData);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-
-                        //   saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
                 }
             });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -357,7 +375,7 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -381,7 +399,7 @@ public class OpeningActivity extends Activity {
 //
 //
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -400,7 +418,7 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -420,7 +438,7 @@ public class OpeningActivity extends Activity {
             );
 
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                 @Override
                 public void onResponse(int status, String apiContent) {
 
@@ -428,7 +446,7 @@ public class OpeningActivity extends Activity {
                     try {
 
                         JSONArray allData = new JSONArray(apiContent);
-                        new SaveEntertainmentDataTask(activity).execute(allData );
+                        new SaveEntertainmentDataTask(activity).execute(allData);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -436,7 +454,7 @@ public class OpeningActivity extends Activity {
 
                 }
             });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -452,7 +470,7 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
@@ -470,7 +488,7 @@ public class OpeningActivity extends Activity {
             );
 
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username="+user+"&password="+pass+" ", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             try {
@@ -484,7 +502,6 @@ public class OpeningActivity extends Activity {
                         }
                     }
             );
-
 
 
         } else {
@@ -585,12 +602,29 @@ public class OpeningActivity extends Activity {
         // TODO Auto-generated method stub
         slideInFromRightAnim();
         super.onStart();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client2.connect();
 
         System.out.println("----main activity---onStart---");
 
 
         overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Opening Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://demo.kolorob.kolorobdemoversion.activity/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client2, viewAction);
     }
+
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -626,6 +660,26 @@ public class OpeningActivity extends Activity {
             t.show();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Opening Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://demo.kolorob.kolorobdemoversion.activity/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client2, viewAction);
+        client2.disconnect();
+    }
+
 
     // ASYNC TASKS
     abstract class GenericSaveDBTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
@@ -637,14 +691,14 @@ public class OpeningActivity extends Activity {
 
         @Override
         protected void onPostExecute(Result result) {
-            if (((Long)result).longValue() == 0.0) { // Means the task is successful
+            if (((Long) result).longValue() == 0.0) { // Means the task is successful
                 countofDb++;
                 SharedPreferences settings = getSharedPreferences("prefs", 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putInt("KValue", countofDb);
                 editor.commit();
-                Log.d("tasks", "Tasks remaining: " + ( 7 - countofDb ) );
-                makeToastWithShortbread("Tasks remaining: " + ( 7 - countofDb ) );
+                Log.d("tasks", "Tasks remaining: " + (7 - countofDb));
+                makeToastWithShortbread("Tasks remaining: " + (7 - countofDb));
             }
         }
 
@@ -682,7 +736,7 @@ public class OpeningActivity extends Activity {
 
         protected Long doInBackground(JSONArray... categoryArrays) {
             JSONArray subcat = categoryArrays[0];
-            SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(OpeningActivity.this);
+            SubCategoryTableNew subCategoryTableNew = new SubCategoryTableNew(OpeningActivity.this);
             subCategoryTableNew.dropTable();
 
             int legalaidServiceProviderCount = subcat.length();
@@ -728,24 +782,28 @@ public class OpeningActivity extends Activity {
         }
     }
 
+//    private void SaveEntertainmentData(JSONObject jsonObject, int i) {
+//        EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew = new EntertainmentServiceProviderTableNew(OpeningActivity.this);
+//        //entertainmentServiceProviderTableNew.dropTable();
+//        try {
+//            EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew = EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject, i);
+//            entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
+//
+//            if (jsonObject.has("rspot_details")) {
+//                JSONArray rspot_details = jsonObject.getJSONArray("rspot_details");
+//                int rspot_detailsSize = rspot_details.length();
+//    for (int v = 0; v < rspot_detailsSize; v++) {
+//        JSONObject rspot_detailsSizeItem = rspot_details.getJSONObject(v);
+//        Saverspot_detailsData(rspot_detailsSizeItem, jsonObject.getInt("id"));
+//
+//    }
+//}
 
     class SaveHealthtDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SaveHealthtDataTask(Context ctx) {
             super(ctx);
         }
-=======
-    private void SaveEntertainmentData(JSONObject jsonObject, int i) {
-        EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew= new EntertainmentServiceProviderTableNew(OpeningActivity.this);
-        //entertainmentServiceProviderTableNew.dropTable();
-        try {
-            EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
-            entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
 
-            if (jsonObject.has("rspot_details"))
-            {
-                JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
-                int rspot_detailsSize=rspot_details.length();
->>>>>>> master
 
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray allData = jsonArrays[0];
@@ -753,7 +811,7 @@ public class OpeningActivity extends Activity {
             HealthDatSize = allData.length();
 
             for (int i = 0; i < HealthDatSize; i++) {
-                try{
+                try {
                     JSONObject jsonObject = allData.getJSONObject(i);
                     HealthServiceProviderItemNew healthServiceProviderItemNew = HealthServiceProviderItemNew.parseHealthServiceProviderItem(jsonObject);
                     healthServiceProviderTableNew.insertItemHealth(healthServiceProviderItemNew);
@@ -770,8 +828,6 @@ public class OpeningActivity extends Activity {
                         JSONArray health_specialist_details = jsonObject.getJSONArray("health_specialist_details");
                         int HealthVaccineDataSize = health_specialist_details.length();
 
-<<<<<<< HEAD
-
                         for (int v = 0; v < HealthVaccineDataSize; v++) {
                             JSONObject healthSpecialistItem = health_specialist_details.getJSONObject(v);
                             SaveSpecialistData(healthSpecialistItem, jsonObject.getInt("id"));
@@ -779,45 +835,32 @@ public class OpeningActivity extends Activity {
                     }
 
 
-                }catch(JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                     return new Long(-1);
                 }
             }
             return new Long(0);
         }
-=======
-                for (int v=0;v<rspot_detailsSize;v++)
-                {
-                    JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
-                    Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
 
-                }
-            }
->>>>>>> master
-
-        private void SaveSpecialistData(JSONObject jsonObject,int foreign_key)
-        {
-            HealthSpecialistTableDetails healthVaccineTableDetails= new HealthSpecialistTableDetails(OpeningActivity.this);
+        private void SaveSpecialistData(JSONObject jsonObject, int foreign_key) {
+            HealthSpecialistTableDetails healthVaccineTableDetails = new HealthSpecialistTableDetails(OpeningActivity.this);
             try {
-                HealthSpecialistItemDetails healthSpecialistItemDetails=HealthSpecialistItemDetails.parseHealthSpecialistItem(jsonObject,foreign_key);
+                HealthSpecialistItemDetails healthSpecialistItemDetails = HealthSpecialistItemDetails.parseHealthSpecialistItem(jsonObject, foreign_key);
                 healthVaccineTableDetails.insertItemHealth(healthSpecialistItemDetails);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
         }
 
-        private void SaveHealthVaccineData(JSONObject jsonObject,int foreign_key)
-        {
-            HealthVaccineTableDetails healthVaccineTableDetails= new HealthVaccineTableDetails(OpeningActivity.this);
+        private void SaveHealthVaccineData(JSONObject jsonObject, int foreign_key) {
+            HealthVaccineTableDetails healthVaccineTableDetails = new HealthVaccineTableDetails(OpeningActivity.this);
             try {
-                HealthVaccineItemDetails healthVaccineItemDetails=HealthVaccineItemDetails.parseHealthVaccinesItem(jsonObject,foreign_key);
+                HealthVaccineItemDetails healthVaccineItemDetails = HealthVaccineItemDetails.parseHealthVaccinesItem(jsonObject, foreign_key);
                 healthVaccineTableDetails.insertItemHealth(healthVaccineItemDetails);
 
-
-<<<<<<< HEAD
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -831,8 +874,7 @@ public class OpeningActivity extends Activity {
         public SaveEntertainmentDataTask(Context ctx) {
             super(ctx);
         }
-=======
->>>>>>> master
+
 
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray allData = jsonArrays[0];
@@ -841,21 +883,18 @@ public class OpeningActivity extends Activity {
             for (int i = 0; i < entDataSize; i++) {
                 try {
                     JSONObject jsonObject = allData.getJSONObject(i);
-                    EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew= new EntertainmentServiceProviderTableNew(OpeningActivity.this);
+                    EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew = new EntertainmentServiceProviderTableNew(OpeningActivity.this);
                     //entertainmentServiceProviderTableNew.dropTable();
-                    EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
+                    EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew = EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject, i);
                     entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
 
-<<<<<<< HEAD
-                    if (jsonObject.has("rspot_details"))
-                    {
-                        JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
-                        int rspot_detailsSize=rspot_details.length();
+                    if (jsonObject.has("rspot_details")) {
+                        JSONArray rspot_details = jsonObject.getJSONArray("rspot_details");
+                        int rspot_detailsSize = rspot_details.length();
 
-                        for (int v=0;v<rspot_detailsSize;v++)
-                        {
-                            JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
-                            Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
+                        for (int v = 0; v < rspot_detailsSize; v++) {
+                            JSONObject rspot_detailsSizeItem = rspot_details.getJSONObject(v);
+                            Saverspot_detailsData(rspot_detailsSizeItem, jsonObject.getInt("id"));
                         }
                     }
                 } catch (JSONException e) {
@@ -866,12 +905,11 @@ public class OpeningActivity extends Activity {
             return new Long(0);
         }
 
-        private void Saverspot_detailsData(JSONObject jsonObject,int foreign_key)
-        {
-            EntertainmetTypeTable entertainmetTypeTable= new EntertainmetTypeTable(OpeningActivity.this);
+        private void Saverspot_detailsData(JSONObject jsonObject, int foreign_key) {
+            EntertainmetTypeTable entertainmetTypeTable = new EntertainmetTypeTable(OpeningActivity.this);
             try {
 
-                EntertainmentTypeItem entertainmentTypeItem=EntertainmentTypeItem.parseEntertainmentTypeItem(foreign_key,jsonObject);
+                EntertainmentTypeItem entertainmentTypeItem = EntertainmentTypeItem.parseEntertainmentTypeItem(foreign_key, jsonObject);
                 entertainmetTypeTable.insertItem(entertainmentTypeItem);
 
             } catch (JSONException e) {
@@ -890,9 +928,9 @@ public class OpeningActivity extends Activity {
 
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray financial = jsonArrays[0];
-            FinancialServiceNewTable financialServiceNewTable=new FinancialServiceNewTable(OpeningActivity.this);
+            FinancialServiceNewTable financialServiceNewTable = new FinancialServiceNewTable(OpeningActivity.this);
 
-            FinancialServiceDetailsTable financialServiceDetailsTable=new FinancialServiceDetailsTable(OpeningActivity.this);
+            FinancialServiceDetailsTable financialServiceDetailsTable = new FinancialServiceDetailsTable(OpeningActivity.this);
 
             financialServiceDetailsTable.dropTable();
 
@@ -908,12 +946,11 @@ public class OpeningActivity extends Activity {
                     financialServiceNewTable.insertItem(et);
 
 
-                    if(jo.has("fin_service_details"))// need id in fin_service_details
+                    if (jo.has("fin_service_details"))// need id in fin_service_details
                     {
                         JSONArray service_details = jo.getJSONArray("fin_service_details");
-                        for( int j=0;j<service_details.length();j++)
-                        {
-                            JSONObject joes= service_details.getJSONObject(j);
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
                             FinancialServiceDetailsItem financialServiceDetailsItem = FinancialServiceDetailsItem.parseFinancialServiceDetailsItem(joes);
                             financialServiceDetailsTable.insertItem(financialServiceDetailsItem);
 
@@ -939,9 +976,9 @@ public class OpeningActivity extends Activity {
 
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray Gov = jsonArrays[0];
-            GovernmentNewTable governmentNewTable=new GovernmentNewTable(OpeningActivity.this);
+            GovernmentNewTable governmentNewTable = new GovernmentNewTable(OpeningActivity.this);
 
-            GovernmentServiceDetailsTable governmentServiceDetailsTable=new GovernmentServiceDetailsTable(OpeningActivity.this);
+            GovernmentServiceDetailsTable governmentServiceDetailsTable = new GovernmentServiceDetailsTable(OpeningActivity.this);
 
             governmentServiceDetailsTable.dropTable();
 
@@ -953,15 +990,14 @@ public class OpeningActivity extends Activity {
             for (int i = 0; i < Govcount; i++) {
                 try {
                     JSONObject jo = Gov.getJSONObject(i);
-                    GovernmentNewItem et =GovernmentNewItem.parseGovernmentNewItem(jo);
+                    GovernmentNewItem et = GovernmentNewItem.parseGovernmentNewItem(jo);
                     governmentNewTable.insertItem(et);
 
-                    if(jo.has("govservice_details"))// need id in fin_service_details
+                    if (jo.has("govservice_details"))// need id in fin_service_details
                     {
                         JSONArray service_details = jo.getJSONArray("govservice_details");
-                        for( int j=0;j<service_details.length();j++)
-                        {
-                            JSONObject joes= service_details.getJSONObject(j);
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
                             GovernmentServiceDetailsItem governmentServiceDetailsItem = GovernmentServiceDetailsItem.parseGovernmentServiceDetailsItem(joes);
                             governmentServiceDetailsTable.insertItem(governmentServiceDetailsItem);
                         }
@@ -974,7 +1010,6 @@ public class OpeningActivity extends Activity {
             return new Long(0);
         }
     }
-=======
 
 
     /**
@@ -982,17 +1017,16 @@ public class OpeningActivity extends Activity {
      */
 
 
-    private void savenewEdu(JSONArray edu ) {
-        EducationNewTable educationNewTable= new EducationNewTable(OpeningActivity.this);
-        EducationResultDetailsTable educationResultDetailsTable= new EducationResultDetailsTable(OpeningActivity.this);
-        EducationTrainingDetailsTable educationTrainingDetailsTable=new EducationTrainingDetailsTable(OpeningActivity.this);
-        EducationTuitionDetailsTable educationTuitionDetailsTable=new EducationTuitionDetailsTable(OpeningActivity.this);
-        educationNewTable.dropTable();
-        educationResultDetailsTable.dropTable();
-        educationTrainingDetailsTable.dropTable();
-        educationTuitionDetailsTable.dropTable();
->>>>>>> master
-
+//            private void savenewEdu (JSONArray edu){
+//                EducationNewTable educationNewTable = new EducationNewTable(OpeningActivity.this);
+//                EducationResultDetailsTable educationResultDetailsTable = new EducationResultDetailsTable(OpeningActivity.this);
+//                EducationTrainingDetailsTable educationTrainingDetailsTable = new EducationTrainingDetailsTable(OpeningActivity.this);
+//                EducationTuitionDetailsTable educationTuitionDetailsTable = new EducationTuitionDetailsTable(OpeningActivity.this);
+//                educationNewTable.dropTable();
+//                educationResultDetailsTable.dropTable();
+//                educationTrainingDetailsTable.dropTable();
+//                educationTuitionDetailsTable.dropTable();
+//
 
     class SaveLegaltDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SaveLegaltDataTask(Context ctx) {
@@ -1007,18 +1041,16 @@ public class OpeningActivity extends Activity {
             for (int i = 0; i < p; i++) {
                 try {
                     JSONObject jsonObject = legal_array.getJSONObject(i);
-                    LegalAidServiceProviderTableNew legalAidServiceProviderTableNew= new LegalAidServiceProviderTableNew(OpeningActivity.this);
-                    LegalAidServiceProviderItemNew legalAidServiceProviderItemNew=LegalAidServiceProviderItemNew.parseLegalAidServiceProviderItemNew(jsonObject);
+                    LegalAidServiceProviderTableNew legalAidServiceProviderTableNew = new LegalAidServiceProviderTableNew(OpeningActivity.this);
+                    LegalAidServiceProviderItemNew legalAidServiceProviderItemNew = LegalAidServiceProviderItemNew.parseLegalAidServiceProviderItemNew(jsonObject);
                     legalAidServiceProviderTableNew.insertItem(legalAidServiceProviderItemNew);
-                    if (jsonObject.has("lservice_details"))
-                    {
-                        JSONArray lservice_details=jsonObject.getJSONArray("lservice_details");
-                        int lservice_detailsSize=lservice_details.length();
+                    if (jsonObject.has("lservice_details")) {
+                        JSONArray lservice_details = jsonObject.getJSONArray("lservice_details");
+                        int lservice_detailsSize = lservice_details.length();
 
-                        for (int v=0;v<lservice_detailsSize;v++)
-                        {
-                            JSONObject lservice_detailsSizeItem= lservice_details.getJSONObject(v);
-                            SaveLegalDetailsData(lservice_detailsSizeItem,jsonObject.getInt("id"));
+                        for (int v = 0; v < lservice_detailsSize; v++) {
+                            JSONObject lservice_detailsSizeItem = lservice_details.getJSONObject(v);
+                            SaveLegalDetailsData(lservice_detailsSizeItem, jsonObject.getInt("id"));
                         }
                     }
 
@@ -1027,18 +1059,15 @@ public class OpeningActivity extends Activity {
                     e.printStackTrace();
                     return new Long(-1);
                 }
-        }
+            }
             return new Long(0);
         }
 
-        private void SaveLegalDetailsData(JSONObject jsonObject,int foreign_key)
-        {
-            LegalAidDetailsTable legalAidDetailsTable= new LegalAidDetailsTable(OpeningActivity.this);
+        private void SaveLegalDetailsData(JSONObject jsonObject, int foreign_key) {
+            LegalAidDetailsTable legalAidDetailsTable = new LegalAidDetailsTable(OpeningActivity.this);
             try {
-                LeagalAidDetailsItem leagalAidDetailsItem=LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject,foreign_key);
+                LeagalAidDetailsItem leagalAidDetailsItem = LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject, foreign_key);
                 legalAidDetailsTable.insertItem(leagalAidDetailsItem);
-
-
 
 
             } catch (JSONException e) {
@@ -1062,9 +1091,9 @@ public class OpeningActivity extends Activity {
             EducationCourseTable educationCourseTable = new EducationCourseTable(OpeningActivity.this);
             educationCourseTable.dropTable();
             educationFeeTable.dropTable();
-            EducationCourseItem Eci =null;
-            EducationFeeItem Etf=null;
-            EducationServiceProviderItem et=null;
+            EducationCourseItem Eci = null;
+            EducationFeeItem Etf = null;
+            EducationServiceProviderItem et = null;
             int eduServiceProviderCount = educationServiceProvider.length();
             for (int i = 0; i < eduServiceProviderCount; i++) {
                 try {
@@ -1072,12 +1101,10 @@ public class OpeningActivity extends Activity {
                     et = EducationServiceProviderItem.parseEducationServiceProviderItem(jo);
                     educationServiceProviderTable.insertItem(et);
 
-                    if(jo.has("EducationServiceProviderCourse"))
-                    {
+                    if (jo.has("EducationServiceProviderCourse")) {
                         JSONArray eduCourse = jo.getJSONArray("EducationServiceProviderCourse");
-                        for( int k=0;k<eduCourse.length();k++)
-                        {
-                            JSONObject joesCourse= eduCourse.getJSONObject(k);
+                        for (int k = 0; k < eduCourse.length(); k++) {
+                            JSONObject joesCourse = eduCourse.getJSONObject(k);
 
                             Eci = EducationCourseItem.parseEducationCourseItem(joesCourse);
                             educationCourseTable.insertItem(Eci);
@@ -1085,13 +1112,11 @@ public class OpeningActivity extends Activity {
                         }
 
                     }
-                    if (jo.has("EduExamFees"))
-                    {
+                    if (jo.has("EduExamFees")) {
                         JSONArray eduExamFees = jo.getJSONArray("EduExamFees");
 
-                        for( int j=0;j<eduExamFees.length();j++)
-                        {
-                            JSONObject joes= eduExamFees.getJSONObject(j);
+                        for (int j = 0; j < eduExamFees.length(); j++) {
+                            JSONObject joes = eduExamFees.getJSONObject(j);
 
                             Etf = EducationFeeItem.parseEducationFeeItem(joes);
                             educationFeeTable.insertItem(Etf);
@@ -1115,9 +1140,9 @@ public class OpeningActivity extends Activity {
             JSONArray healthServiceProvider = jsonObjects[0];
             HealthServiceProviderTable healthServiceProviderTable = new HealthServiceProviderTable(OpeningActivity.this);
             healthServiceProviderTable.dropTable();
-            HealthVaccinesTable healthVaccinesTable = new  HealthVaccinesTable(OpeningActivity.this);
+            HealthVaccinesTable healthVaccinesTable = new HealthVaccinesTable(OpeningActivity.this);
             healthVaccinesTable.dropTable();
-            HealthSpecialistTable healthSpecialistTable  = new  HealthSpecialistTable (OpeningActivity.this);
+            HealthSpecialistTable healthSpecialistTable = new HealthSpecialistTable(OpeningActivity.this);
             healthSpecialistTable.dropTable();
             HealthPharmacyTable healthPharmacyTable = new HealthPharmacyTable(OpeningActivity.this);
             healthPharmacyTable.dropTable();
@@ -1128,375 +1153,278 @@ public class OpeningActivity extends Activity {
                     HealthServiceProviderItem et = HealthServiceProviderItem.parseHealthServiceProviderItem(jo);
                     // healthServiceProviderTable.insertItemHealth(et);
 
-                    if(jo.has("specialist"))
-                    {
+                    if (jo.has("specialist")) {
                         JSONArray specialist = jo.getJSONArray("specialist");
 
-                        for( int m=0;m<specialist.length();m++)
-                        {
-                            JSONObject joes= specialist.getJSONObject(m);
+                        for (int m = 0; m < specialist.length(); m++) {
+                            JSONObject joes = specialist.getJSONObject(m);
 
-                            HealthSpecialistItem ets =  HealthSpecialistItem.parseHealthSpecialistItem(joes);
+                            HealthSpecialistItem ets = HealthSpecialistItem.parseHealthSpecialistItem(joes);
                             healthSpecialistTable.insertItemHealth(ets);
 
                         }
 
                     }
-                    if(jo.has("vaccine"))
-                    {
+                    if (jo.has("vaccine")) {
                         JSONArray vaccine = jo.getJSONArray("vaccine");
 
-                        for( int n=0;n<vaccine.length();n++)
-                        {
-                            JSONObject joes= vaccine.getJSONObject(n);
+                        for (int n = 0; n < vaccine.length(); n++) {
+                            JSONObject joes = vaccine.getJSONObject(n);
 
-                            HealthVaccinesItem etd =  HealthVaccinesItem.parseHealthVaccinesItem(joes);
+                            HealthVaccinesItem etd = HealthVaccinesItem.parseHealthVaccinesItem(joes);
                             healthVaccinesTable.insertItemHealth(etd);
 
-<<<<<<< HEAD
                         }
 
                     }
-                    if(jo.has("pharmacy"))
-                    {
+                    if (jo.has("pharmacy")) {
                         JSONArray pharmacy = jo.getJSONArray("pharmacy");
 
-                        for( int k=0;k<pharmacy.length();k++)
-                        {
-                            JSONObject joes= pharmacy.getJSONObject(k);
+                        for (int k = 0; k < pharmacy.length(); k++) {
+                            JSONObject joes = pharmacy.getJSONObject(k);
                             HealthPharmacyItem etl = HealthPharmacyItem.parseHealthPharmacyItem(joes);
                             healthPharmacyTable.insertItemHealthPharmacy(etl);
-=======
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-
-
-
-    private void savesubcat(JSONArray subcat ) {
-        SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(OpeningActivity.this);
-
-
-
-        subCategoryTableNew.dropTable();
-
-        int legalaidServiceProviderCount = subcat.length();
-
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = subcat.getJSONObject(i);
-                SubCategoryItemNew et = SubCategoryItemNew.parseSubCategoryItem(jo);
-                subCategoryTableNew.insertItem(et);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
->>>>>>> master
-
                         }
-
                     }
 
-<<<<<<< HEAD
-=======
-    }
-    private void savesubcat2(JSONArray subcat ) {
-        SubCategoryTable subCategoryTable=new SubCategoryTable(OpeningActivity.this);
-
-
-
-        subCategoryTable.dropTable();
->>>>>>> master
-
-
-<<<<<<< HEAD
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    return new Long(-1);
                 }
-=======
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = subcat.getJSONObject(i);
-                SubCategoryItem et = SubCategoryItem.parseSubCategoryItem(jo);
-                subCategoryTable.insertItem(et);
-            } catch (JSONException e) {
-                e.printStackTrace();
->>>>>>> master
+
             }
             return new Long(0);
         }
 
 
+        private void savesubcat(JSONArray subcat) {
+            SubCategoryTableNew subCategoryTableNew = new SubCategoryTableNew(OpeningActivity.this);
 
 
-    }
+            subCategoryTableNew.dropTable();
 
-<<<<<<< HEAD
-    class SaveEntertainmentServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
-        public SaveEntertainmentServiceProviderTask(Context ctx) {
-            super(ctx);
-        }
-=======
-    private void saveSubCategoryList(JSONArray subCategoryArray) {
-        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
-        subCatTable.dropTable();
-        int subCatCount = subCategoryArray.length();
-        for (int i = 0; i < subCatCount; i++) {
-            try {
-                JSONObject jo = subCategoryArray.getJSONObject(i);
-                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
-                subCatTable.insertItem(si);
+            int legalaidServiceProviderCount = subcat.length();
 
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-        si2=subCatTable.getAllSubCategories(1);
-        si2.size();
-    }
->>>>>>> master
-
-        protected Long doInBackground(JSONArray... jsonObjects) {
-            JSONArray entertainmentServiceProvider = jsonObjects[0];
-            EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(OpeningActivity.this);
-            entertainmentServiceProviderTable.dropTable();
-            EntertainmentBookTable entertainmentBookTable = new EntertainmentBookTable(OpeningActivity.this);
-            entertainmentBookTable.dropTable();
-            EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(OpeningActivity.this);
-            entertainmentFieldTable.dropTable();
-            EntertainmentTheatreTable entertainmentTheatreTable = new EntertainmentTheatreTable(OpeningActivity.this);
-            entertainmentTheatreTable.dropTable();
-            EntertainmentFitnessTable entertainmentFitnessTable = new EntertainmentFitnessTable(OpeningActivity.this);
-            entertainmentFitnessTable.dropTable();
-            int entServiceProviderCount = entertainmentServiceProvider.length();
-            for (int i = 0; i < entServiceProviderCount; i++) {
+            for (int i = 0; i < legalaidServiceProviderCount; i++) {
                 try {
-                    JSONObject jo = entertainmentServiceProvider.getJSONObject(i);
-                    EntertainmentServiceProviderItem et = EntertainmentServiceProviderItem.parseEntertainmentServiceProviderItem(jo);
-                    entertainmentServiceProviderTable.insertItem(et);
-
-
-                    if(jo.has("EntFitnessBeauty"))
-                    {
-                        JSONArray EntFitnessBeauty = jo.getJSONArray("EntFitnessBeauty");
-
-                        for( int m=0;m<EntFitnessBeauty.length();m++)
-                        {
-                            JSONObject joes= EntFitnessBeauty.getJSONObject(m);
-                            EntertainmentFitnessItem ets = EntertainmentFitnessItem.parseEntertainmentFitnessItem(joes);
-                            entertainmentFitnessTable.insertItem(ets);
-
-                        }
-
-                    }
-
-                    if(jo.has("EntBookShop"))
-                    {
-                        JSONArray EntBookShop = jo.getJSONArray("EntBookShop");
-                        for( int j=0;j<EntBookShop.length();j++)
-                        {
-                            JSONObject joes= EntBookShop.getJSONObject(j);
-                            EntertainmentBookShopItem ets = EntertainmentBookShopItem.parseEntertainmentBookShopItem(joes);
-                            entertainmentBookTable.insertItem(ets);
-
-                        }
-
-                    }
-
-                    if(jo.has("EntField"))
-                    {
-                        JSONArray EntField = jo.getJSONArray("EntField");
-                        for( int k=0;k<EntField.length();k++)
-                        {
-                            JSONObject joes= EntField.getJSONObject(k);
-                            EntertainmentFieldItem ets = EntertainmentFieldItem.parseEntertainmentFieldItem(joes);
-                            entertainmentFieldTable.insertItem(ets);
-
-                        }
-
-
-                    }
-
-                    if(jo.has("EntTheatre"))
-                    {
-                        JSONArray EntTheatre = jo.getJSONArray("EntTheatre");
-                        for( int l=0;l<EntTheatre.length();l++)
-                        {
-                            JSONObject joes= EntTheatre.getJSONObject(l);
-                            EntertainmentTheatreItem etc = EntertainmentTheatreItem.parseEntertainmentTheatreItem(joes);
-                            entertainmentTheatreTable.insertItem(etc);
-
-                        }
-
-                    }
+                    JSONObject jo = subcat.getJSONObject(i);
+                    SubCategoryItemNew et = SubCategoryItemNew.parseSubCategoryItem(jo);
+                    subCategoryTableNew.insertItem(et);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    return new Long(-1);
                 }
             }
-            return new Long(0);
+
+
         }
-<<<<<<< HEAD
+
     }
 
 
-    class SavenewEduTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
-        public SavenewEduTask(Context ctx) {
-            super(ctx);
-        }
 
-        protected Long doInBackground(JSONArray... jsonObjects) {
-            JSONArray edu = jsonObjects[0];
-            EducationNewTable educationNewTable= new EducationNewTable(OpeningActivity.this);
-            EducationResultDetailsTable educationResultDetailsTable= new EducationResultDetailsTable(OpeningActivity.this);
-            EducationTrainingDetailsTable educationTrainingDetailsTable=new EducationTrainingDetailsTable(OpeningActivity.this);
-            EducationTuitionDetailsTable educationTuitionDetailsTable=new EducationTuitionDetailsTable(OpeningActivity.this);
-            educationNewTable.dropTable();
-            educationResultDetailsTable.dropTable();
-            educationTrainingDetailsTable.dropTable();
-            educationTuitionDetailsTable.dropTable();
-
-
-            int eduServiceProviderCount = edu.length();
-
-            for (int i = 0; i < eduServiceProviderCount; i++) {
-                try {
-                    JSONObject jo = edu.getJSONObject(i);
-                    EducationNewItem et = EducationNewItem.parseEducationNewItem(jo);
-                    educationNewTable.insertItem(et);
-
-
-                    if(jo.has("tution_details"))//
-                    {
-                        JSONArray service_details = jo.getJSONArray("tution_details");
-                        for( int j=0;j<service_details.length();j++)
-                        {
-                            JSONObject joes= service_details.getJSONObject(j);
-                            EducationTuitionDetailsItem educationTuitionDetailsItem = EducationTuitionDetailsItem.parseEducationTuitionDetailsItem(joes);
-                            educationTuitionDetailsTable.insertItem(educationTuitionDetailsItem);
-
-                        }
-=======
-
-        countofDb++;
-
-//        if (firstRun == false)//if running for first time
-//        {
-//            pd.dismiss();
-//          //  Intent i = new Intent(OpeningActivity.this, LocationAskActivity.class);
-//         //   overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-//            //Activity to be     launched For the First time
-//            // Intent i = new Intent(OpeningActivity.this, FeedbackActivity.class);//Activity to be     launched For the First time
-//            startActivity(i);
+//                    private void savesubcat2(JSONArray subcat) {
+//                        SubCategoryTable subCategoryTable = new SubCategoryTable(OpeningActivity.this);
 //
-//        } else {
+//
+//                        subCategoryTable.dropTable();
+//                    }
+//
+//                    catch(
+//                    JSONException e
+//                    )
+//
+//                    {
+//                        e.printStackTrace();
+//                        return new Long(-1);
+//                    }
+//
+//                    =======
+//                            for(
+//                    int i = 0;
+//                    i<legalaidServiceProviderCount;i++)
+//
+//                    {
+//                        try {
+//                            JSONObject jo = subcat.getJSONObject(i);
+//                            SubCategoryItem et = SubCategoryItem.parseSubCategoryItem(jo);
+//                            subCategoryTable.insertItem(et);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                        return new Long(0);
+//                    }
+//
+//
+//                }
 
-
-        //    }
-
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
+                class SaveEntertainmentServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+                    public SaveEntertainmentServiceProviderTask(Context ctx) {
+                        super(ctx);
                     }
-                    if(jo.has("result_details"))//
-                    {
-                        JSONArray service_details = jo.getJSONArray("result_details");
-                        for( int j=0;j<service_details.length();j++)
-                        {
-                            JSONObject joes= service_details.getJSONObject(j);
-                            EducationResultItemNew educationResultItemNew=EducationResultItemNew.parseEducationResultItemNew(joes);
-                            educationResultDetailsTable.insertItem(educationResultItemNew);
 
+                    private void saveSubCategoryList(JSONArray subCategoryArray) {
+                        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
+                        subCatTable.dropTable();
+                        int subCatCount = subCategoryArray.length();
+                        for (int i = 0; i < subCatCount; i++) {
+                            try {
+                                JSONObject jo = subCategoryArray.getJSONObject(i);
+                                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
+                                subCatTable.insertItem(si);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
-
+                        countofDb++;
+                        si2 = subCatTable.getAllSubCategories(1);
+                        si2.size();
                     }
-                    if(jo.has("training_details"))//
-                    {
-                        JSONArray service_details = jo.getJSONArray("training_details");
-                        for( int j=0;j<service_details.length();j++)
-                        {
-                            JSONObject joes= service_details.getJSONObject(j);
-                            EducationTrainingDetailsItem educationTrainingDetailsItem = EducationTrainingDetailsItem.parseEducationTrainingDetailsItem(joes);
-                            educationTrainingDetailsTable.insertItem(educationTrainingDetailsItem);
-        Animation inFromRight = new TranslateAnimation(
-                Animation.RELATIVE_TO_PARENT, +1.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f,
-                Animation.RELATIVE_TO_PARENT, 0.0f
-        );
-        inFromRight.setDuration(ANIM_INTERVAL *
-                (int) (200 *
-                        (AppConstants.CAT_LIST_LG_WIDTH_PERC
-                                - AppConstants.CAT_LIST_SM_WIDTH_PERC)
-                )
-        );
-        inFromRight.setInterpolator(new AccelerateInterpolator());
-        return inFromRight;
-    }
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (alertDialog != null) {
-            alertDialog.dismiss();
-            alertDialog = null;
-        }
 
-    }
-    @Override
-    protected void onStart() {
-        // TODO Auto-generated method stub
-        slideInFromRightAnim();
-        super.onStart();
+                    protected Long doInBackground(JSONArray... jsonObjects) {
+                        JSONArray entertainmentServiceProvider = jsonObjects[0];
+                        EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(OpeningActivity.this);
+                        entertainmentServiceProviderTable.dropTable();
+                        EntertainmentBookTable entertainmentBookTable = new EntertainmentBookTable(OpeningActivity.this);
+                        entertainmentBookTable.dropTable();
+                        EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(OpeningActivity.this);
+                        entertainmentFieldTable.dropTable();
+                        EntertainmentTheatreTable entertainmentTheatreTable = new EntertainmentTheatreTable(OpeningActivity.this);
+                        entertainmentTheatreTable.dropTable();
+                        EntertainmentFitnessTable entertainmentFitnessTable = new EntertainmentFitnessTable(OpeningActivity.this);
+                        entertainmentFitnessTable.dropTable();
+                        int entServiceProviderCount = entertainmentServiceProvider.length();
+                        for (int i = 0; i < entServiceProviderCount; i++) {
+                            try {
+                                JSONObject jo = entertainmentServiceProvider.getJSONObject(i);
+                                EntertainmentServiceProviderItem et = EntertainmentServiceProviderItem.parseEntertainmentServiceProviderItem(jo);
+                                entertainmentServiceProviderTable.insertItem(et);
 
+
+                                if (jo.has("EntFitnessBeauty")) {
+                                    JSONArray EntFitnessBeauty = jo.getJSONArray("EntFitnessBeauty");
+
+                                    for (int m = 0; m < EntFitnessBeauty.length(); m++) {
+                                        JSONObject joes = EntFitnessBeauty.getJSONObject(m);
+                                        EntertainmentFitnessItem ets = EntertainmentFitnessItem.parseEntertainmentFitnessItem(joes);
+                                        entertainmentFitnessTable.insertItem(ets);
+
+                                    }
+
+                                }
+
+                                if (jo.has("EntBookShop")) {
+                                    JSONArray EntBookShop = jo.getJSONArray("EntBookShop");
+                                    for (int j = 0; j < EntBookShop.length(); j++) {
+                                        JSONObject joes = EntBookShop.getJSONObject(j);
+                                        EntertainmentBookShopItem ets = EntertainmentBookShopItem.parseEntertainmentBookShopItem(joes);
+                                        entertainmentBookTable.insertItem(ets);
+
+                                    }
+
+                                }
+
+                                if (jo.has("EntField")) {
+                                    JSONArray EntField = jo.getJSONArray("EntField");
+                                    for (int k = 0; k < EntField.length(); k++) {
+                                        JSONObject joes = EntField.getJSONObject(k);
+                                        EntertainmentFieldItem ets = EntertainmentFieldItem.parseEntertainmentFieldItem(joes);
+                                        entertainmentFieldTable.insertItem(ets);
+
+                                    }
+
+
+                                }
+
+                                if (jo.has("EntTheatre")) {
+                                    JSONArray EntTheatre = jo.getJSONArray("EntTheatre");
+                                    for (int l = 0; l < EntTheatre.length(); l++) {
+                                        JSONObject joes = EntTheatre.getJSONObject(l);
+                                        EntertainmentTheatreItem etc = EntertainmentTheatreItem.parseEntertainmentTheatreItem(joes);
+                                        entertainmentTheatreTable.insertItem(etc);
+
+                                    }
+
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                return new Long(-1);
+                            }
                         }
+                        return new Long(0);
+                    }
+                }
 
+
+                class SavenewEduTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+                    public SavenewEduTask(Context ctx) {
+                        super(ctx);
                     }
 
+                    protected Long doInBackground(JSONArray... jsonObjects) {
+                        JSONArray edu = jsonObjects[0];
+                        EducationNewTable educationNewTable = new EducationNewTable(OpeningActivity.this);
+                        EducationResultDetailsTable educationResultDetailsTable = new EducationResultDetailsTable(OpeningActivity.this);
+                        EducationTrainingDetailsTable educationTrainingDetailsTable = new EducationTrainingDetailsTable(OpeningActivity.this);
+                        EducationTuitionDetailsTable educationTuitionDetailsTable = new EducationTuitionDetailsTable(OpeningActivity.this);
+                        educationNewTable.dropTable();
+                        educationResultDetailsTable.dropTable();
+                        educationTrainingDetailsTable.dropTable();
+                        educationTuitionDetailsTable.dropTable();
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return new Long(-1);
+
+                        int eduServiceProviderCount = edu.length();
+
+                        for (int i = 0; i < eduServiceProviderCount; i++) {
+                            try {
+                                JSONObject jo = edu.getJSONObject(i);
+                                EducationNewItem et = EducationNewItem.parseEducationNewItem(jo);
+                                educationNewTable.insertItem(et);
+
+
+                                if (jo.has("tution_details"))//
+                                {
+                                    JSONArray service_details = jo.getJSONArray("tution_details");
+                                    for (int j = 0; j < service_details.length(); j++) {
+                                        JSONObject joes = service_details.getJSONObject(j);
+                                        EducationTuitionDetailsItem educationTuitionDetailsItem = EducationTuitionDetailsItem.parseEducationTuitionDetailsItem(joes);
+                                        educationTuitionDetailsTable.insertItem(educationTuitionDetailsItem);
+
+                                    }
+
+                                    countofDb++;
+
+                                }
+
+
+                                if (jo.has("result_details"))//
+                                {
+                                    JSONArray service_details = jo.getJSONArray("result_details");
+                                    for (int j = 0; j < service_details.length(); j++) {
+                                        JSONObject joes = service_details.getJSONObject(j);
+                                        EducationResultItemNew educationResultItemNew = EducationResultItemNew.parseEducationResultItemNew(joes);
+                                        educationResultDetailsTable.insertItem(educationResultItemNew);
+
+                                    }
+
+                                }
+                                if (jo.has("training_details"))//
+                                {
+                                    JSONArray service_details = jo.getJSONArray("training_details");
+                                    for (int j = 0; j < service_details.length(); j++) {
+                                        JSONObject joes = service_details.getJSONObject(j);
+                                        EducationTrainingDetailsItem educationTrainingDetailsItem = EducationTrainingDetailsItem.parseEducationTrainingDetailsItem(joes);
+                                        educationTrainingDetailsTable.insertItem(educationTrainingDetailsItem);
+                                    }
+
+                                }
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                return new Long(-1);
+                            }
+                        }
+                        return new Long(0);
+                    }
                 }
             }
-            return new Long(0);
-        }
-    }
-}
