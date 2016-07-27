@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -202,7 +203,7 @@ public class SubCategoryTableNew {
 
         if (cursor.moveToFirst()) {
             do {
-                String name = cursor.getString(6);
+                String name = cursor.getString(7);
                 siList.add(i,name);
                 i++;
             } while (cursor.moveToNext());
@@ -214,16 +215,16 @@ public class SubCategoryTableNew {
 
     public int  getRefId(String name) {
         int ids=0;
-      //   Log.d("Ent Name","------"+name);
+        Log.d("Ent Name","######"+name);
 
         SQLiteDatabase db = openDB();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_REF_NAME_EN+" = '"+name+"'", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_REF_NAME_BN+" = '"+name+"'", null);
 
         if (cursor.moveToFirst()) {
             do {
-                 ids = cursor.getInt(5);
-              //  Log.d("cursor","======"+ids);
+                ids = cursor.getInt(5);
+                Log.d("cursor","######"+ids);
             } while (cursor.moveToNext());
         }
 
@@ -234,6 +235,31 @@ public class SubCategoryTableNew {
         closeDB();
         return ids;
     }
+    public int  getSubcategoryId(String name) {
+        int ids=0;
+        Log.d("Ent Name","######"+name);
+
+        SQLiteDatabase db = openDB();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_SUB_CAT_HEADER_BN+" = '"+name+"'", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ids = cursor.getInt(2);
+                Log.d("cursor","######"+ids);
+            } while (cursor.moveToNext());
+        }
+
+
+
+
+        cursor.close();
+        closeDB();
+        return ids;
+    }
+
+
+
    /* public ArrayList<Integer> getSubid(int id,String head) {
         ArrayList<Integer> siList2=new ArrayList<>();
 
