@@ -21,6 +21,10 @@ android {
     }
     productFlavors {
     }
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "12g"
+    }
 }
 
 dependencies {
