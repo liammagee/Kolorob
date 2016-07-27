@@ -329,9 +329,10 @@ public class OpeningActivity extends Activity {
 //
         final Handler handler = new Handler();
         Runnable runner = new Runnable() {
+            int timeCounter = 0;
             @Override
             public void run() {
-                if (OpeningActivity.this.countofDb >= NUMBER_OF_TASKS) {
+                if (OpeningActivity.this.countofDb >= NUMBER_OF_TASKS || timeCounter > 60000) {
                     overridePendingTransition(0, 0);
                     handler.removeCallbacks(this);
                     Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
@@ -341,6 +342,7 @@ public class OpeningActivity extends Activity {
                 }
                 //Create a loop
                 handler.postDelayed(this, 1000);
+                timeCounter += 1000;
             }
 
         };
