@@ -79,8 +79,10 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
     ImageView left_image,middle_image,right_image,email_btn;
     TextView address_text,phone_text,email_text;
     int width,height;
-    TextView ups_text;
+    TextView ups_text,headerx;
     ListView courseListView,listView;
+    String username="kolorobapp";
+    String password="2Jm!4jFe3WgBZKEN";
     Context con;
     EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew;
     ArrayList<EntertainmentTypeItem> entertainmentTypeItems;
@@ -147,6 +149,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         ratingText=(TextView)findViewById(R.id.ratingText);
         detailsEntertainment=(TextView)findViewById(R.id.detailsEntertainment);
         other_detailsEnt=(TextView)findViewById(R.id.other_detailsEnt);
+        headerx=(TextView)findViewById(R.id.headerx);
 
         // close_button=(ImageView)findViewById(R.id.close_button);
 
@@ -161,6 +164,8 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         feedback = (ImageView) findViewById(R.id.feedback);
         checkBox = (CheckBox) findViewById(R.id.compare);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        if(width<500)
+            ratingBar = new RatingBar(this, null, android.R.attr.ratingBarStyleSmall);
         setRatingBar();
 
 //        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -196,10 +201,11 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         upperHand.setLayoutParams(params2);
 
 
-//        LinearLayout.LayoutParams params_upperText = (LinearLayout.LayoutParams) upperText.getLayoutParams();
-//        // int  vd=params_upperText.height = height/24;
-//        // params_upperText.width = width;
-//        upperText.setLayoutParams(params_upperText);
+        LinearLayout.LayoutParams params_upperText = (LinearLayout.LayoutParams) upperText.getLayoutParams();
+
+
+      //  params_upperText.setMargins(width/3,0,0,0);
+        upperText.setLayoutParams(params_upperText);
 
         LinearLayout.LayoutParams params_left_way = (LinearLayout.LayoutParams) left_way.getLayoutParams();
         int lett_img = params_left_way.height = (height * 3) / 24;
@@ -245,6 +251,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         ups_text = (TextView) findViewById(R.id.ups_text);
         ups_text.setTextSize(width / 25);
         ratingText.setTextSize(width / 25);
+        headerx.setTextSize(width / 21);
 
         LinearLayout.LayoutParams feedbacks = (LinearLayout.LayoutParams) feedback.getLayoutParams();
         feedbacks.height = width / 8;
@@ -281,7 +288,8 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         CheckConcate("পুলিশ স্টেশন", entertainmentServiceProviderItemNew.getPolice_station());
         CheckConcate("ঠিকানা", entertainmentServiceProviderItemNew.getAddress());
         timeProcessing("খোলার সময়", entertainmentServiceProviderItemNew.getOpeningtime());
-        CheckConcate("বিরতির সময়", entertainmentServiceProviderItemNew.getBreaktime());
+        if(!entertainmentServiceProviderItemNew.getBreaktime().equals("null")&&!entertainmentServiceProviderItemNew.getBreaktime().equals(""))
+        breakTimeProcessing("বিরতির সময়", entertainmentServiceProviderItemNew.getBreaktime());
         timeProcessing("বন্ধের সময়", entertainmentServiceProviderItemNew.getClosingtime());
         CheckConcate("সাপ্তাহিক ছুটির দিন", entertainmentServiceProviderItemNew.getOff_day());
         CheckConcate("যার মাধ্যমে নিবন্ধন করা হয়েছে", entertainmentServiceProviderItemNew.getNodeRegisteredWith());
@@ -363,33 +371,6 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 //                }
 //            });
 //
-//            phone_mid.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent callIntent1 = new Intent(Intent.ACTION_CALL);
-//                    if(!educationServiceProviderItem.getContactNo().equals(""))
-//                    {
-//                        callIntent1.setData(Uri.parse("tel:" + educationServiceProviderItem.getContactNo()));
-//                        if(checkPermission())
-//                            startActivity(callIntent1);
-//                        else{
-//                            AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
-//                                    "ফোন নম্বর পাওয়া যায়নি");
-//                            Toast.makeText(getApplicationContext(),
-//                                    "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
-//                                    .show();
-//                        }
-//                    }
-//                    else {
-//
-//                        AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
-//                                "ফোন নম্বর পাওয়া যায়নি");
-//                        Toast.makeText(getApplicationContext(),
-//                                "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
-//                                .show();
-//                    }
-//                }
-//            });
 
 
         // phermacy.setText(lat);
@@ -650,7 +631,28 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 //
 //        }
     }
+    private void breakTimeProcessing(String value1, String value2) {
+        if (!value2.equals("null") || !value2.equals(", ")) {
+            String timeInBengali = "";
 
+            try {
+                value2 = value2 + ",";
+
+                String[] breakTIme = value2.split(",");
+
+
+                String[] realTIme = breakTIme[0].split("-");
+
+
+                value2 = timeConverter(realTIme[0]) + " থেকে " + timeConverter(realTIme[1]);
+                CheckConcate(value1, value2);
+            }
+            catch (Exception e)
+            {
+
+            }
+        }
+    }
 
     public void verifyRegistration(View v) {
 
@@ -725,7 +727,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         String comment="";
         comment=feedback_comment.getText().toString();
         Log.d("status ","======"+status);
-        String url = "http://kolorob.net/demo/api/sp_rating/"+entertainmentServiceProviderItemNew.getNodeId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating;
+        String url = "http://kolorob.net/demo/api/sp_rating/"+entertainmentServiceProviderItemNew.getNodeId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -775,7 +777,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 
     public void setRatingBar()
     {
-        getRequest(DetailsInfoActivityEntertainmentNew.this, "http://kolorob.net/demo/api/get_sp_rating/entertainment", new VolleyApiCallback() {
+        getRequest(DetailsInfoActivityEntertainmentNew.this, "http://kolorob.net/demo/api/get_sp_rating/entertainment?username=kolorobapp&password=2Jm!4jFe3WgBZKEN", new VolleyApiCallback() {
                     @Override
                     public void onResponse(int status, String apiContent) {
                         if (status == AppConstants.SUCCESS_CODE) {
@@ -893,38 +895,43 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 
     private String timeConverter(String time) {
 
+
         String timeInBengali = "";
 
+        try
+        {
+
+            String[] separated = time.split(":");
 
 
-        String[] separated = time.split(":");
-        Log.d("time","====="+separated[0]);
+            int hour = Integer.valueOf(separated[0]);
+            int times = Integer.valueOf(separated[1]);
 
+            if (hour >= 6 && hour < 12)
+                timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour == 12)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour > 12 && hour < 16)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 15 && hour < 18)
+                timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 17 && hour < 20)
+                timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 20)
+                timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            if (times != 0)
+                timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
+            else
+                timeInBengali = timeInBengali + " টা";
+        }
+        catch (Exception e)
+        {
 
+        }
 
-
-        int hour = Integer.valueOf(separated[0]);
-        int times = Integer.valueOf(separated[1]);
-
-        if (hour > 6 && hour < 12)
-            timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour == 12)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour > 12 && hour < 16)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 15 && hour < 18)
-            timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 17 && hour < 20)
-            timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 20)
-            timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        if (times != 0)
-            timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
-        else
-            timeInBengali = timeInBengali + " টা";
         return timeInBengali;
-    }
 
+    }
 //    public Boolean RegisteredOrNot()
 //    {
 //        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);

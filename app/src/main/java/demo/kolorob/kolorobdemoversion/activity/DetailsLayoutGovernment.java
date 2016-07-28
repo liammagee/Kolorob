@@ -5,9 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -47,7 +45,6 @@ import demo.kolorob.kolorobdemoversion.model.Government.GovernmentNewItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentServiceDetailsItem;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
-import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
 
 /**
@@ -64,6 +61,8 @@ public class DetailsLayoutGovernment extends Activity {
     ListView courseListView, listView;
     Context con;
     GovernmentNewItem governmentNewItem;
+    String user="kolorobapp";
+    String pass="2Jm!4jFe3WgBZKEN";
 
     ArrayList<GovernmentServiceDetailsItem> governmentServiceDetailsItems;
 
@@ -154,7 +153,8 @@ public class DetailsLayoutGovernment extends Activity {
 
         timeProcessing("খোলার সময় :", governmentNewItem.getOpeningtime());
         timeProcessing("বন্ধে সময় :", governmentNewItem.getClosetime());
-        CheckConcate("বিরতির সময় :", governmentNewItem.getBreaktime());
+        if(!governmentNewItem.getBreaktime().equals("null")&&!governmentNewItem.getBreaktime().equals(""))
+        breakTimeProcessing("বিরতির সময় :", governmentNewItem.getBreaktime());
         CheckConcate("বন্ধের দিন  :", governmentNewItem.getOffday());
         CheckConcate("রেজিস্ট্রেশন নাম্বার:", governmentNewItem.getRegisterednumber());
         CheckConcate("কাদের সাথে রেজিস্টার্ড  :", governmentNewItem.getRegisteredwith());
@@ -184,7 +184,7 @@ public class DetailsLayoutGovernment extends Activity {
         right_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (governmentNewItem.getNode_contact2().equals("")) {
+                if (!governmentNewItem.getNode_contact2().equals("")) {
                     AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
                             "ই মেইল আই ডি পাওয়া যায়নি");
                 }
@@ -278,7 +278,7 @@ public class DetailsLayoutGovernment extends Activity {
 
 
 
-        distance_left.setOnClickListener(new View.OnClickListener() {
+      /*  distance_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
@@ -337,7 +337,7 @@ public class DetailsLayoutGovernment extends Activity {
 
                 }
             }
-        });
+        });*/
     }
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
@@ -562,57 +562,70 @@ public class DetailsLayoutGovernment extends Activity {
     }
 
 
-//    public Boolean RegisteredOrNot()
-//    {
-//        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-//        SharedPreferences.Editor editor = pref.edit();
-//        //  editor.putString("registered", lat);
-//        registered = pref.getString("registered", null);
-//        phone_num = pref.getString("phone",null);
-//        // editor.commit();
-//        //  if(registered.equals("yes"))
-//        return true;
-//        //  else
-//        //   return true;
-//
-//
-//
-//
+
 
     private String timeConverter(String time) {
 
 
         String timeInBengali = "";
 
-        String[] separated = time.split(":");
+        try
+        {
+
+            String[] separated = time.split(":");
 
 
-        int hour = Integer.valueOf(separated[0]);
-        int times = Integer.valueOf(separated[1]);
+            int hour = Integer.valueOf(separated[0]);
+            int times = Integer.valueOf(separated[1]);
 
-        if (hour >= 6 && hour < 12)
-            timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour == 12)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour > 12 && hour < 16)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 15 && hour < 18)
-            timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 17 && hour < 20)
-            timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 20)
-            timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        if (times != 0)
-            timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
-        else
-            timeInBengali = timeInBengali + " টা";
+            if (hour >= 6 && hour < 12)
+                timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour == 12)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour > 12 && hour < 16)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 15 && hour < 18)
+                timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 17 && hour < 20)
+                timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 20)
+                timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            if (times != 0)
+                timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
+            else
+                timeInBengali = timeInBengali + " টা";
+        }
+        catch (Exception e)
+        {
+
+        }
+
         return timeInBengali;
 
     }
 
     private void breakTimeProcessing(String value1, String value2) {
         if (!value2.equals("null") || !value2.equals(", ")) {
-            CheckConcate(value1, value2);
+            if (!value2.equals("null") || !value2.equals(", ")) {
+                String timeInBengali = "";
+                try {
+
+                    value2 = value2 + ",";
+
+                    String[] breakTIme = value2.split(",");
+
+
+                    String[] realTIme = breakTIme[0].split("-");
+
+
+                    value2 = timeConverter(realTIme[0]) + " থেকে " + timeConverter(realTIme[1]);
+                    CheckConcate(value1, value2);
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
         }
     }
 

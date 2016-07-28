@@ -988,6 +988,7 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
     public void compareTool()
     {
        // compare_layout.setBackgroundColor(Color.parseColor("#F7931E"));
+
         if(currentCategoryID==1)
         { //compare_layout.setBackgroundColor(Color.parseColor("#2F7281"));
             comapreData = SharedPreferencesHelper.getComapreData(PlaceDetailsActivityNewLayout.this);
@@ -1004,7 +1005,7 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
 
         else {
             compare_layout.setVisibility(View.VISIBLE);
-            compare_layout.setBackgroundColor(Color.parseColor("#F7931E"));
+
             comapreData = SharedPreferencesHelper.getComapreDataHealth(PlaceDetailsActivityNewLayout.this);
             int size=comapreData.length();
             for(int i=0;i<size;i++)
@@ -1067,8 +1068,31 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
                 secondSpecialistItem = secondSpecialistItem + healthSpecialistItemDetails.getSpecialisttype() + ", ";
             }
         }
+
+        String healthService="";
+        String health_service_data1="";
+
         for (HealthServiceProviderItemNew healthServiceProviderItemNew: firstDataSetHealth)
         {
+            healthService=healthServiceProviderItemNew.getFamily_privacy();
+            if(!healthService.equals(""))
+            {
+                for (int i=0;i<healthService.length();i++)
+                {
+                    if(healthService.charAt(i)=='1')
+                    {
+                        health_service_data1=health_service_data1+"Emergency Service,";
+                    }
+                    else if(healthService.charAt(i)=='2')
+                    {
+                        health_service_data1=health_service_data1+" Ambulance Service,";
+                    }
+                    else
+                        health_service_data1=health_service_data1+" Maternity Service";
+
+                }
+            }
+
             if(healthServiceProviderItemNew.getNode_bn().equalsIgnoreCase("null")||healthServiceProviderItemNew.getNode_bn()==null)
                 health_name3.setText("X");
             else
@@ -1084,11 +1108,10 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
             else
                 language_spoken3.setText(healthServiceProviderItemNew.getSpoken_lang());
 
-            if(healthServiceProviderItemNew.getGeneral_cost().equalsIgnoreCase("null")||healthServiceProviderItemNew.getGeneral_cost()==null)
-                service_type3.setText("X");
+            if(!health_service_data1.equals(""))
+                service_type3.setText(health_service_data1);
             else
-                service_type3.setText(healthServiceProviderItemNew.getGeneral_cost());
-
+                service_type3.setText("X");
             if(healthServiceProviderItemNew.getPharmacy_speciality().equalsIgnoreCase("null")||healthServiceProviderItemNew.getPharmacy_speciality()==null)
                 specialist_available3.setText("X");
             else
@@ -1115,9 +1138,30 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
                 cost3.setText(healthServiceProviderItemNew.getQuality_equipments());
 
         }
+
+
+        String healthService1="";
+        String health_service_data2="";
         for (HealthServiceProviderItemNew healthServiceProviderItemNew: secondDataSetHealth)
         {
+            healthService1=healthServiceProviderItemNew.getFamily_privacy();
+            if(!healthService.equals(""))
+            {
+                for (int i=0;i<healthService1.length();i++)
+                {
+                    if(healthService1.charAt(i)=='1')
+                    {
+                        health_service_data2=health_service_data1+"Emergency Service, ";
+                    }
+                    else if(healthService1.charAt(i)=='2')
+                    {
+                        health_service_data2=health_service_data1+" Ambulance Service, ";
+                    }
+                    else
+                        health_service_data2=health_service_data1+" Maternity Service";
 
+                }
+            }
             if(healthServiceProviderItemNew.getNode_bn().equalsIgnoreCase("null")||healthServiceProviderItemNew.getNode_bn()==null)
                 health_name2.setText("X");
             else
@@ -1132,10 +1176,10 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
             else
                 language_spoken2.setText(healthServiceProviderItemNew.getSpoken_lang());
 
-            if(healthServiceProviderItemNew.getGeneral_cost().equalsIgnoreCase("null")||healthServiceProviderItemNew.getGeneral_cost()==null)
-                service_type2.setText("X");
+            if(!health_service_data1.equals(""))
+                service_type2.setText(health_service_data2);
             else
-                service_type2.setText(healthServiceProviderItemNew.getGeneral_cost());
+                service_type2.setText("X");
 
             if(healthServiceProviderItemNew.getPharmacy_speciality().equalsIgnoreCase("null")||healthServiceProviderItemNew.getPharmacy_speciality()==null)
                 specialist_available2.setText("X");
@@ -1182,57 +1226,57 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
         for (EducationNewItem educationNewItem: firstDataSet)
         {
             if(educationNewItem.getNamebn()==null || educationNewItem.getNamebn().equalsIgnoreCase("null"))
-                edu_name_ban22.setText("X");
+                edu_name_ban22.setText("পাওয়া যায় নি");
             else
             edu_name_ban22.setText(educationNewItem.getNamebn());
 
             if(educationNewItem.getEdtype()==null || educationNewItem.getEdtype().equalsIgnoreCase("null"))
-                edtype.setText("X");
+                edtype.setText("পাওয়া যায় নি");
             else
             edtype.setText(educationNewItem.getEdtype());
 
             if(educationNewItem.getFloor()==null || educationNewItem.getFloor().equalsIgnoreCase("null"))
-                hostel_facility.setText("X");
+                hostel_facility.setText("পাওয়া যায় নি"); //center type
             else
             hostel_facility.setText(educationNewItem.getFloor());
 
-            if(educationNewItem.getAddress()==null || educationNewItem.getAddress().equalsIgnoreCase("null"))
-                transport_facility.setText("X");
+            if(educationNewItem.getLandmark()==null || educationNewItem.getLandmark().equalsIgnoreCase("null"))
+                transport_facility.setText("পাওয়া যায় নি");
             else
-            transport_facility.setText(educationNewItem.getAddress());
+            transport_facility.setText(educationNewItem.getLandmark());//done
 
             if(educationNewItem.getAveragestudent()==null || educationNewItem.getAveragestudent().equalsIgnoreCase("null"))
-                playground.setText("X");
+                playground.setText("পাওয়া যায় নি");
             else
-            playground.setText(educationNewItem.getAveragestudent());
+            playground.setText(educationNewItem.getAveragestudent()); //done
 
             if(educationNewItem.getStudentno()==null || educationNewItem.getStudentno().equalsIgnoreCase("null"))
-                total_students.setText("X");
+                total_students.setText("পাওয়া যায় নি");
             else
             total_students.setText(String.valueOf(educationNewItem.getStudentno()));
 
             if(educationNewItem.getClassno()==null || educationNewItem.getClassno().equalsIgnoreCase("null"))
-                total_classes.setText("X");
+                total_classes.setText("পাওয়া যায় নি");
             else
             total_classes.setText(String.valueOf(educationNewItem.getClassno()));
 
             if(educationNewItem.getTeachersno()==null || educationNewItem.getTeachersno().equalsIgnoreCase("null"))
-                total_teachers.setText("X");
+                total_teachers.setText("পাওয়া যায় নি");
             else
             total_teachers.setText(String.valueOf(educationNewItem.getTeachersno()));
 
             if(educationNewItem.getWatercondition()==null || educationNewItem.getWatercondition().equalsIgnoreCase("null"))
-                course_provided.setText("X");
+                course_provided.setText("পাওয়া যায় নি");
             else
             course_provided.setText(educationNewItem.getWatercondition());
 
             if(educationNewItem.getShift()==null || educationNewItem.getShift().equalsIgnoreCase("null"))
-                shift.setText("X");
+                shift.setText("পাওয়া যায় নি");
             else
             shift.setText(educationNewItem.getShift());
 
             if(educationNewItem.getWatersource()==null || educationNewItem.getWatersource().equalsIgnoreCase("null"))
-                canteen_facility.setText("X");
+                canteen_facility.setText("পাওয়া যায় নি");
             else
             canteen_facility.setText(educationNewItem.getWatersource());
         }
@@ -1240,57 +1284,57 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
         {
 
             if(educationNewItem.getNamebn()==null || educationNewItem.getNamebn().equalsIgnoreCase("null"))
-                edu_name_ban.setText("X");
+                edu_name_ban.setText("পাওয়া যায় নি");
             else
             edu_name_ban.setText(educationNewItem.getNamebn());
 
             if(educationNewItem.getEdtype()==null || educationNewItem.getEdtype().equalsIgnoreCase("null"))
-                edtype1.setText("X");
+                edtype1.setText("পাওয়া যায় নি");
             else
             edtype1.setText(educationNewItem.getEdtype());
 
             if(educationNewItem.getFloor()==null || educationNewItem.getFloor().equalsIgnoreCase("null"))
-                hostel_facility1.setText("X");
+                hostel_facility1.setText("পাওয়া যায় নি");
             else
             hostel_facility1.setText(educationNewItem.getFloor());
 
-            if(educationNewItem.getAddress()==null || educationNewItem.getAddress().equalsIgnoreCase("null"))
-                transport_facility1.setText("X");
+            if(educationNewItem.getLandmark()==null || educationNewItem.getLandmark().equalsIgnoreCase("null"))
+                transport_facility1.setText("পাওয়া যায় নি");
             else
-            transport_facility1.setText(educationNewItem.getAddress());
+            transport_facility1.setText(educationNewItem.getLandmark());
 
             if(educationNewItem.getAveragestudent()==null || educationNewItem.getAveragestudent().equalsIgnoreCase("null"))
-                playground1.setText("X");
+                playground1.setText("পাওয়া যায় নি");
             else
             playground1.setText(educationNewItem.getAveragestudent());
 
             if(educationNewItem.getStudentno()==null || educationNewItem.getStudentno().equalsIgnoreCase("null"))
-                total_students1.setText("X");
+                total_students1.setText("পাওয়া যায় নি");
             else
             total_students1.setText(String.valueOf(educationNewItem.getStudentno()));
 
             if(educationNewItem.getClassno()==null || educationNewItem.getClassno().equalsIgnoreCase("null"))
-                total_classes1.setText("X");
+                total_classes1.setText("পাওয়া যায় নি");
             else
             total_classes1.setText(String.valueOf(educationNewItem.getClassno()));
 
             if(educationNewItem.getTeachersno()==null || educationNewItem.getTeachersno().equalsIgnoreCase("null"))
-                total_teachers1.setText("X");
+                total_teachers1.setText("পাওয়া যায় নি");
             else
             total_teachers1.setText(String.valueOf(educationNewItem.getTeachersno()));
 
             if(educationNewItem.getWatercondition()==null || educationNewItem.getWatercondition().equalsIgnoreCase("null"))
-                course_provided1.setText("X");
+                course_provided1.setText("পাওয়া যায় নি");
             else
             course_provided1.setText(educationNewItem.getWatercondition());
 
             if(educationNewItem.getShift()==null || educationNewItem.getShift().equalsIgnoreCase("null"))
-                shift1.setText("X");
+                shift1.setText("পাওয়া যায় নি");
             else
             shift1.setText(educationNewItem.getShift());
 
             if(educationNewItem.getWatersource()==null || educationNewItem.getWatersource().equalsIgnoreCase("null"))
-                canteen_facility1.setText("X");
+                canteen_facility1.setText("পাওয়া যায় নি");
             else
             canteen_facility1.setText(educationNewItem.getWatersource());
         }
@@ -1361,7 +1405,7 @@ fholder=(LinearLayout)findViewById(R.id.LinearLayoutfilter);
                     Group group = new Group(RefEnt.get(j));
                     printnamesent = null;
                     int refId=subCategoryTableNewEnt.getRefId(RefEnt.get(j));
-                    printnamesent = entertainmentServiceProviderTableNew.getAllEntertainmentSubCategoriesInfo();
+                    printnamesent = entertainmentServiceProviderTableNew.EntNames(currentCategoryID, refId,RefEnt.get(j), placeChoice);
 
                     for (int i = 0; i < printnamesent.size(); i++) {
                         group.childrenent.add(i, printnamesent.get(i));

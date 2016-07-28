@@ -84,6 +84,8 @@ public class DetailsInfoActivityLegalNew extends Activity {
     Context con;
     Float rating;
     RatingBar ratingBar;
+    String username="kolorobapp";
+    String password="2Jm!4jFe3WgBZKEN";
     LegalAidServiceProviderItemNew legalAidServiceProviderItemNew;
     ArrayList<LeagalAidDetailsItem> leagalAidDetailsItems;
     ArrayList<LegalAidServiceProviderItemNew>legalAidServiceProviderItemNewsv;
@@ -93,8 +95,8 @@ public class DetailsInfoActivityLegalNew extends Activity {
     private TextView playground;
     private TextView hostel;
     private TextView transport;
-    private TextView ratingText,common_details,other_details;
-    private ImageView close_button,phone_mid,distance_left,feedback,top_logo,cross,school_logo_default;
+    private TextView ratingText,common_details,other_details,header;
+    private ImageView close_button,phone_middl,distance_left,feedback,top_logo,cross,school_logo_default;
     RadioGroup feedRadio;
     RadioButton rb1,rb2,rb3;
     String status="",phone_num="",registered="";
@@ -148,6 +150,7 @@ public class DetailsInfoActivityLegalNew extends Activity {
         ratingText=(TextView)findViewById(R.id.ratingText);
         common_details=(TextView)findViewById(R.id.common_details);
         other_details=(TextView)findViewById(R.id.other_details);
+        header=(TextView)findViewById(R.id.header);
 
         // close_button=(ImageView)findViewById(R.id.close_button);
 
@@ -247,6 +250,7 @@ public class DetailsInfoActivityLegalNew extends Activity {
         ups_text = (TextView) findViewById(R.id.ups_text);
         ups_text.setTextSize(width / 25);
         ratingText.setTextSize(width / 25);
+        header.setTextSize(width/25);
         //  ups_text.setText(educationServiceProviderItem.getEduNameBan());
 
         LinearLayout.LayoutParams feedbacks = (LinearLayout.LayoutParams) feedback.getLayoutParams();
@@ -271,7 +275,8 @@ public class DetailsInfoActivityLegalNew extends Activity {
 
         CheckConcate("ঠিকানা", legalAidServiceProviderItemNew.getAddress());
         timeProcessing("খোলার সময়", legalAidServiceProviderItemNew.getOpeningtime());
-        timeProcessing("বিরতির সময়", legalAidServiceProviderItemNew.getBreaktime());
+        if(!legalAidServiceProviderItemNew.getBreaktime().equals("null")&&!legalAidServiceProviderItemNew.getBreaktime().equals(""))
+        breakTimeProcessing("বিরতির সময়", legalAidServiceProviderItemNew.getBreaktime());
         timeProcessing("বন্ধের সময়", legalAidServiceProviderItemNew.getClosingtime());
         CheckConcate("সাপ্তাহিক ছুটির দিন", legalAidServiceProviderItemNew.getOff_day());
         CheckConcate("যার মাধ্যমে রেজিস্ট্রেশন করা হয়েছে", legalAidServiceProviderItemNew.getRegisteredWith());
@@ -315,45 +320,46 @@ public class DetailsInfoActivityLegalNew extends Activity {
 //        });
 
 
-//            right_image.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    if(educationServiceProviderItem.getEmailAddress().equals(""))
-//                    {
-//                        AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
-//                                "ই মেইল আই ডি পাওয়া যায়নি");
-//                    }
-//                }
-//            });
-//
-//            phone_mid.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent callIntent1 = new Intent(Intent.ACTION_CALL);
-//                    if(!educationServiceProviderItem.getContactNo().equals(""))
-//                    {
-//                        callIntent1.setData(Uri.parse("tel:" + educationServiceProviderItem.getContactNo()));
-//                        if(checkPermission())
-//                            startActivity(callIntent1);
-//                        else{
-//                            AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
-//                                    "ফোন নম্বর পাওয়া যায়নি");
-//                            Toast.makeText(getApplicationContext(),
-//                                    "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
-//                                    .show();
-//                        }
-//                    }
-//                    else {
-//
-//                        AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
-//                                "ফোন নম্বর পাওয়া যায়নি");
-//                        Toast.makeText(getApplicationContext(),
-//                                "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
-//                                .show();
-//                    }
-//                }
-//            });
 
+        right_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!legalAidServiceProviderItemNew.getEmailAddress().equals(""))
+                {
+                    AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
+                            "ই মেইল আই ডি পাওয়া যায়নি");
+                }
+            }
+        });
+//
+
+        middle_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent callIntent1 = new Intent(Intent.ACTION_CALL);
+                if(!legalAidServiceProviderItemNew.getWebsiteLink().equals(""))
+                {
+                    callIntent1.setData(Uri.parse("tel:" + legalAidServiceProviderItemNew.getContactNo()));
+                    if(checkPermission())
+                        startActivity(callIntent1);
+                    else{
+                        AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
+                                "ফোন নম্বর পাওয়া যায়নি");
+                        Toast.makeText(getApplicationContext(),
+                                "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
+                                .show();
+                    }
+                }
+                else {
+
+                    AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
+                            "ফোন নম্বর পাওয়া যায়নি");
+                    Toast.makeText(getApplicationContext(),
+                            "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
+                            .show();
+                }
+            }
+        });
 
         // phermacy.setText(lat);
 
@@ -523,6 +529,29 @@ public class DetailsInfoActivityLegalNew extends Activity {
     }
 
 
+    private void breakTimeProcessing(String value1, String value2) {
+        if (!value2.equals("null") || !value2.equals(", ")) {
+            String timeInBengali = "";
+
+         try {
+             value2 = value2 + ",";
+
+             String[] breakTIme = value2.split(",");
+
+
+             String[] realTIme = breakTIme[0].split("-");
+
+
+             value2 = timeConverter(realTIme[0]) + " থেকে " + timeConverter(realTIme[1]);
+             CheckConcate(value1, value2);
+         }
+         catch (Exception e)
+         {
+
+         }
+        }
+    }
+
     public void sendReviewToServer() {
         int rating=0;
         if (status.equals("খুবই অসন্তুষ্ট"))
@@ -542,7 +571,7 @@ public class DetailsInfoActivityLegalNew extends Activity {
         String comment="";
         comment=feedback_comment.getText().toString();
         Log.d("status ","======"+status);
-        String url = "http://kolorob.net/demo/api/sp_rating/"+legalAidServiceProviderItemNew.getIdentifierId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating;
+        String url = "http://kolorob.net/demo/api/sp_rating/"+legalAidServiceProviderItemNew.getIdentifierId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -628,19 +657,18 @@ public class DetailsInfoActivityLegalNew extends Activity {
 
         alert.show();
     }
-//
-//    private boolean checkPermission(){
-//        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
-//        if (result == PackageManager.PERMISSION_GRANTED){
-//
-//            return true;
-//
-//        } else {
-//
-//            return false;
-//
-//        }
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
+        if (result == PackageManager.PERMISSION_GRANTED) {
 
+            return true;
+
+        } else {
+
+            return false;
+
+        }
+    }
 
     private String English_to_bengali_number_conversion(String english_number) {
         int v = english_number.length();
@@ -672,36 +700,42 @@ public class DetailsInfoActivityLegalNew extends Activity {
 
     private String timeConverter(String time) {
 
+
         String timeInBengali = "";
 
+        try
+        {
+
+            String[] separated = time.split(":");
 
 
-        String[] separated = time.split(":");
-        Log.d("time","====="+separated[0]);
+            int hour = Integer.valueOf(separated[0]);
+            int times = Integer.valueOf(separated[1]);
 
+            if (hour >= 6 && hour < 12)
+                timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour == 12)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour > 12 && hour < 16)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 15 && hour < 18)
+                timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 17 && hour < 20)
+                timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 20)
+                timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            if (times != 0)
+                timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
+            else
+                timeInBengali = timeInBengali + " টা";
+        }
+        catch (Exception e)
+        {
 
+        }
 
-
-        int hour = Integer.valueOf(separated[0]);
-        int times = Integer.valueOf(separated[1]);
-
-        if (hour > 6 && hour < 12)
-            timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour == 12)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour > 12 && hour < 16)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 15 && hour < 18)
-            timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 17 && hour < 20)
-            timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 20)
-            timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        if (times != 0)
-            timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
-        else
-            timeInBengali = timeInBengali + " টা";
         return timeInBengali;
+
     }
 
 //    public Boolean RegisteredOrNot()
@@ -721,11 +755,7 @@ public class DetailsInfoActivityLegalNew extends Activity {
 //
 //
 
-    private void breakTimeProcessing(String value1, String value2) {
-        if (!value2.equals("null") || !value2.equals(", ")) {
-            CheckConcate(value1, value2);
-        }
-    }
+
 
 
     private void timeProcessing(String value1, String value2) {

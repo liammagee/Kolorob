@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +48,7 @@ import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationResultDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTrainingDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTuitionDetailsTable;
+import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationResultItemNew;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTrainingDetailsItem;
@@ -54,6 +57,8 @@ import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
+
+import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
 
 /**
  * Created by israt.jahan on 7/17/2016.
@@ -67,9 +72,11 @@ public class DetailsLayoutEducation extends Activity {
     TextView address_text, phone_text, email_text;
     int width, height;
     TextView ups_text;
+
     ListView courseListView, listView;
     Context con;
     EducationNewItem educationNewItem;
+    RatingBar ratingBar;
 
     ArrayList<EducationTuitionDetailsItem> educationTuitionDetailsItems;
     ArrayList<EducationTrainingDetailsItem> educationTrainingDetailsItems;
@@ -99,7 +106,7 @@ public class DetailsLayoutEducation extends Activity {
         height = displayMetrics.heightPixels;
         width = displayMetrics.widthPixels;
         con = this;
-
+        setRatingBar();
 
         Intent intent = getIntent();
 
@@ -139,6 +146,7 @@ public class DetailsLayoutEducation extends Activity {
         ratingText = (TextView) findViewById(R.id.ratingText);
         serviceDetails = (TextView) findViewById(R.id.serviceDetails);
         close_button = (ImageView) findViewById(R.id.close_buttonc);
+        ratingBar=(RatingBar)findViewById(R.id.ratingBar);
 
 
         top_logo = (ImageView) findViewById(R.id.top_logo);
@@ -190,7 +198,8 @@ public class DetailsLayoutEducation extends Activity {
 
         timeProcessing("খোলার সময়", educationNewItem.getOpeningtime());
         timeProcessing("বন্ধে সময়", educationNewItem.getClosetime());
-        CheckConcate("বিরতির সময়", educationNewItem.getBreaktime());
+        if(!educationNewItem.getBreaktime().equals("null")&&!educationNewItem.getBreaktime().equals(""))
+        breakTimeProcessing("বিরতির সময়", educationNewItem.getBreaktime());
         CheckConcate("কবে বন্ধ থাকে", educationNewItem.getOffday());
         CheckConcate("রেজিস্ট্রেশন নাম্বার", educationNewItem.getRegisterednumber());
         CheckConcate("কাদের সাথে রেজিস্টার্ড ", educationNewItem.getRegisteredwith());
@@ -264,7 +273,7 @@ public class DetailsLayoutEducation extends Activity {
         right_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (educationNewItem.getNode_contact2().equals("")) {
+                if (!educationNewItem.getNode_contact2().equals("")) {
                     AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
                             "ই মেইল আই ডি পাওয়া যায়নি");
                 }
@@ -399,6 +408,7 @@ public class DetailsLayoutEducation extends Activity {
                     editor.putString("Longitude", lon);
                     editor.putString("Name", name);
                     editor.putBoolean("Value", fromornot);
+                    editor.putString("nValue", node);
                     editor.putString("nValue", node);
                     editor.commit();
 
@@ -654,6 +664,47 @@ public class DetailsLayoutEducation extends Activity {
         return concatResult;
     }
 
+
+    public void setRatingBar()
+    {
+        getRequest(DetailsLayoutEducation.this, "http://kolorob.net/demo/api/get_sp_rating/education", new VolleyApiCallback() {
+                    @Override
+                    public void onResponse(int status, String apiContent) {
+                        if (status == AppConstants.SUCCESS_CODE) {
+                            try {
+                                JSONArray jo = new JSONArray(apiContent);
+                                int size= jo.length();
+                                for(int i=0;i<size;i++)
+                                {
+                                    JSONObject ratingH=jo.getJSONObject(i);
+                                    String id= ratingH.getString("id");
+                                    if(id.equals(educationNewItem.getEduId()))
+                                    {
+
+                                        Float rating;
+                                        rating=Float.parseFloat(ratingH.getString("avg"));
+                                        ratingBar.setRating(rating);
+                                        break;
+
+                                    }
+
+
+                                }
+
+
+
+
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
+
     public Boolean RegisteredOrNot() {
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
@@ -672,35 +723,64 @@ public class DetailsLayoutEducation extends Activity {
 
         String timeInBengali = "";
 
-        String[] separated = time.split(":");
+        try
+        {
+
+            String[] separated = time.split(":");
 
 
-        int hour = Integer.valueOf(separated[0]);
-        int times = Integer.valueOf(separated[1]);
+            int hour = Integer.valueOf(separated[0]);
+            int times = Integer.valueOf(separated[1]);
 
-        if (hour >= 6 && hour < 12)
-            timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour == 12)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour > 12 && hour < 16)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 15 && hour < 18)
-            timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 17 && hour < 20)
-            timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 20)
-            timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        if (times != 0)
-            timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
-        else
-            timeInBengali = timeInBengali + " টা";
+            if (hour >= 6 && hour < 12)
+                timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour == 12)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour > 12 && hour < 16)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 15 && hour < 18)
+                timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 17 && hour < 20)
+                timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 20)
+                timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            if (times != 0)
+                timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
+            else
+                timeInBengali = timeInBengali + " টা";
+        }
+        catch (Exception e)
+        {
+
+        }
+
         return timeInBengali;
 
     }
 
     private void breakTimeProcessing(String value1, String value2) {
         if (!value2.equals("null") || !value2.equals(", ")) {
-            CheckConcate(value1, value2);
+            if (!value2.equals("null") || !value2.equals(", ")) {
+                String timeInBengali = "";
+
+
+                try {
+                    value2 = value2 + ",";
+
+                    String[] breakTIme = value2.split(",");
+
+
+                    String[] realTIme = breakTIme[0].split("-");
+
+
+                    value2 = timeConverter(realTIme[0]) + " থেকে " + timeConverter(realTIme[1]);
+                    CheckConcate(value1, value2);
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
         }
     }
 

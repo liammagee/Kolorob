@@ -168,7 +168,7 @@ mapp=(FrameLayout)findViewById(R.id.map_fragment);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         height= displayMetrics.heightPixels-32;
         width=displayMetrics.widthPixels-32;
-placemain=(LinearLayout)findViewById(R.id.placemainpageholder);
+        placemain=(LinearLayout)findViewById(R.id.placemainpageholder);
         searchmain=(LinearLayout)findViewById(R.id.searchviewholder);
         searchmain.setVisibility(View.GONE);
         placemain.setVisibility(View.VISIBLE);
@@ -669,7 +669,7 @@ help=(ImageButton)findViewById(R.id.helpicon);
 
     public void help(){
         LayoutInflater layoutInflater = LayoutInflater.from(PlaceChoiceActivity2.this);
-        View promptView = layoutInflater.inflate(R.layout.help_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.app_feedback_dialog, null);
         final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PlaceChoiceActivity2.this);
         alertDialogBuilder.setView(promptView);
 
@@ -734,7 +734,7 @@ help=(ImageButton)findViewById(R.id.helpicon);
     public void helpDialog(View v){
 
         LayoutInflater layoutInflater = LayoutInflater.from(PlaceChoiceActivity2.this);
-        View promptView = layoutInflater.inflate(R.layout.help_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.app_feedback_dialog, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PlaceChoiceActivity2.this);
         alertDialogBuilder.setView(promptView);
 

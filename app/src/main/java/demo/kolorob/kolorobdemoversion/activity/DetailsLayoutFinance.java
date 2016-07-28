@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -46,7 +45,6 @@ import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialNewItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceDetailsItem;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
-import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
 
 /**
@@ -62,6 +60,8 @@ public class DetailsLayoutFinance extends Activity {
     int width, height;
     TextView ups_text;
     ListView courseListView, listView;
+    String user="kolorobapp";
+    String pass="2Jm!4jFe3WgBZKEN";
     Context con;
     FinancialNewItem financialNewItem;
 EditText feedback_comment;
@@ -164,7 +164,8 @@ EditText feedback_comment;
 
         timeProcessing("খোলার সময় :", financialNewItem.getOpeningtime());
         timeProcessing("বন্ধের সময় :", financialNewItem.getClosetime());
-        CheckConcate("বিরতির সময় :", financialNewItem.getBreaktime());
+        if(!financialNewItem.getBreaktime().equals("null")&&!financialNewItem.getBreaktime().equals(""))
+        breakTimeProcessing("বিরতির সময় :", financialNewItem.getBreaktime());
         CheckConcate("বন্ধের দিন :", financialNewItem.getOffday());
         CheckConcate("রেজিস্ট্রেশন নাম্বার:", financialNewItem.getRegisterednumber());
         CheckConcate("কাদের সাথে রেজিস্টার্ড  :", financialNewItem.getRegisteredwith());
@@ -194,7 +195,7 @@ EditText feedback_comment;
         right_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (financialNewItem.getNode_contact2().equals("")) {
+                if (!financialNewItem.getNode_contact2().equals("")) {
                     AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
                             "ই মেইল আই ডি পাওয়া যায়নি");
                 }
@@ -288,7 +289,7 @@ EditText feedback_comment;
 
 
 
-        distance_left.setOnClickListener(new View.OnClickListener() {
+    /*    distance_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
@@ -347,7 +348,7 @@ EditText feedback_comment;
 
                 }
             }
-        });
+        });*/
     }
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE);
@@ -587,7 +588,10 @@ EditText feedback_comment;
     private String timeConverter(String time) {
 
 
-            String timeInBengali = "";
+        String timeInBengali = "";
+
+        try
+        {
 
             String[] separated = time.split(":");
 
@@ -611,13 +615,39 @@ EditText feedback_comment;
                 timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
             else
                 timeInBengali = timeInBengali + " টা";
-            return timeInBengali;
+        }
+        catch (Exception e)
+        {
+
+        }
+
+        return timeInBengali;
 
     }
 
     private void breakTimeProcessing(String value1, String value2) {
         if (!value2.equals("null") || !value2.equals(", ")) {
-            CheckConcate(value1, value2);
+            if (!value2.equals("null") || !value2.equals(", ")) {
+
+
+                try {
+                    String timeInBengali = "";
+                    value2 = value2 + ",";
+
+                    String[] breakTIme = value2.split(",");
+
+
+                    String[] realTIme = breakTIme[0].split("-");
+
+
+                    value2 = timeConverter(realTIme[0]) + " থেকে " + timeConverter(realTIme[1]);
+                    CheckConcate(value1, value2);
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
         }
     }
 

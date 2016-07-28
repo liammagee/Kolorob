@@ -75,6 +75,8 @@ public class DetailsInfoActivityHealthNew extends Activity {
     TextView ups_text;
     ListView courseListView, listView;
     Context con;
+    String username="kolorobapp";
+    String password="2Jm!4jFe3WgBZKEN";
     Float rating;
     HealthServiceProviderItemNew healthServiceProviderItemNew;
     ArrayList<HealthServiceProviderItem> healthServiceProviderItems;
@@ -170,6 +172,10 @@ public class DetailsInfoActivityHealthNew extends Activity {
         feedback = (ImageView) findViewById(R.id.feedback);
         checkBox = (CheckBox) findViewById(R.id.compare);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
+        if(width<500)
+        ratingBar = new RatingBar(this, null, android.R.attr.ratingBarStyleSmall);
+//        RatingBar ratingBar = new RatingBar(context, null, android.R.attr.ratingBarStyleSmall);
+
         setRatingBar();
 
         CheckConcate("প্রতিস্টানের ধরন", healthServiceProviderItemNew.getInstitute_type());
@@ -181,7 +187,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
         CheckConcate("মহিলা ডাক্তার", healthServiceProviderItemNew.getFemale_doctors());
         CheckConcate("রোগী নার্সের অনুপাত", healthServiceProviderItemNew.getPatient_nurse_ratio());
         CheckConcate("পরিচিত স্থান", healthServiceProviderItemNew.getLandmark());
-        CheckConcate("ব্লক", healthServiceProviderItemNew.getAddress());
+        CheckConcate("ব্লক", healthServiceProviderItemNew.getBlock());
         CheckConcate("ফ্লোর", healthServiceProviderItemNew.getFloor());
         CheckConcate("বাড়ির নাম", healthServiceProviderItemNew.getHouse_name());
         CheckConcate("রাস্তা", healthServiceProviderItemNew.getRoad());
@@ -191,6 +197,10 @@ public class DetailsInfoActivityHealthNew extends Activity {
         CheckConcate("পুলিশ স্টেশন", healthServiceProviderItemNew.getPolice_station());
         CheckConcate("বিনামূল্যে সেবা", healthServiceProviderItemNew.getGeneral_free_for());
         CheckConcate("বিনামূল্যে সেবার ধরন", healthServiceProviderItemNew.getGeneral_free_services());
+
+
+        CheckConcate("ফার্মেসি চিকিৎসা সেবা", healthServiceProviderItemNew.getPharmacy_speciality());
+        CheckConcate("ফার্মেসি ফি", healthServiceProviderItemNew.getPharmacy_fee());
 
         CheckConcate("বিনামূল্যে সেবা", healthServiceProviderItemNew.getGeneral_free_services());
         CheckConcate("সাধারন খরচ", healthServiceProviderItemNew.getGeneral_cost());
@@ -206,6 +216,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
 
         timeProcessing("খোলার সময়", healthServiceProviderItemNew.getOpening_time());
         timeProcessing("বন্ধ করার সময়", healthServiceProviderItemNew.getClosing_time());
+        if(!healthServiceProviderItemNew.getBreak_time().equals("null")&&!healthServiceProviderItemNew.getBreak_time().equals(""))
         breakTimeProcessing("বিরতির সময়", healthServiceProviderItemNew.getBreak_time());
         CheckConcate("ছুটির দিন", healthServiceProviderItemNew.getOff_day());
         healthSpecialistItemDetailses = healthSpecialistTableDetails.getHealthSpecialistData(healthServiceProviderItemNew.getId());
@@ -290,10 +301,10 @@ public class DetailsInfoActivityHealthNew extends Activity {
         upperHand.setLayoutParams(params2);
 
 
-//        LinearLayout.LayoutParams params_upperText = (LinearLayout.LayoutParams) upperText.getLayoutParams();
+       LinearLayout.LayoutParams params_upperText = (LinearLayout.LayoutParams) upperText.getLayoutParams();
 //        // int  vd=params_upperText.height = height/24;
 //        // params_upperText.width = width;
-//        upperText.setLayoutParams(params_upperText);
+        upperText.setLayoutParams(params_upperText);
 
         LinearLayout.LayoutParams params_left_way = (LinearLayout.LayoutParams) left_way.getLayoutParams();
         int lett_img = params_left_way.height = (height * 3) / 24;
@@ -342,6 +353,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
         feedback.setLayoutParams(feedbacks);
         feedbacks.setMargins(0, 0, width / 30, 0);
 
+        checkBox.setTextSize(width/25);
 
 //        feedback.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -571,7 +583,7 @@ public class DetailsInfoActivityHealthNew extends Activity {
         String comment="";
         comment=feedback_comment.getText().toString();
         Log.d("status ","======"+status);
-        String url = "http://kolorob.net/demo/api/sp_rating/"+healthServiceProviderItemNew.getId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating;
+        String url = "http://kolorob.net/demo/api/sp_rating/"+healthServiceProviderItemNew.getId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -716,36 +728,65 @@ public class DetailsInfoActivityHealthNew extends Activity {
     }
 
     private String timeConverter(String time) {
+
+
         String timeInBengali = "";
 
-        String[] separated = time.split(":");
+        try
+        {
+
+            String[] separated = time.split(":");
 
 
-        int hour = Integer.valueOf(separated[0]);
-        int times = Integer.valueOf(separated[1]);
+            int hour = Integer.valueOf(separated[0]);
+            int times = Integer.valueOf(separated[1]);
 
-        if (hour > 6 && hour < 12)
-            timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour == 12)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
-        else if (hour > 12 && hour < 16)
-            timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 15 && hour < 18)
-            timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 17 && hour < 20)
-            timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        else if (hour > 20)
-            timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
-        if (times != 0)
-            timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
-        else
-            timeInBengali = timeInBengali + " টা";
+            if (hour >= 6 && hour < 12)
+                timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour == 12)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
+            else if (hour > 12 && hour < 16)
+                timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 15 && hour < 18)
+                timeInBengali = "বিকেল " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 17 && hour < 20)
+                timeInBengali = "সন্ধ্যা " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            else if (hour > 20)
+                timeInBengali = "রাত " + English_to_bengali_number_conversion(String.valueOf(hour - 12));
+            if (times != 0)
+                timeInBengali = timeInBengali + " টা " + English_to_bengali_number_conversion(String.valueOf(times)) + " মিনিট";
+            else
+                timeInBengali = timeInBengali + " টা";
+        }
+        catch (Exception e)
+        {
+
+        }
+
         return timeInBengali;
-    }
 
+    }
     private void breakTimeProcessing(String value1, String value2) {
         if (!value2.equals("null") || !value2.equals(", ")) {
-            CheckConcate(value1, value2);
+
+            String timeInBengali = "";
+            try {
+                value2 = value2 + ",";
+
+                String[] breakTIme = value2.split(",");
+
+
+                String[] realTIme = breakTIme[0].split("-");
+
+
+                value2 = timeConverter(realTIme[0]) + " থেকে " + timeConverter(realTIme[1]);
+                CheckConcate(value1, value2);
+            }
+            catch (Exception e)
+            {
+                //result_concate="n/a";
+            }
+
         }
     }
 
