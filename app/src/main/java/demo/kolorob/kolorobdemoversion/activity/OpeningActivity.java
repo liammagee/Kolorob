@@ -1264,7 +1264,7 @@ public class OpeningActivity extends Activity {
 
         @Override
         protected void onPostExecute(Result result) {
-            if (((Long) result).longValue() == 0.0) { // Means the task is successful
+            if (((Long) result).longValue() == 0.0 && countofDb < NUMBER_OF_TASKS)  { // Means the task is successful
                 countofDb++;
                 SharedPreferences settings = getSharedPreferences("prefs", 0);
                 SharedPreferences.Editor editor = settings.edit();
@@ -1366,7 +1366,7 @@ public class OpeningActivity extends Activity {
         protected Long doInBackground(JSONArray... jsonObjects) {
             JSONArray RatingArray = jsonObjects[0];
             RatingTable subCatTable = new RatingTable(OpeningActivity.this);
-           subCatTable.dropTable();
+            subCatTable.dropTable();
             int subCatCount = RatingArray.length();
             for (int i = 0; i < subCatCount; i++) {
                 try {
