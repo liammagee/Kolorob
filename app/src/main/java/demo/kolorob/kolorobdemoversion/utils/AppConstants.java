@@ -97,10 +97,10 @@ public static final int[] ALL_CAT_ICONS_NEW_OPEN = {R.drawable.ic_continue, R.dr
     //region Keys of the activity data-passing extras
     public static final String KEY_CAT_OBJ = "category_object";
     public static final String KEY_PLACE = "place";
-    public static final String BAUNIABADH = "বাউনিয়া বাঁধ";
+    public static final String BAUNIABADH = "মিরপুর ১১";
     public static final String WAITTAG = "একটু অপেক্ষা করুন";
     public static final String WAITDET = "তথ্য সংগ্রহ হচ্ছে.....";
-    public static final String PARIS_ROAD = "প্যারিস রোড";
+    public static final String PARIS_ROAD = "মিরপুর ১০";
     public static final int PLACE_BAUNIABADH = 1;
     public static final int PLACE_PARIS_ROAD = 2;
     //endregion
@@ -120,11 +120,13 @@ public static final int[] ALL_CAT_ICONS_NEW_OPEN = {R.drawable.ic_continue, R.dr
     public static final String KEY_DETAILS_JOB = "jobprovider";
     public static final String KEY_DETAILS_ENT = "entProvider";
     public static final String KEY_DETAILS_VIEW = "eduProvider";
+    public static final String KEY_DETAILS_GOV = "govProvider";
     public static final String KEY_DETAILS_EDU= "eduProviderNew";
     public static final String KEY_DETAILS_HEALTH = "heaProvider";
     public static final String KEY_DETAILS_HEALTH_NEW = "heaProvider_new";
     public static final String KEY_DETAILS_LEGAL = "legalaidprovider";
     public static final String KEY_DETAILS_FINANCIAL = "financialprovider";
+    public static final String KEY_DETAILS_FINANCIALNEW = "financialprovider";
     public static final int EDUCATION= 1;
     public static final int HEALTH = 2;
     public static final int ENTERTAINMENT = 3;

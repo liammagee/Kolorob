@@ -5,16 +5,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import demo.kolorob.kolorobdemoversion.database.DatabaseHelper;
 import demo.kolorob.kolorobdemoversion.database.DatabaseManager;
-
-import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.utils.Lg;
 
@@ -215,6 +210,8 @@ public class HealthServiceProviderTableNew {
     private void closeDB() {
         DatabaseManager.getInstance(tContext).closeDatabase();
     }
+
+
 
 
     public long insertItemHealth(HealthServiceProviderItemNew healthServiceProviderItemNew) {
@@ -555,31 +552,130 @@ public class HealthServiceProviderTableNew {
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
 
+
+
         closeDB();
         return ret;
     }
-    public HealthServiceProviderItem gethelNode2(String Node) {
+
+    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfosearch() {
+        ArrayList<HealthServiceProviderItemNew> subCatList = new ArrayList<>();
+
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +  " ORDER BY " +KEY_NODE_NAME, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+
+
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
+    public HealthServiceProviderItemNew gethelNode2(int Node) {
 
         SQLiteDatabase db = openDB();
-        HealthServiceProviderItem healthServiceProviderItem=null;
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_NODE_ID+"="+Node, null);
+        HealthServiceProviderItemNew healthServiceProviderItem=null;
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_ID+"="+Node, null);
 
         if (cursor.moveToFirst()) {
             do {
                 //System.out.println("abc="+cursor.getString(4));
 
-                healthServiceProviderItem=new HealthServiceProviderItem( cursor.getString(0),cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),
-                        cursor.getString(6),cursor.getString(7),cursor.getString(8),cursor.getString(9),cursor.getString(10),
-                        cursor.getString(11),cursor.getString(12),cursor.getInt(13),cursor.getString(14),cursor.getString(15),
-                        cursor.getString(16),cursor.getString(17),cursor.getString(18),cursor.getString(19),cursor.getString(20),
-                        cursor.getInt(21),cursor.getString(22),cursor.getString(23),cursor.getString(24),cursor.getString(25)
-                        ,cursor.getString(26),cursor.getString(27),cursor.getString(28),cursor.getString(29));
+                healthServiceProviderItem=new HealthServiceProviderItemNew(
+                        cursor.getString(0),
+                        cursor.getString(1),
+                        cursor.getString(2),
+                        cursor.getString(3),
+                        cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6),
+                        cursor.getString(7),
+                        cursor.getString(8),
+                        cursor.getString(9),
+                        cursor.getString(10),
+                        cursor.getString(11),
+                        cursor.getString(12),
+                        cursor.getString(13),
+                        cursor.getString(14),
+                        cursor.getString(15),
+                        cursor.getString(16),
+                        cursor.getString(17),
+                        cursor.getString(18),
+                        cursor.getString(19),
+                        cursor.getString(20),
+                        cursor.getString(21),
+                        cursor.getString(22),
+                        cursor.getString(23),
+                        cursor.getString(24),
+                        cursor.getString(25),
+                        cursor.getString(26),
+                        cursor.getString(27),
+                        cursor.getString(28),
+                        cursor.getString(29),
+                        cursor.getString(30),
+                        cursor.getString(31),
+                        cursor.getString(32),
+                        cursor.getString(33),
+                        cursor.getString(34),
+                        cursor.getString(35),
+                        cursor.getString(36),
+                        cursor.getString(37),
+                        cursor.getString(38),
+                        cursor.getString(39),
+                        cursor.getString(40),
+                        cursor.getString(41),
+                        cursor.getString(42),
+                        cursor.getString(43),
+                        cursor.getString(44),
+                        cursor.getString(45),
+                        cursor.getString(46),
+                        cursor.getString(47),
+                        cursor.getString(48),
+                        cursor.getString(49),
+                        cursor.getString(50),
+                        cursor.getString(51),
+                        cursor.getString(52),
+                        cursor.getString(53),
+                        cursor.getString(54),
+                        cursor.getString(55),
+                        cursor.getString(56),
+                        cursor.getString(57),
+                        cursor.getString(58),
+                        cursor.getString(59),
+                        cursor.getString(60),
+                        cursor.getString(61),
+                        cursor.getString(62),
+                        cursor.getString(63),
+                        cursor.getString(64),
+                        cursor.getString(65),
+                        cursor.getString(66),
+                        cursor.getString(67),
+                        cursor.getString(68),
+                        cursor.getString(69),
+                        cursor.getString(70),
+                        cursor.getString(71),
+                        cursor.getString(72),
+                        cursor.getString(73),
+                        cursor.getString(74),
+                        cursor.getString(75),
+                        cursor.getString(76),
+                        cursor.getString(77),
+                        cursor.getString(78),
+                        cursor.getString(79));
             } while (cursor.moveToNext());
         }
         cursor.close();
         closeDB();
         return healthServiceProviderItem;
     }
+
     public boolean isFieldExist(String id) {
         //Lg.d(TAG, "isFieldExist : inside, id=" + id);
         SQLiteDatabase db = openDB();
@@ -798,22 +894,7 @@ public class HealthServiceProviderTableNew {
         Lg.d(TAG, "Table dropped and recreated.");
         closeDB();
     }
-//    public ArrayList<HealthServiceProviderItem> getAllHealthSubCategoriesInfo(int cat_id,int sub_cat_id) {
-//        ArrayList<HealthServiceProviderItem> subCatList = new ArrayList<>();
-//        //System.out.println(cat_id+"  "+sub_cat_id);
-//        SQLiteDatabase db = openDB();
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID+"="+cat_id+" AND "+KEY_REF_NUM+"="+sub_cat_id, null);
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                //System.out.println("abc="+cursor.getString(4));
-//                subCatList.add(cursorToSubCatList(cursor));
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//        closeDB();
-//        return subCatList;
-//    }
+
 
 //    public Vector<String> getAllEntertainmentSubCategoriesInfo() {
 //        Vector<String> subCatList = new Vector<>();
@@ -925,25 +1006,62 @@ public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfo() {
     }
 
 
+    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfoWithHead(int cat_id,String header) {
+        ArrayList<HealthServiceProviderItemNew> subCatList = new ArrayList<>();
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        header=","+header+",";
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY + " LIKE '%"+header+"%'", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
+
+    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfo(int cat_id) {
+        ArrayList<HealthServiceProviderItemNew> subCatList = new ArrayList<>();
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME , null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
+
+
     public ArrayList<HealthServiceProviderItemNew> Heanames(int cat_id,int refId,String a,String place) {
         String subcatnames=null;
         subcatnames=a;
+        String places;
 
 
         String refids= String.valueOf(refId);
 
           refids=","+refids+",";
-
-
+        places="Mirpur-11";
+        Log.d("refisd test","------"+refids);
 
         ArrayList<HealthServiceProviderItemNew> nameslist=new ArrayList<>();
 
         SQLiteDatabase db = openDB();
 
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" , null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" , null);
         //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  , null);
-      //  Log.d("Ref Id","======"+"SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" + "=" +refId);
+        Log.d("Ref Id","------"+"SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" + "=" +refId);
 //        Toast.makeText(this, +cursor,
 //                Toast.LENGTH_LONG).show();
 

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -96,6 +97,8 @@ public class LegalAidDetailsTable {
 
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
+
+        Log.d("Legal Insert","======"+ret);
         closeDB();
         return ret;
     }
@@ -121,6 +124,23 @@ public class LegalAidDetailsTable {
         closeDB();
         return ret;
 
+    }
+
+
+    public ArrayList<LeagalAidDetailsItem> getAllLegalAidSubCategoriesInfo(int id) {
+        ArrayList<LeagalAidDetailsItem> subCatList = new ArrayList<>();
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_LEGAL_REMARKS+"="+id, null);
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
     }
 
 

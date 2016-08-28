@@ -17,7 +17,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:id="@+id/linearLayout7"
-            android:layout_above="@+id/linearLayout8">
+            
+            >
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -35,120 +36,68 @@
             </FrameLayout>
 
 
-
+            <include layout="@layout/compare_screen" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="gone"
+                android:background="@color/health_color"
                 android:id="@+id/compare_layout"
 
-               >
-
-                <!--android:visibility="gone"-->
-                <!--<LinearLayout-->
-                    <!--android:orientation="horizontal"-->
-                    <!--android:id="@+id/header_compare"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content">-->
-
-
-                    <!--<LinearLayout-->
-                        <!--android:orientation="vertical"-->
-                        <!--android:id="@+id/first_screen_logo"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:gravity="center"-->
-                        <!--android:layout_height="wrap_content">-->
-
-                        <!--<ImageView-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:background="@drawable/school_logo_default"-->
-                            <!--android:id="@+id/first_screen_logo_image"-->
-                            <!--android:layout_gravity="center_horizontal"-->
-                            <!--/>-->
-                    <!--</LinearLayout>-->
-
-                    <!--<LinearLayout-->
-                        <!--android:orientation="vertical"-->
-                        <!--android:id="@+id/compare_logo"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content">-->
-
-                        <!--<ImageView-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:background="@drawable/compare_logo_default"-->
-
-                            <!--android:id="@+id/compare_logo_image"-->
-                            <!--/>-->
-                    <!--</LinearLayout>-->
-
-                    <!--<LinearLayout-->
-                        <!--android:orientation="vertical"-->
-                        <!--android:id="@+id/second_school_logo"-->
-                        <!--android:layout_width="wrap_content"-->
-                        <!--android:layout_height="wrap_content">-->
-
-                        <!--<ImageView-->
-                            <!--android:layout_width="wrap_content"-->
-                            <!--android:layout_height="wrap_content"-->
-                            <!--android:background="@drawable/school_logo_default"-->
-
-
-                            <!--android:id="@+id/second_school_logo_image"-->
-                            <!--/>-->
-                    <!--</LinearLayout>-->
+                >
 
 
 
-                <!--</LinearLayout>-->
 
 
                 <LinearLayout
                     android:orientation="horizontal"
                     android:id="@+id/header_compare"
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="15dp"
+
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
-
-
-                    <ImageView
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="0.45"
+                        android:gravity="center_horizontal"
+                        android:layout_height="wrap_content">
+                        <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/school_logo_default"
                         android:id="@+id/first_screen_logo_image"
-                        android:layout_gravity="center_horizontal"
                         />
+                    </LinearLayout>
 
-
-
-
-                    <ImageView
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="0.1"
+                        android:layout_height="wrap_content">
+                        <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/compare_logo_default"
 
-                        android:layout_gravity="center_horizontal"
                         android:id="@+id/compare_logo_image"
-                        />
+                        /></LinearLayout>
 
 
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_weight="0.45"
+                        android:gravity="center_horizontal"
 
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/school_logo_default"
-
-
-                        android:id="@+id/second_school_logo_image"
-                        />
-
-
-
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/school_logo_default"
+                            android:id="@+id/second_school_logo_image"
+                            />
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -171,7 +120,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/edu_name_ban2"
+                            android:id="@+id/health_name2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -193,7 +142,7 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:id="@+id/edu_name_ban3"
+                            android:id="@+id/health_name3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -218,8 +167,7 @@
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
                         android:textAppearance="?android:attr/textAppearanceMedium"
-                        android:text="@string/total_students"
-                        android:id="@+id/textView16" />
+                        android:id="@+id/clean_facilities1" />
 
                 </LinearLayout>
 
@@ -237,7 +185,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/ttl_students"
+                            android:id="@+id/clean_facilities2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="5dp"
@@ -257,7 +205,7 @@
 
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/total_students3"
+                            android:id="@+id/clean_facilities3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -281,7 +229,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/eduType1"
+                        android:id="@+id/opening_time1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="5dp"
@@ -307,7 +255,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/eduType2"
+                            android:id="@+id/opening_time2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -327,7 +275,7 @@
 
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/eduType3"
+                            android:id="@+id/opening_time3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -351,7 +299,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/hostel_facility1"
+                        android:id="@+id/language_spoken1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="5dp"
@@ -377,7 +325,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/hostel_facility2"
+                            android:id="@+id/language_spoken2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -396,7 +344,7 @@
 
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/hostel_facility3"
+                            android:id="@+id/language_spoken3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -415,11 +363,11 @@
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:gravity="center"
-                    android:id="@+id/transport_facility1_l"
+                    android:id="@+id/service_type1_l"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/transport_facility1"
+                        android:id="@+id/service_type1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
@@ -444,7 +392,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/transport_facility2"
+                            android:id="@+id/service_type2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -464,7 +412,7 @@
 
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/transport_facility3"
+                            android:id="@+id/service_type3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -480,93 +428,21 @@
 
 
                 <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:gravity="center"
-                        android:id="@+id/playground1_l"
-                        android:layout_height="wrap_content">
-
-                        <TextView
-                            android:id="@+id/playground1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-
-
-                            android:padding="5dp"
-                            android:text="@string/playground"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:background="@drawable/custom_border"
-                            android:gravity="center"
-
-                            android:layout_weight="0.5"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:id="@+id/playground2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-
-                                android:padding="5dp"
-                                android:text="TextView"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:layout_weight="0.5"
-                            android:background="@drawable/custom_border2"
-                            android:gravity="center"
-
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:id="@+id/playground3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-
-                                android:padding="5dp"
-                                android:text="TextView"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                        </LinearLayout>
-
-
-
-                    </LinearLayout>
-
-
-
-
-
-
-                <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:gravity="center"
-                    android:id="@+id/total_classes_l"
+                    android:id="@+id/specialist_available1_l"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/total_classes1"
+                        android:id="@+id/specialist_available1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
+
+
                         android:padding="5dp"
-                        android:text="@string/total_classes"
+                        android:text="@string/playground"
                         android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
                 </LinearLayout>
 
@@ -585,7 +461,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/total_classes2"
+                            android:id="@+id/specialist_available2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -605,7 +481,78 @@
 
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/total_classes3"
+                            android:id="@+id/specialist_available3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+
+                            android:padding="5dp"
+                            android:text="TextView"
+                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
+
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+
+
+
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:id="@+id/privacy_l"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/privacy1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:padding="5dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:background="@drawable/custom_border"
+                        android:gravity="center"
+
+                        android:layout_weight="0.5"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/privacy2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+
+                            android:padding="5dp"
+                            android:text="TextView"
+                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.5"
+                        android:background="@drawable/custom_border2"
+                        android:gravity="center"
+
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/privacy3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -618,75 +565,74 @@
                 </LinearLayout>
 
 
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+
+                    android:id="@+id/quality_equipment1_1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/quality_equipment1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:textColor="@color/white"
+                        android:padding="5dp"
+                        android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
                     <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:background="@drawable/custom_border"
                         android:gravity="center"
 
-                        android:id="@+id/total_teachers1_1"
+                        android:layout_weight="0.5"
                         android:layout_height="wrap_content">
-
                         <TextView
-                            android:id="@+id/total_teachers1"
+                            android:id="@+id/quality_equipment2"
                             android:layout_width="wrap_content"
+                            android:textColor="@color/white"
+
                             android:layout_height="wrap_content"
 
-                            android:textColor="@color/white"
                             android:padding="5dp"
-                            android:text="@string/total_teachers"
+                            android:text="TextView"
                             android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                    </LinearLayout>
 
+                    </LinearLayout>
 
                     <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.5"
+                        android:background="@drawable/custom_border2"
+                        android:gravity="center"
+
                         android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/quality_equipment3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
 
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:background="@drawable/custom_border"
-                            android:gravity="center"
-
-                            android:layout_weight="0.5"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:id="@+id/total_teachers2"
-                                android:layout_width="wrap_content"
-                                android:textColor="@color/white"
-
-                                android:layout_height="wrap_content"
-
-                                android:padding="5dp"
-                                android:text="TextView"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="vertical"
-                            android:layout_width="0dp"
-                            android:layout_weight="0.5"
-                            android:background="@drawable/custom_border2"
-                            android:gravity="center"
-
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:id="@+id/total_teachers3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-
-                                android:padding="5dp"
-                                android:text="TextView"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                        </LinearLayout>
-
-
+                            android:padding="5dp"
+                            android:text="TextView"
+                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
 
                     </LinearLayout>
+
+
+
+                </LinearLayout>
 
 
 
@@ -707,10 +653,10 @@
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:gravity="center"
-                    android:id="@+id/course_provided1_1"
+                    android:id="@+id/cost111_1"
                     android:layout_height="wrap_content">
                     <TextView
-                        android:id="@+id/course_provided1"
+                        android:id="@+id/cost1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/white"
@@ -737,7 +683,7 @@
                         android:layout_weight="0.5"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/course_provided2"
+                            android:id="@+id/cost2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -756,7 +702,7 @@
 
                         android:layout_height="wrap_content">
                         <TextView
-                            android:id="@+id/course_provided3"
+                            android:id="@+id/cost3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/white"
@@ -779,143 +725,7 @@
 
 
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:id="@+id/shift1_1"
-                    android:layout_height="wrap_content">
 
-                    <TextView
-                        android:id="@+id/shift1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:padding="5dp"
-                        android:text="@string/shift"
-                        android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:background="@drawable/custom_border"
-                        android:gravity="center"
-
-                        android:layout_weight="0.5"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/shift2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-
-                            android:padding="5dp"
-                            android:text="TextView"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:layout_weight="0.5"
-                        android:background="@drawable/custom_border2"
-                        android:gravity="center"
-
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/shift3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-
-                            android:padding="5dp"
-                            android:text="TextView"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-
-                    </LinearLayout>
-
-
-
-                </LinearLayout>
-
-
-
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:gravity="center"
-                    android:id="@+id/canteen_facility_1"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/canteen_facility1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/white"
-                        android:padding="5dp"
-                        android:text="@string/canteen_facility"
-                        android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:textColor="@color/white"
-                        android:background="@drawable/custom_border"
-                        android:gravity="center"
-                        android:layout_weight="0.5"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/canteen_facility2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-
-                            android:padding="5dp"
-                            android:text="TextView"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="vertical"
-                        android:layout_width="0dp"
-                        android:gravity="center"
-
-                        android:layout_weight="0.5"
-                        android:background="@drawable/custom_border2"
-
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:id="@+id/canteen_facility3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:padding="5dp"
-                            android:text="TextView"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                    </LinearLayout>
-
-
-
-                </LinearLayout>
 
 
 
@@ -923,6 +733,7 @@
 
 
             </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -948,29 +759,9 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:id="@+id/searchholder"
-android:visibility="gone"
 
+                android:visibility="gone"
                 android:layout_height="match_parent">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="What you want to search?"
-                    android:id="@+id/searchtext"
-                    android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/imageView13"
-                    android:layout_marginTop="@dimen/fab_marginforsearch"
-                    android:background="@drawable/search_orange"
-                    android:layout_marginBottom="@dimen/fab_margin"
-                    android:layout_below="@+id/searchtext"
-                    android:layout_centerHorizontal="true" />
 
                 <EditText
                     android:id="@+id/searchall"
@@ -983,18 +774,17 @@ android:visibility="gone"
                     android:layout_height="40dp"
                     android:popupBackground="#ffffff"
                     android:ems="10"
-                    android:layout_marginLeft="@dimen/nav_header_height2"
-                    android:layout_marginRight="@dimen/fab_margin"
-                    android:layout_below="@+id/imageView13"
+                    android:layout_marginRight="@dimen/search_margin"
                     android:layout_alignParentRight="true"
-                     />
+                    android:layout_marginTop="@dimen/search_top"
+                    android:layout_alignLeft="@+id/filterholder"
+                    android:layout_alignStart="@+id/filterholder" />
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/listheight"
                     android:id="@+id/allitem"
-                    android:layout_marginRight="@dimen/fab_margin"
+                    android:layout_marginRight="@dimen/search_margin"
                     android:maxHeight="80dp"
-                    android:layout_marginLeft="@dimen/nav_header_height2"
                     android:minHeight="80dp"
                     android:background="#F7941E"
                     android:layout_marginTop="20dp"
@@ -1003,7 +793,8 @@ android:visibility="gone"
                     android:layout_alignRight="@+id/searchall"
                     android:layout_alignEnd="@+id/searchall"
                     android:layout_alignParentRight="true"
-                    />
+                    android:layout_alignLeft="@+id/searchall"
+                    android:layout_alignStart="@+id/searchall" />
                 <RelativeLayout
                     android:layout_width="@dimen/searchbar"
                     android:id="@+id/filterholder"
@@ -1013,16 +804,10 @@ android:visibility="gone"
 
                     android:layout_height="450dp"
                     android:layout_gravity="center_horizontal"
-                    android:layout_below="@+id/allitem">
-
-                    <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/morebutton"
-                        android:background="@drawable/filter"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true" />
+                    android:layout_below="@+id/allitem"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="@dimen/search_margin">
 
 
                     <RelativeLayout
@@ -1031,7 +816,12 @@ android:visibility="gone"
 
                         android:id="@+id/categoryfilterholder"
 
-                        >
+                        android:layout_alignParentLeft="false"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@+id/morebutton"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="@dimen/search_margin">
 
 
 
@@ -1081,7 +871,16 @@ android:visibility="gone"
                                 </LinearLayout>
                             </LinearLayout>
                         </ScrollView>
+
                     </RelativeLayout>
+
+                    <ImageButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/morebutton"
+                        android:background="@drawable/filter"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true" />
                 </RelativeLayout>
 
             </RelativeLayout>
@@ -1099,7 +898,19 @@ android:visibility="gone"
                 android:weightSum="1"
                 android:layout_alignParentRight="false"
                 android:layout_alignParentLeft="true">
-            <ScrollView
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="What you want to search?"
+                    android:id="@+id/searchtext"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_weight="2" />
+
+                <ScrollView
                 android:id="@+id/svCategoryListHolder"
                 android:layout_width="wrap_content"
 
@@ -1107,7 +918,7 @@ android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:layout_above="@+id/toggle"
-                android:layout_marginTop="@dimen/nav_header_heightcat"
+                android:layout_marginTop="@dimen/nav_header_heightcat2"
 
                 android:layout_marginBottom="@dimen/nav_header_heightcat"
                 android:layout_gravity="center|top">
@@ -1128,7 +939,7 @@ android:visibility="gone"
                 </LinearLayout>
 
             </ScrollView>
-</LinearLayout>
+                </LinearLayout>
             <LinearLayout
                 android:id="@+id/llSubCategoryListHolderback"
                 android:layout_width="@dimen/sidebarwidth"

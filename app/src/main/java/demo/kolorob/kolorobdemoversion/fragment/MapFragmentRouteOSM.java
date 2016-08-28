@@ -69,7 +69,6 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
 /**
  * Created by israt.jahan on 5/5/2016.
-
  */
 public class MapFragmentRouteOSM extends Fragment implements View.OnClickListener, MapEventsReceiver, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -84,7 +83,7 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     List<String> listData = new ArrayList<String>();
-double laat,longg;
+    double laat,longg;
     public String getLocationName() {
         return locationName;
     }
@@ -97,7 +96,7 @@ double laat,longg;
     private int locationNameId;
     private static double VIEW_WIDTH;
     private int primaryIconWidth;
-double roadlength;
+    double roadlength;
     public int getLocationNameId() {
         return locationNameId;
     }
@@ -217,7 +216,7 @@ double roadlength;
         mapView.setUseDataConnection(true);
 
 
-        mapView.setTileSource(TileSourceFactory.MAPQUESTOSM);
+        mapView.setTileSource(TileSourceFactory.MAPNIK);
         mapView.setTilesScaledToDpi(true);
 
         mapViewController = mapView.getController();
@@ -226,7 +225,7 @@ double roadlength;
 
         String Latitude = pref.getString("Latitude", null);
         String Longitude = pref.getString("Longitude", null);
-         centername = pref.getString("Name", null);
+        centername = pref.getString("Name", null);
         locationNameId = pref.getInt("LocationNameId", 0);
         double lat = Double.parseDouble(Latitude);
         double lon = Double.parseDouble(Longitude);
@@ -291,7 +290,7 @@ double roadlength;
         mapView.getOverlays().add(myScaleBarOverlay);
 
 
-        ImageButton curButton = (ImageButton) rootView.findViewById(R.id.currlocation);
+        /*ImageButton curButton = (ImageButton) rootView.findViewById(R.id.currlocation);
         curButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -312,63 +311,63 @@ double roadlength;
                     mapViewController.animateTo(new GeoPoint(setloc));
                 }
             }
-        });
+        });*/
 
 
 
         return rootView;
     }
-public void calltransportlayout()
-{
-    RelativeLayout trlayout,headlayout;
-    TextView disttext,Bustext,Ricksawtext,Cngtext,Walkingtext,headtext;
-    trlayout=(RelativeLayout)rootView.findViewById(R.id.transportdetailslayout);
+    public void calltransportlayout()
+    {
+        RelativeLayout trlayout,headlayout;
+        TextView disttext,Bustext,Ricksawtext,Cngtext,Walkingtext,headtext;
+        trlayout=(RelativeLayout)rootView.findViewById(R.id.transportdetailslayout);
 
-    trlayout.setVisibility(View.VISIBLE);
-    headlayout=(RelativeLayout)rootView.findViewById(R.id.headerlayout);
-    headlayout.setVisibility(View.VISIBLE);
-    headtext=(TextView)rootView.findViewById(R.id.headtext);
-    headtext.setText(centername);
-    String distance= String.format("%.2f", roadlength);
-    disttext=(TextView)rootView.findViewById(R.id.distancetext);
-    Cngtext=(TextView)rootView.findViewById(R.id.cngtext);
-    Bustext=(TextView)rootView.findViewById(R.id.bustext);
-    Ricksawtext=(TextView)rootView.findViewById(R.id.ricksawtext);
-    Walkingtext=(TextView)rootView.findViewById(R.id.walkingtext);
-    disttext.setText(getString(R.string.distance) +": " +distance+ " km" );
-    double Busfare=roadlength*1.55;
-    double bustime=(roadlength/15)*60;
-            if (Busfare <=7.00)Bustext.setText( "7 " + "Taka ");
-    else {
-                String Bfare=String.format("%.2f", Busfare);
-                String Btime=String.format("%.2f", bustime);
-                Bustext.setText(Bfare + " Taka and might take " + Btime+ " minutes"  );
-            }
-    double CNGfare=(roadlength-2)*12+40;
-    double CNGtime=(roadlength/13)*60;
-    if (CNGfare <=40.00)Cngtext.setText( "40 " + "Taka and very minimum time required");
-    else {
-        String Cfare=String.format("%.2f", CNGfare);
-        String Ctime=String.format("%.2f", CNGtime);
-        Cngtext.setText(Cfare + " Taka and might take " + Ctime+ " minutes"  );
-    }
-    double rickfare=(roadlength)*15;
-    double ricktime=(roadlength/10)*60;
-    if (rickfare <=10.00)Ricksawtext.setText( "10 " + "Taka and very minimum time required");
-    else {
-        String Rfare=String.format("%.2f", rickfare);
-        String Rtime=String.format("%.2f", ricktime);
-        Ricksawtext.setText(Rfare + " Taka and might take " + Rtime+ " minutes"  );
-    }
-    double wfare=0.0;
-    double wtime=(roadlength/8)*60;
+        trlayout.setVisibility(View.VISIBLE);
+        headlayout=(RelativeLayout)rootView.findViewById(R.id.headerlayout);
+        headlayout.setVisibility(View.VISIBLE);
+        headtext=(TextView)rootView.findViewById(R.id.headtext);
+        headtext.setText(centername);
+        String distance= String.format("%.2f", roadlength);
+        ///  disttext=(TextView)rootView.findViewById(R.id.distancetext);
+        Cngtext=(TextView)rootView.findViewById(R.id.cngtext);
+        Bustext=(TextView)rootView.findViewById(R.id.bustext);
+        Ricksawtext=(TextView)rootView.findViewById(R.id.ricksawtext);
+        Walkingtext=(TextView)rootView.findViewById(R.id.walkingtext);
+     //   disttext.setText(getString(R.string.distance) +": " +distance+ " km" );
+        double Busfare=roadlength*1.55;
+        double bustime=(roadlength/15)*60;
+        if (Busfare <=7.00)Bustext.setText( "7 " + "Taka ");
+        else {
+            String Bfare=String.format("%.2f", Busfare);
+            String Btime=String.format("%.2f", bustime);
+            Bustext.setText(Bfare + " Taka and might take " + Btime+ " minutes"  );
+        }
+        double CNGfare=(roadlength-2)*12+40;
+        double CNGtime=(roadlength/13)*60;
+        if (CNGfare <=40.00)Cngtext.setText( "40 " + "Taka and very minimum time required");
+        else {
+            String Cfare=String.format("%.2f", CNGfare);
+            String Ctime=String.format("%.2f", CNGtime);
+            Cngtext.setText(Cfare + " Taka and might take " + Ctime+ " minutes"  );
+        }
+        double rickfare=(roadlength)*15;
+        double ricktime=(roadlength/10)*60;
+        if (rickfare <=10.00)Ricksawtext.setText( "10 " + "Taka and very minimum time required");
+        else {
+            String Rfare=String.format("%.2f", rickfare);
+            String Rtime=String.format("%.2f", ricktime);
+            Ricksawtext.setText(Rfare + " Taka and might take " + Rtime+ " minutes"  );
+        }
+        double wfare=0.0;
+        double wtime=(roadlength/8)*60;
 
 
         String wwfare=String.format("%.2f", wfare);
         String wwtime=String.format("%.2f", wtime);
         Walkingtext.setText(wwfare + " Taka and might take " + wwtime+ " minutes"  );
 
-}
+    }
     public void Drawroute(GeoPoint Ulocation, GeoPoint Mlocation) {
         mapView.getOverlays().remove(roadOverlay);
         RoadManager roadManager = new OSRMRoadManager(getActivity());
@@ -444,8 +443,8 @@ public void calltransportlayout()
             mapView.getOverlays().remove(usermarker);
             Toast.makeText(getActivity(), "Tap on locationmanager (" + location.getLatitude() + "," + location.getLongitude() + ")", Toast.LENGTH_SHORT).show();
             usermarker = new Marker(mapView);
-          laat = location.getLatitude();
-          longg = location.getLongitude();
+            laat = location.getLatitude();
+            longg = location.getLongitude();
             userlocation = new GeoPoint(laat, longg);
             usermarker.setPosition(userlocation);
             mapView.getOverlays().add(usermarker);
@@ -512,7 +511,7 @@ public void calltransportlayout()
             Drawroute(userlocation, markerlocation);
 
         }
-         Toast.makeText(getActivity(), "Tap on (" + stlat + "," + stlong + ")", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Tap on (" + stlat + "," + stlong + ")", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -540,7 +539,7 @@ public void calltransportlayout()
         super.onStart();
         Log.d("s", "onStart fired ..............");
         if(statusofservice==true)
-        mGoogleApiClient.connect();
+            mGoogleApiClient.connect();
     }
 
     @Override
@@ -574,4 +573,3 @@ public void calltransportlayout()
     }
 */
 }
-

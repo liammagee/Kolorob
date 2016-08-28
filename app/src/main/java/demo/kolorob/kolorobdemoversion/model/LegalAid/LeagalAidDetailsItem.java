@@ -79,13 +79,15 @@ public class LeagalAidDetailsItem {
         this.nodeId = nodeId;
     }
 
-    public static LeagalAidDetailsItem parseLegalAidDetailsItem(JSONObject jo) throws JSONException {
+    public static LeagalAidDetailsItem parseLegalAidDetailsItem(JSONObject jo,int foreign_key) throws JSONException {
+
         String id = jo.getString("id");
         String legal_cost = jo.getString("legal_cost");
         String legal_responsible_person = jo.getString("legal_responsible_person");
-        String legal_remark = jo.getString("legal_remark");
-        String type = jo.getString("type");
-        String sub_type = jo.getString("sub_type");
+        String legal_remark = String.valueOf(foreign_key);
+        JSONObject legal_service=jo.getJSONObject("legal_service");
+        String type = legal_service.getString("type");
+        String sub_type = legal_service.getString("sub_type");
 
 
 

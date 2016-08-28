@@ -12,7 +12,6 @@ import java.util.Vector;
 
 import demo.kolorob.kolorobdemoversion.database.DatabaseHelper;
 import demo.kolorob.kolorobdemoversion.database.DatabaseManager;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.utils.Lg;
 
@@ -71,7 +70,7 @@ public class LegalAidServiceProviderTableNew {
                 + KEY_IDENTIFIER_ID + "  INTEGER , " // 0 - int
                 + KEY_POST_OFFICE + "  INTEGER, "              // 1 - text
                 + KEY_LEGAL_AID_SUBCATEGORY_ID + " INTEGER, "
-                + KEY_CATEGORY_ID + " INTEGER, "// 2 - text
+                + KEY_CATEGORY_ID + " TEXT, "// 2 - text
                 + KEY_LEGAL_AID_NAME_ENG + " TEXT, "
                 + KEY_LEGAL_AID_NAME_BAN + " TEXT, "
                 + KEY_CONTACT_PERSON_DESIGNATION + " TEXT, "
@@ -99,7 +98,7 @@ public class LegalAidServiceProviderTableNew {
                 + KEY_HOUSE_NO+ " TEXT, "
                 + KEY_LINE + " TEXT, "
                 + KEY_AVENUE + " TEXT, "
-                + KEY_POLICE_STATION + " TEXT, PRIMARY KEY(" + KEY_CATEGORY_ID + ", " + KEY_LEGAL_AID_SUBCATEGORY_ID + ", " + KEY_POST_OFFICE + "))";
+                + KEY_POLICE_STATION + " TEXT, PRIMARY KEY(" + KEY_IDENTIFIER_ID + "))";
         db.execSQL(CREATE_TABLE_SQL);
         closeDB();
     }
@@ -142,7 +141,7 @@ public class LegalAidServiceProviderTableNew {
     public long insertItem(String identifierId,
                            String post_office,
                            int legalaidSubCategoryId,
-                           int categoryId,
+                           String categoryId,
                            String legalaidNameEng,
                            String legalaidNameBan,
                            String contactPersonDesignation,
@@ -172,7 +171,7 @@ public class LegalAidServiceProviderTableNew {
                            String avenue,
                            String police_station
     ) {
-        if (isFieldExist(identifierId, categoryId, legalaidSubCategoryId)) {
+        if (isFieldExist(identifierId)) {
             return updateItem(
                     identifierId,
                     post_office,
@@ -244,8 +243,31 @@ public class LegalAidServiceProviderTableNew {
 
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
+
+
         closeDB();
         return ret;
+    }
+
+    public ArrayList<LegalAidServiceProviderItemNew> getAllLegalSubCategoriesInfosearch() {
+        ArrayList<LegalAidServiceProviderItemNew> subCatList = new ArrayList<>();
+
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +  " ORDER BY " +KEY_LEGAL_AID_NAME_ENG, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+
+
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
     }
     public LegalAidServiceProviderItemNew getlegNode2(String Node) {
 
@@ -256,7 +278,7 @@ public class LegalAidServiceProviderTableNew {
             do {
                 //System.out.println("abc="+cursor.getString(4));
                 legalAidServiceProviderItem=new LegalAidServiceProviderItemNew(cursor.getString(0),cursor.getString(1),
-                        cursor.getInt(2),cursor.getInt(3),cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),
+                        cursor.getInt(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getString(6),cursor.getString(7),
                         cursor.getString(8),cursor.getString(9),
                         cursor.getString(10), cursor.getString(11),cursor.getString(12),cursor.getString(13),cursor.getString(14),cursor.getString(15),
                         cursor.getString(16), cursor.getString(17),cursor.getString(18),cursor.getString(19),cursor.getString(20),cursor.getString(21),cursor.getString(22),
@@ -268,6 +290,45 @@ public class LegalAidServiceProviderTableNew {
         closeDB();
         return legalAidServiceProviderItem;
     }
+
+    public ArrayList<LegalAidServiceProviderItemNew> LegalInfo(int cat_id,int refId,String a,String place) {
+        String subcatnames=null;
+        subcatnames=a;
+        String places;
+
+
+        String refids= String.valueOf(refId);
+
+        refids=","+refids+",";
+        places="Mirpur-11";
+
+
+        ArrayList<LegalAidServiceProviderItemNew> nameslist=new ArrayList<>();
+
+        SQLiteDatabase db = openDB();
+
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_BREAKTIME2+ " LIKE '%"+refids+"%'" , null);
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  , null);
+       //   Log.d("Ref Id","======"+"SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_BREAKTIME2+ " LIKE '%"+refids+"%'" + "=" +refId);
+//        Toast.makeText(this, +cursor,
+//                Toast.LENGTH_LONG).show();
+
+
+
+        if (cursor.moveToFirst()) {
+            do {
+
+
+                nameslist.add(cursorToSubCatList(cursor));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return  nameslist;
+    }
+
     public ArrayList<LegalAidServiceProviderItemNew> Legnames(int cat_id,String head,String a,String place) {
         String subcatnames=null;
         subcatnames=a;
@@ -293,13 +354,13 @@ public class LegalAidServiceProviderTableNew {
         return  nameslist;
     }
 
-    public boolean isFieldExist(String id, int cat_id, int sub_cat_id) {
+    public boolean isFieldExist(String id) {
         //Lg.d(TAG, "isFieldExist : inside, id=" + id);
         SQLiteDatabase db = openDB();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         if (cursor.moveToFirst()) {
             do {
-                if (id.equals(cursor.getString(0)) && Integer.parseInt(cursor.getString(3)) == cat_id && Integer.parseInt(cursor.getString(2)) == sub_cat_id) {
+                if (id.equals(cursor.getString(0))) {
                     cursor.close();
                     closeDB();
                     return true;
@@ -315,7 +376,7 @@ public class LegalAidServiceProviderTableNew {
             String identifierId,
             String post_office,
             int legalaidSubCategoryId,
-            int categoryId,
+            String categoryId,
             String legalaidNameEng,
             String legalaidNameBan,
             String contactPersonDesignation,
@@ -379,8 +440,8 @@ public class LegalAidServiceProviderTableNew {
         rowValue.put(KEY_AVENUE,avenue);
         rowValue.put(KEY_POLICE_STATION,police_station);
         SQLiteDatabase db = openDB();
-        long ret = db.update(TABLE_NAME, rowValue, KEY_IDENTIFIER_ID + " = ? AND " + KEY_LEGAL_AID_SUBCATEGORY_ID + " = ? AND " + KEY_CATEGORY_ID + " = ? ",
-                new String[]{identifierId + "", legalaidSubCategoryId + "", categoryId + ""});
+        long ret = db.update(TABLE_NAME, rowValue, KEY_IDENTIFIER_ID + " = ?",
+                new String[]{identifierId + ""});
         closeDB();
         return ret;
     }
@@ -402,11 +463,11 @@ public class LegalAidServiceProviderTableNew {
         closeDB();
         return subCatList;
     }
-    public ArrayList<LegalAidServiceProviderItemNew> getAllLegalAidSubCategoriesInfo(int cat_id) {
+    public ArrayList<LegalAidServiceProviderItemNew> getAllLegalAidSubCategoriesInfosearch() {
         ArrayList<LegalAidServiceProviderItemNew> subCatList = new ArrayList<>();
         //System.out.println(cat_id+"  "+sub_cat_id);
         SQLiteDatabase db = openDB();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID+"="+cat_id +" ORDER BY " +KEY_LEGAL_AID_NAME_ENG, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME , null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -419,7 +480,22 @@ public class LegalAidServiceProviderTableNew {
         return subCatList;
     }
 
+    public ArrayList<LegalAidServiceProviderItemNew> getAllLegalAidSubCategoriesInfo(int cat_id) {
+        ArrayList<LegalAidServiceProviderItemNew> subCatList = new ArrayList<>();
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME , null);
 
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
     public Vector<String> getAllLegalAidSubCategoriesInfo() {
         Vector<String> subCatList = new Vector<>();
         //System.out.println(cat_id+"  "+sub_cat_id);
@@ -462,14 +538,12 @@ public class LegalAidServiceProviderTableNew {
         closeDB();
         return subCatList;
     }
-
-
-    public ArrayList<LegalAidServiceProviderItemNew> getAllLegalAidSubCategoriesInfoWithHead(int cat_id, String header) {
+    public ArrayList<LegalAidServiceProviderItemNew> getAllLegalAidSubCategoriesInfoWithHead(int cat_id,String header) {
         ArrayList<LegalAidServiceProviderItemNew> subCatList = new ArrayList<>();
         //System.out.println(cat_id+"  "+sub_cat_id);
         SQLiteDatabase db = openDB();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_CATEGORY_ID + "=" + cat_id
-                + " AND " + KEY_LEGAL_AID_SUBCATEGORY_ID + " in (SELECT _sub_cat_id from " + DatabaseHelper.SUB_CATEGORY + " WHERE _sub_cat_header = '" + header + "')", null);
+        header=","+header+",";
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID + " LIKE '%"+header+"%'", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -482,11 +556,13 @@ public class LegalAidServiceProviderTableNew {
         return subCatList;
     }
 
+
+
     private LegalAidServiceProviderItemNew cursorToSubCatList(Cursor cursor) {
         String _identifierId = cursor.getString(0);
         String post_office = cursor.getString(1);
         int _legalaidSubCategoryId = cursor.getInt(2);
-        int _categoryId = cursor.getInt(3);
+        String _categoryId = cursor.getString(3);
         String _legalaidNameEng = cursor.getString(4);
         String _legalaidBan = cursor.getString(5);
         String _contactPersonDesignation = cursor.getString(6);

@@ -7,11 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import demo.kolorob.kolorobdemoversion.database.DatabaseHelper;
 import demo.kolorob.kolorobdemoversion.database.DatabaseManager;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.utils.Lg;
 
@@ -91,7 +89,7 @@ public class EntertainmentServiceProviderTableNew {
                 + KEY_ADDRESS + " TEXT, "
                 + KEY_LATITUDE + " TEXT, "
                 + KEY_LONGITUDE + " TEXT, "
-                + KEY_CATEGORY_ID + " INTEGER, "
+                + KEY_CATEGORY_ID + " TEXT, "
                 + KEY_OPENTIME + " TEXT, "
                 + KEY_BREAKTIME + " TEXT, "
                 + KEY_CLOSEATIME + " TEXT, "
@@ -176,7 +174,7 @@ public class EntertainmentServiceProviderTableNew {
                            String address,
                            String latitude,
                            String longitude,
-                           int categoryId,
+                           String categoryId,
                            String openingtime,
                            String breaktime,
                            String closingtime,
@@ -270,7 +268,7 @@ public class EntertainmentServiceProviderTableNew {
 
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
-        Log.d("NODE_ID","====="+ret);
+
         closeDB();
         return ret;
 
@@ -313,7 +311,7 @@ public class EntertainmentServiceProviderTableNew {
                              String address,
                              String latitude,
                              String longitude,
-                             int categoryId,
+                             String categoryId,
                              String openingtime,
                              String breaktime,
                              String closingtime,
@@ -379,26 +377,47 @@ public class EntertainmentServiceProviderTableNew {
 
 
 
-    public Vector<String> getAllEntertainmentSubCategoriesInfo() {
-        Vector<String> subCatList = new Vector<>();
+
+
+    public ArrayList<EntertainmentServiceProviderItemNew> getAllEntertainmentSubCategoriesInfo() {
+        ArrayList<EntertainmentServiceProviderItemNew> subCatList = new ArrayList<>();
+
         //System.out.println(cat_id+"  "+sub_cat_id);
         SQLiteDatabase db = openDB();
-        int cat_id=3;
-
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID+"="+cat_id, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +  " ORDER BY " +KEY_NODE_NAME, null);
 
         if (cursor.moveToFirst()) {
             do {
-                //System.out.println("abc="+cursor.getString(4));
-                String  subCatLists = cursor.getString(cursor.getColumnIndex(KEY_NODE_NAME));
 
-                subCatList.add(subCatLists);
+
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+
             } while (cursor.moveToNext());
         }
         cursor.close();
         closeDB();
         return subCatList;
     }
+    public ArrayList<EntertainmentServiceProviderItemNew> getAllEntertainmentSubCategoriesInfoWithHead(int cat_id, String header) {
+        ArrayList<EntertainmentServiceProviderItemNew> subCatList = new ArrayList<>();
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        header=","+header+",";
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID + " LIKE '%"+header+"%'", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
+
+
 
     public ArrayList<EntertainmentServiceProviderItemNew> entertainmentServiceProviderItemNews() {
         ArrayList<EntertainmentServiceProviderItemNew> subCatList = new ArrayList<>();
@@ -509,36 +528,63 @@ public class EntertainmentServiceProviderTableNew {
 
 
 
-//    public ArrayList<EntertainmentServiceProviderItem> getAllEntertainmentSubCategoriesInfo(int cat_id) {
-//        ArrayList<EntertainmentServiceProviderItem> subCatList = new ArrayList<>();
-//        //System.out.println(cat_id+"  "+sub_cat_id);
-//        SQLiteDatabase db = openDB();
-//
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "+ KEY_CATEGORY_ID+"="+cat_id +" ORDER BY " +KEY_NODE_NAME, null);
-//
-//
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                //System.out.println("abc="+cursor.getString(4));
-//                subCatList.add(cursorToSubCatList(cursor));
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//        closeDB();
-//        return subCatList;
-//    }
 
-    public EntertainmentServiceProviderItem getentNode2(String Node) {
+
+
+
+
+    public ArrayList<EntertainmentServiceProviderItemNew> EntNames(int cat_id,int refId,String a,String place) {
+        String subcatnames=null;
+        subcatnames=a;
+        String places;
+
+
+        String refids= String.valueOf(refId);
+
+        refids=","+refids+",";
+        places="Mirpur-11";
+
+
+
+
+        ArrayList<EntertainmentServiceProviderItemNew> nameslist=new ArrayList<>();
 
         SQLiteDatabase db = openDB();
-        EntertainmentServiceProviderItem entertainmentServiceProviderItem=null;
+
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_NODE_EMAIL+ " LIKE '%"+refids+"%'" , null);
+        //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  , null);
+        Log.d("Key Area","------"+KEY_NODE_ADDITIONAL);
+         Log.d("Ref Id","------"+"SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_NODE_ADDITIONAL+ " LIKE '%"+refids+"%'");
+//        Toast.makeText(this, +cursor,
+//                Toast.LENGTH_LONG).show();
+
+
+
+        if (cursor.moveToFirst()) {
+            do {
+
+
+                nameslist.add(cursorToSubCatList(cursor));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return  nameslist;
+    }
+
+
+    public EntertainmentServiceProviderItemNew getentNode2(String Node) {
+
+        SQLiteDatabase db = openDB();
+        EntertainmentServiceProviderItemNew entertainmentServiceProviderItem=null;
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_NODE_ID+"="+Node, null);
 
         if (cursor.moveToFirst()) {
             do {
                 //System.out.println("abc="+cursor.getString(4));
-                entertainmentServiceProviderItem=new EntertainmentServiceProviderItem(
+                entertainmentServiceProviderItem=new EntertainmentServiceProviderItemNew(
                         cursor.getString(0),
                         cursor.getInt(1),
                         cursor.getString(2),
@@ -560,7 +606,7 @@ public class EntertainmentServiceProviderTableNew {
                         cursor.getString(18),
                         cursor.getString(19),
                         cursor.getString(20),
-                        cursor.getInt(21),
+                        cursor.getString(21),
                         cursor.getString(22),
                         cursor.getString(23),
                         cursor.getString(24),
@@ -568,7 +614,11 @@ public class EntertainmentServiceProviderTableNew {
                         cursor.getString(26),
                         cursor.getString(27),
                         cursor.getString(28),
-                        cursor.getString(29));
+                        cursor.getString(29),
+                        cursor.getString(30),
+                        cursor.getString(31),
+                        cursor.getString(32),
+                        cursor.getString(33));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -594,7 +644,7 @@ public class EntertainmentServiceProviderTableNew {
         String _address = cursor.getString(14);
         String _latitude = cursor.getString(15);
         String _longitude= cursor.getString(16);
-        int _categoryId= cursor.getInt(17);
+        String _categoryId= cursor.getString(17);
         String _openingtime=cursor.getString(18);
         String _breaktime=cursor.getString(19);
         String _closingtime=cursor.getString(20);

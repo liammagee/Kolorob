@@ -9,26 +9,26 @@
     android:background="@drawable/bg">
 
     <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="200dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:background="@drawable/boy_figure"-->
-        <!--android:id="@+id/boy">-->
+    <!--android:orientation="horizontal"-->
+    <!--android:layout_width="200dp"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_alignParentLeft="true"-->
+    <!--android:layout_alignParentStart="true"-->
+    <!--android:background="@drawable/boy_figure"-->
+    <!--android:id="@+id/boy">-->
 
     <!--</LinearLayout>-->
 
     <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="200dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:background="@drawable/girl_figure"-->
-        <!--android:layout_alignParentTop="true"-->
-        <!--android:layout_toRightOf="@+id/boy"-->
-        <!--android:layout_toEndOf="@+id/boy"-->
-        <!--android:id="@+id/girl" />-->
+    <!--android:orientation="horizontal"-->
+    <!--android:layout_width="200dp"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@drawable/girl_figure"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_toRightOf="@+id/boy"-->
+    <!--android:layout_toEndOf="@+id/boy"-->
+    <!--android:id="@+id/girl" />-->
 
 
 

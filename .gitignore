@@ -6,3 +6,5 @@
 /build
 /captures
 /*.orig
+.idea/modules.xml
+.idea/gradle.xml

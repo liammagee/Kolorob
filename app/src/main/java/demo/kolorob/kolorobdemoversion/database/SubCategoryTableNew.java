@@ -89,6 +89,7 @@ public class SubCategoryTableNew {
         rowValue.put(KEY_REF_NAME_BN,subCatNameBn);
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
+
         closeDB();
         return ret;
     }
@@ -137,8 +138,8 @@ public class SubCategoryTableNew {
 
         if (cursor.moveToFirst()) {
             do {
-                String catid2 =cursor.getString(4);
-                int subcatid=cursor.getInt(1);
+                String catid2 =cursor.getString(7);
+                int subcatid=cursor.getInt(5);
                 siList.add(new Subcatholder(subcatid,catid2));
             } while (cursor.moveToNext());
         }
@@ -161,7 +162,21 @@ public class SubCategoryTableNew {
         closeDB();
         return siList;
     }
+    public ArrayList<SubCategoryItemNew> getAllSubCategories(int id) {
+        ArrayList<SubCategoryItemNew> siList = new ArrayList<>();
 
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + KEY_CAT_ID + " = " + id, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                siList.add(cursorToSubCategory(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return siList;
+    }
     public ArrayList<SubCategoryItemNew> getAllSubCategories() {
         ArrayList<SubCategoryItemNew> siList = new ArrayList<>();
 
@@ -180,13 +195,15 @@ public class SubCategoryTableNew {
     public ArrayList<String> getSubnameedu(int id) {
         ArrayList<String> siList=new ArrayList<>();
 
+//        Log.d("CategoryId","======="+id);
+
         SQLiteDatabase db = openDB();
         int i=0;
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_CAT_ID+" = "+ id, null);
 
         if (cursor.moveToFirst()) {
             do {
-                String name = cursor.getString(6);
+                String name = cursor.getString(7);
                 siList.add(i,name);
                 i++;
             } while (cursor.moveToNext());
@@ -198,16 +215,16 @@ public class SubCategoryTableNew {
 
     public int  getRefId(String name) {
         int ids=0;
+        Log.d("Ent Name","######"+name);
 
         SQLiteDatabase db = openDB();
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_REF_NAME_EN+" = '"+name+"'", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_REF_NAME_BN+" = '"+name+"'", null);
 
-      //  Log.d("cursor","======"+cursor);
         if (cursor.moveToFirst()) {
             do {
-                 ids = cursor.getInt(5);
-              //  Log.d("cursor","======"+ids);
+                ids = cursor.getInt(5);
+                Log.d("cursor","######"+ids);
             } while (cursor.moveToNext());
         }
 
@@ -218,6 +235,31 @@ public class SubCategoryTableNew {
         closeDB();
         return ids;
     }
+    public int  getSubcategoryId(String name) {
+        int ids=0;
+        Log.d("Ent Name","######"+name);
+
+        SQLiteDatabase db = openDB();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME+" WHERE "+KEY_SUB_CAT_HEADER_BN+" = '"+name+"'", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                ids = cursor.getInt(2);
+                Log.d("cursor","######"+ids);
+            } while (cursor.moveToNext());
+        }
+
+
+
+
+        cursor.close();
+        closeDB();
+        return ids;
+    }
+
+
+
    /* public ArrayList<Integer> getSubid(int id,String head) {
         ArrayList<Integer> siList2=new ArrayList<>();
 

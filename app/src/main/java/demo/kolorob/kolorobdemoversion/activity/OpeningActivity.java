@@ -11,11 +11,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
-import android.media.MediaPlayer;
+import android.graphics.drawable.AnimationDrawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
@@ -28,9 +28,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -58,6 +55,7 @@ import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFitne
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTableNew;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentTheatreTable;
+import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmetTypeTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialBillsTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialInsuranceTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialLoanTable;
@@ -78,9 +76,9 @@ import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTableDetails;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccineTableDetails;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthVaccinesTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidtypeServiceProviderLegalAdviceTable;
-import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidtypeServiceProviderSalishiTable;
+import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidDetailsTable;
+import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProviderTableNew;
+import demo.kolorob.kolorobdemoversion.database.RatingTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTableNew;
 import demo.kolorob.kolorobdemoversion.helpers.AppDialogManager;
@@ -100,6 +98,7 @@ import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFitnessI
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTheatreItem;
+import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTypeItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialBillsItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialInsuranceItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialLoanItem;
@@ -120,9 +119,9 @@ import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthSpecialistItemDetails;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccineItemDetails;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthVaccinesItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidLegalAdviceItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidSalishiItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
+import demo.kolorob.kolorobdemoversion.model.LegalAid.LeagalAidDetailsItem;
+import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItemNew;
+import demo.kolorob.kolorobdemoversion.model.RatingModel;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItem;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItemNew;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
@@ -140,12 +139,17 @@ public class OpeningActivity extends Activity {
     public static final String DB_NAME = "kolorob.db";
     private final static int SPLASH_TIME_OUT = 500;
     private static final int INTERNET_PERMISSION = 1;
+    private static final int NUMBER_OF_TASKS = 10;
+    String user="kolorobapp";
+    String pass="2Jm!4jFe3WgBZKEN";
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
+    AlertDialog alertDialog;
     private GoogleApiClient client;
+    private AnimationDrawable frameAnimation;
     private Context ctx;
     public static final String EDU_PROVIDER_TABLE = "edu_provider";
     public  SQLiteDatabase db3;
@@ -154,14 +158,20 @@ public class OpeningActivity extends Activity {
     Boolean  firstRun;
     private int EntDataSize,HealthDatSize;
     private static final int ANIM_INTERVAL = 200;
-int countofDb;
+    int countofDb;
     ArrayList<SubCategoryItem>si2=new ArrayList<>();
+    ArrayList<RatingModel>si22=new ArrayList<>();
     ArrayList<SubCategoryItemNew>si3=new ArrayList<>();
+
+    // LM's variables
+    private Toast t = null;
+    static int countOfDBLocal = 0;
+
 
     public int getCountofDb() {
         return countofDb;
     }
-   // ArrayList<Trialholder>holdertrial=new ArrayList<>();
+    // ArrayList<Trialholder>holdertrial=new ArrayList<>();
     public void setCountofDb(int countofDb) {
         this.countofDb = countofDb;
     }
@@ -175,90 +185,6 @@ int countofDb;
     View view=null;
 
 
-    public RefreshHandler mRedrawHandler = new RefreshHandler();
-
-    class RefreshHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            OpeningActivity.this.setImage();
-        }
-
-        public void sleep(long delayMillis) {
-            this.removeMessages(0);
-            sendMessageDelayed(obtainMessage(0), delayMillis);
-        }
-    };
-
-    private void setImage() {
-        try {
-            in++;
-
-//            if(in == 5) {
-//                rotateImage.setBackgroundResource(R.drawable.glow);
-//                Animation startRotateAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.glow_animation);
-//                rotateImage.startAnimation(startRotateAnimation);
-//            }
-
-        } catch (final Exception e) {
-
-
-        }
-
-        if(in ==1){
-            rotateImage.setBackgroundResource(R.drawable.a1);
-            System.out.println("-----okkkkk1--------");
-            // startActivity(new Intent(SplashActivity.this, OpeningActivity.class));
-        }
-        else if(in ==2){
-            rotateImage.setBackgroundResource(R.drawable.a3);
-            System.out.println("-----okkkkk2--------");
-
-        }
-        else if(in ==3){
-            rotateImage.setBackgroundResource(R.drawable.a7);
-            System.out.println("-----okkkkk--------");
-
-        }
-        else if(in ==3){
-            rotateImage.setBackgroundResource(R.drawable.a7);
-            System.out.println("-----okkkkk7--------");
-
-        }
-        else if(in ==4){
-            rotateImage.setBackgroundResource(R.drawable.a12);
-            System.out.println("-----okkkkk12--------");
-
-        }
-        else if(in ==5){
-            rotateImage.setBackgroundResource(R.drawable.a15);
-            System.out.println("-----okkkkk15--------");
-
-        }
-        else if(in ==6){
-            rotateImage.setBackgroundResource(R.drawable.a16);
-            System.out.println("-----okkkkk16-------");
-
-        }
-        else if(in ==7){
-            rotateImage.setBackgroundResource(R.drawable.a18);
-            System.out.println("-----okkkkk18--------");
-
-        }
-
-        else if(in == 8){
-           // rotateImage.setBackgroundResource(R.drawable.glow);
-            rotateImage.setBackgroundResource(R.drawable.a18);
-            startActivity(new Intent(OpeningActivity.this, PlaceChoiceActivity2.class));
-            mRedrawHandler.removeMessages(0);
-            finish();
-            System.out.println("-----okkkkk74--------" );
-            // in=0;
-        }
-
-        mRedrawHandler.sleep(500);
-
-    }
-
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,34 +197,12 @@ int countofDb;
 
         ImageView kolorobLogo = (ImageView) findViewById(R.id.iv_kolorob_logo);//need to add bengali
 
+
         context = this;
 
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         width=displayMetrics.widthPixels;
         height=displayMetrics.heightPixels;
-
-
-//        LinearLayout boy = (LinearLayout) findViewById(R.id.boy);
-//        LinearLayout girl = (LinearLayout) findViewById(R.id.girl);
-
-//        RelativeLayout.LayoutParams kolorob_logo = new RelativeLayout.LayoutParams(width, height / 3);
-//        RelativeLayout.LayoutParams boy_layout = new RelativeLayout.LayoutParams(width / 2, (2 * height) / 3);
-//        RelativeLayout.LayoutParams girl_layout = new RelativeLayout.LayoutParams(width / 2, (2 * height) / 3 - height / 15);
-//
-//        boy_layout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-
-
-//        girl_layout.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//        girl_layout.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//
-//        boy.setLayoutParams(boy_layout);
-//        girl.setLayoutParams(girl_layout);
-//
-//        boy.bringToFront();
-//        girl.bringToFront();
-
-//        kolorob_logo.setMargins(0, 15, 0, 0);
-//        kolorobLogo.setLayoutParams(kolorob_logo);
 
 
 
@@ -311,8 +215,9 @@ int countofDb;
             editor.commit();
 
             if(!AppUtils.isNetConnected(getApplicationContext())) {
-                AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+                alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                alertDialog.setCanceledOnTouchOutside(false);
                 alertDialog.setMessage(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                         new DialogInterface.OnClickListener() {
@@ -332,24 +237,23 @@ int countofDb;
 
 
             {
-                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
-                pd.setIndeterminate(true);
-                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
+//                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
+//                pd.setIndeterminate(true);
+//                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
                 LoadData();
 
-                pd.dismiss();
-                // Intent i = new Intent(OpeningActivity.this, LocationAskActivity.class);
+                //   pd.dismiss();
             }
         } else {
             AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
             alertDialog.setTitle("আপনি কি তথ্য হালনাগাদ করতে চান? ");
-
+            alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "না",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
                             Log.e("open4",String.valueOf(getCountofDb()));
-                            Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                            Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                             startActivity(i);
 
@@ -368,22 +272,24 @@ int countofDb;
                                 SharedPreferences.Editor editor = settings.edit();
                                 editor.putInt("KValue", countofDb);
                                 editor.commit();
-                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
-                                pd.setIndeterminate(true);
-                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
+//                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
+//                                pd.setIndeterminate(true);
+//                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
 
 
                                 LoadData();
                             } else {
                                 AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+
                                 alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                                alertDialog.setCanceledOnTouchOutside(false);
                                 alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।  ");
                                 alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dialog.dismiss();
                                                 Log.e("open3",String.valueOf(countofDb));
-                                                Intent i = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);
+                                                Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
                                                 overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                                                 startActivity(i);
                                                 dialog.dismiss();
@@ -399,6 +305,7 @@ int countofDb;
                     });
 
             alertDialog.show();
+            alertDialog.setCanceledOnTouchOutside(false);
         }
     }
     public void LoadData()
@@ -407,198 +314,203 @@ int countofDb;
         /*
         @@@@ arafat, you have to control wheel from here
         moving wheel while loading data into local database
-
          */
-        rotateImage = (ImageView) findViewById(R.id.rotate_image);
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+
+
+
+
+
+
+
+//        Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                                  /* start the activity */
+//
+////                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+//                overridePendingTransition(0, 0);
+//                Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
+//                startActivity(a);
+//
+//                //  finish();
+//            }
+//        }, 60000);
+//        //setImage();
+//
+        final Handler handler = new Handler();
+        Runnable runner = new Runnable() {
+            int timeCounter = 0;
             @Override
             public void run() {
-                                /* start the activity */
-                //    startActivity(new Intent(SplashActivity.this, MainActivity.class));
-                //overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-                overridePendingTransition(0, 0);
-                finish();
+                if (OpeningActivity.this.countofDb >= NUMBER_OF_TASKS || timeCounter > 60000) {
+                    overridePendingTransition(0, 0);
+                    handler.removeCallbacks(this);
+                    Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
+                    frameAnimation.stop();
+                    startActivity(a);
+                    return;
+                }
+                //Create a loop
+                handler.postDelayed(this, 1000);
+                timeCounter += 1000;
             }
-        }, 6000);
 
-        setImage();
+        };
+        handler.postDelayed(runner, 1000);
+
+        rotateImage = (ImageView) findViewById(R.id.rotate_image);
+        rotateImage.setBackgroundResource(R.drawable.frame_animation_list);
+        frameAnimation = (AnimationDrawable) rotateImage.getBackground();
+        frameAnimation.setOneShot(false);
+        frameAnimation.start();
 
 
         if ((AppUtils.isNetConnected(getApplicationContext()) )&&(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED )
                 ) {
-          getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories", new VolleyApiCallback() {
-                       @Override
-                      public void onResponse(int status, String apiContent) {
-                           if (status == AppConstants.SUCCESS_CODE) {
-
-                                try {
-
-                                    JSONArray jo = new JSONArray(apiContent);
-
-                                    saveCategoryList(jo);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                               }
-                            }
-                        }
-                   }
-            );
-//
-//
-//            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal", new VolleyApiCallback() {
-//                        @Override
-//                        public void onResponse(int status, String apiContent) {
-//                            // Log.d("====","Response"+apiContent);
-//
-//
-//                            try {
-//                              //  Log.d("====","I am here");
-//                                JSONArray legal_array= new JSONArray(apiContent);
-//                                //  JSONObject jo = new JSONObject(apiContent);
-//                                int p= legal_array.length();
-//                           //     Log.d("====","LengthArray "+p);
-//
-//                                for(int i=0;i<p;i++)
-//                                {
-//
-//                                }
-//
-////                                   String apiSt = jo.getString(AppConstants.KEY_STATUS);
-////                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-////                                        saveLegalaidServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//                    }
-//            );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
 
 
-                                try {
-                                    JSONArray jo = new JSONArray(apiContent);
-
-                                    savesubcat(jo);
-                                    SubCategoryTableNew subCategoryTableNew= new SubCategoryTableNew(OpeningActivity.this);
-                                    si3=subCategoryTableNew.getAllSubCat();
-                                    si3.size();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-                                try {
-                                    JSONArray jo = new JSONArray(apiContent);
-
-                                    savenewEdu(jo);
-
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-           getRequest(OpeningActivity.this, "get_sub_categories", new VolleyApiCallback() {
-                       @Override
-                        public void onResponse(int status, String apiContent) {
-                           if (status == AppConstants.SUCCESS_CODE) {
-
-
-                                try {
-                                    JSONObject jo = new JSONObject(apiContent);
-                                    String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                        saveSubCategoryList(jo.getJSONArray(AppConstants.KEY_DATA));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-            getRequest(OpeningActivity.this, "education/all", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-                                try {
-                                    JSONObject jo = new JSONObject(apiContent);
-                                    String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                        saveEducationServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-
-
-            getRequest(OpeningActivity.this, "entertainment/all", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                 @Override
                 public void onResponse(int status, String apiContent) {
                     if (status == AppConstants.SUCCESS_CODE) {
-
-
                         try {
-                            JSONObject jo = new JSONObject(apiContent);
-                            String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                            if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
+
+                            JSONArray allData = new JSONArray(apiContent);
+                            new SaveHealthtDataTask(OpeningActivity.this).execute(allData);
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 }
             });
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment", new VolleyApiCallback() {
+
+                                try {
+                                    JSONArray jo = new JSONArray(apiContent);
+                                    new SaveSubCategoryListTask(OpeningActivity.this).execute(jo);
+                                    // String apiSt = jo.getString(AppConstants.KEY_STATUS);
+                                    // if (apiSt.equals(AppConstants.KEY_SUCCESS))
+                                    //     new SaveSubCategoryListTask(OpeningActivity.this).execute(jo.getJSONArray(AppConstants.KEY_DATA));
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            );
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/get_sp_rating?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
+
+
+                                try {
+                                    JSONArray jo = new JSONArray(apiContent);
+                                    new SaveRatingTask(OpeningActivity.this).execute(jo);
+                                    // String apiSt = jo.getString(AppConstants.KEY_STATUS);
+                                    // if (apiSt.equals(AppConstants.KEY_SUCCESS))
+                                    //     new SaveSubCategoryListTask(OpeningActivity.this).execute(jo.getJSONArray(AppConstants.KEY_DATA));
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            );
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
+
+                                try {
+
+                                    JSONArray jo = new JSONArray(apiContent);
+
+                                    new SaveCategoryListTask(OpeningActivity.this).execute(jo);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            );
+            //
+            //
+
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
+
+
+                                try {
+                                    JSONArray jo = new JSONArray(apiContent);
+
+                                    new SaveSubCategoryNewListTask(OpeningActivity.this).execute(jo);
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            );
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                        @Override
+                        public void onResponse(int status, String apiContent) {
+                            if (status == AppConstants.SUCCESS_CODE) {
+
+                                try {
+
+                                    JSONArray allData = new JSONArray(apiContent);
+                                    new SavenewEduTask(OpeningActivity.this).execute(allData);
+
+//                                          frameAnimation.stop();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            );
+
+
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                 @Override
                 public void onResponse(int status, String apiContent) {
 
 
-
                     try {
 
-                        JSONArray allData=new JSONArray(apiContent);
-                        EntDataSize=allData.length();
+                        JSONArray allData = new JSONArray(apiContent);
+                        new SaveEntertainmentDataTask(OpeningActivity.this).execute(allData);
 
-                        for(int i=0;i<=EntDataSize;i++)
-                        {
-                            JSONObject jsonObject=allData.getJSONObject(i);
-
-                            SaveEntertainmentData(jsonObject,i);
-                        }
-
-                       //saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                   } catch (JSONException e) {
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
                 }
             });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
                                 try {
+
                                     JSONArray jo = new JSONArray(apiContent);
+                                    new SavenewFinanceTask(OpeningActivity.this).execute(jo);
 
-                                    savenewFinance(jo);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -606,76 +518,15 @@ int countofDb;
                         }
                     }
             );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
                             if (status == AppConstants.SUCCESS_CODE) {
                                 try {
+
                                     JSONArray jo = new JSONArray(apiContent);
+                                    new SavenewGovTask(OpeningActivity.this).execute(jo);
 
-                                    savenewGov(jo);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health", new VolleyApiCallback() {
-            @Override
-            public void onResponse(int status, String apiContent) {
-
-
-                    try {
-
-                        JSONArray allData=new JSONArray(apiContent);
-                        HealthDatSize=allData.length();
-
-                        for(int i=0;i<HealthDatSize;i++)
-                        {
-                            JSONObject jsonObject=allData.getJSONObject(i);
-                            SaveHealthtData(jsonObject);
-
-                        }
-
-                     //   saveEntertainmentServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-            }
-        });
-
-
-//            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp2/health", new VolleyApiCallback() {
-//                @Override
-//                public void onResponse(int status, String apiContent) {
-//                    if (status == AppConstants.SUCCESS_CODE) {
-//
-//
-//                        try {
-//                            JSONObject jo = new JSONObject(apiContent);
-//                            String apiSt = jo.getString(AppConstants.KEY_STATUS);
-//                            if (apiSt.equals(AppConstants.KEY_SUCCESS))
-//                                saveHealthServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//            });
-            getRequest(OpeningActivity.this, "legal/all", new VolleyApiCallback() {
-                       @Override
-                        public void onResponse(int status, String apiContent) {
-
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-                                try {
-                                    JSONObject jo = new JSONObject(apiContent);
-                                    String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                        saveLegalaidServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -685,54 +536,20 @@ int countofDb;
             );
 
 
-//
-
-//            getRequest(OpeningActivity.this, "job", new VolleyApiCallback() {
-//                        @Override
-//                        public void onResponse(int status, String apiContent) {
-//
-//                            if (status == AppConstants.SUCCESS_CODE) {
-//                                try {
-//                                    JSONObject jo = new JSONObject(apiContent);
-//                                    String apiSt = jo.getString(AppConstants.KEY_STATUS);
-//                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-//                                        saveJobServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }
-//                    }
-//            );
-
-
-//
-            getRequest(OpeningActivity.this, "finance/all", new VolleyApiCallback() {
+            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
                         @Override
                         public void onResponse(int status, String apiContent) {
+                            try {
 
-                            if (status == AppConstants.SUCCESS_CODE) {
+                                JSONArray legal_array = new JSONArray(apiContent);
+                                new SaveLegaltDataTask(OpeningActivity.this).execute(legal_array);
 
-
-                                try {
-                                    JSONObject jo = new JSONObject(apiContent);
-                                    String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                        saveFinancialServiceProvider(jo.getJSONArray(AppConstants.KEY_DATA));
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
                         }
                     }
             );
-
-
-
-
-
-
-
 
         } else {
             if (!AppUtils.isNetConnected(getApplicationContext())) {
@@ -742,7 +559,7 @@ int countofDb;
                 if (db.isTableExists(db3,EDU_PROVIDER_TABLE)){
                     pd.dismiss();
                     Log.e("open1",String.valueOf(countofDb));
-                    Intent a = new Intent(getApplicationContext(),PlaceChoiceActivity2.class);//Default Activity
+                    Intent a = new Intent(getApplicationContext(),PlaceSelectionActivity.class);//Default Activity
                     overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
                     a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     //getApplicationContext().startActivity(a);
@@ -776,17 +593,6 @@ int countofDb;
     }
 
 
-       /* new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-            }
-        }, SPLASH_TIME_OUT);*/
-
-
-
-    /**
-     * Written by : Touhid
-     */
     private void saveCategoryList(JSONArray categoryArray) {
         CategoryTable catTable = new CategoryTable(OpeningActivity.this);
         catTable.dropTable();
@@ -805,6 +611,31 @@ int countofDb;
         countofDb++;
     }
 
+    private void SaveLegaltData(JSONObject jsonObject)
+    {
+        LegalAidServiceProviderTableNew legalAidServiceProviderTableNew= new LegalAidServiceProviderTableNew(OpeningActivity.this);
+        try {
+            LegalAidServiceProviderItemNew legalAidServiceProviderItemNew=LegalAidServiceProviderItemNew.parseLegalAidServiceProviderItemNew(jsonObject);
+            legalAidServiceProviderTableNew.insertItem(legalAidServiceProviderItemNew);
+            if (jsonObject.has("lservice_details"))
+            {
+                JSONArray lservice_details=jsonObject.getJSONArray("lservice_details");
+                int lservice_detailsSize=lservice_details.length();
+
+                for (int v=0;v<lservice_detailsSize;v++)
+                {
+                    JSONObject lservice_detailsSizeItem= lservice_details.getJSONObject(v);
+                    SaveLegalDetailsData(lservice_detailsSizeItem,jsonObject.getInt("id"));
+                }
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     private void SaveHealthtData(JSONObject jsonObject)
     {
         HealthServiceProviderTableNew healthServiceProviderTableNew= new HealthServiceProviderTableNew(OpeningActivity.this);
@@ -816,7 +647,6 @@ int countofDb;
                 JSONArray healthVaccine=jsonObject.getJSONArray("health_vaccine_details");
                 int HealthVaccineDataSize=healthVaccine.length();
 
-               // Log.d("healthVaccineItemDetai","==="+HealthVaccineDataSize);
                 for (int v=0;v<HealthVaccineDataSize;v++)
                 {
                     JSONObject healthVaccineItem= healthVaccine.getJSONObject(v);
@@ -835,6 +665,8 @@ int countofDb;
                     SaveSpecialistData(healthSpecialistItem,jsonObject.getInt("id"));
                 }
             }
+
+
 
 
         } catch (JSONException e) {
@@ -857,7 +689,20 @@ int countofDb;
         }
 
     }
+    private void SaveLegalDetailsData(JSONObject jsonObject,int foreign_key)
+    {
+        LegalAidDetailsTable legalAidDetailsTable= new LegalAidDetailsTable(OpeningActivity.this);
+        try {
+            LeagalAidDetailsItem leagalAidDetailsItem=LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject,foreign_key);
+            legalAidDetailsTable.insertItem(leagalAidDetailsItem);
 
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
     private void SaveSpecialistData(JSONObject jsonObject,int foreign_key)
     {
         HealthSpecialistTableDetails healthVaccineTableDetails= new HealthSpecialistTableDetails(OpeningActivity.this);
@@ -877,245 +722,61 @@ int countofDb;
     private void SaveEntertainmentData(JSONObject jsonObject, int i) {
         EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew= new EntertainmentServiceProviderTableNew(OpeningActivity.this);
         //entertainmentServiceProviderTableNew.dropTable();
-            try {
-                EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
-                entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
+        try {
+            EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
+            entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
+
+            if (jsonObject.has("rspot_details"))
+            {
+                JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
+                int rspot_detailsSize=rspot_details.length();
 
 
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-
-    }
-
-
-
-    private void saveSubCategoryList(JSONArray subCategoryArray) {
-        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
-        subCatTable.dropTable();
-        int subCatCount = subCategoryArray.length();
-        for (int i = 0; i < subCatCount; i++) {
-            try {
-                JSONObject jo = subCategoryArray.getJSONObject(i);
-                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
-                subCatTable.insertItem(si);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-        si2=subCatTable.getAllSubCategories(1);
-        si2.size();
-    }
-
-
-
-
-
-
-    private void saveEducationServiceProvider(JSONArray educationServiceProvider) {
-        EducationServiceProviderTable educationServiceProviderTable = new EducationServiceProviderTable(OpeningActivity.this);
-        educationServiceProviderTable.dropTable();
-        EducationFeeTable educationFeeTable = new EducationFeeTable(OpeningActivity.this);
-        EducationCourseTable educationCourseTable = new EducationCourseTable(OpeningActivity.this);
-        educationCourseTable.dropTable();
-        educationFeeTable.dropTable();
-        EducationCourseItem Eci =null;
-        EducationFeeItem Etf=null;
-        EducationServiceProviderItem et=null;
-        int eduServiceProviderCount = educationServiceProvider.length();
-        for (int i = 0; i < eduServiceProviderCount; i++) {
-            try {
-                JSONObject jo = educationServiceProvider.getJSONObject(i);
-                 et = EducationServiceProviderItem.parseEducationServiceProviderItem(jo);
-                educationServiceProviderTable.insertItem(et);
-
-                if(jo.has("EducationServiceProviderCourse"))
+                for (int v=0;v<rspot_detailsSize;v++)
                 {
-                    JSONArray eduCourse = jo.getJSONArray("EducationServiceProviderCourse");
-                    for( int k=0;k<eduCourse.length();k++)
-                    {
-                        JSONObject joesCourse= eduCourse.getJSONObject(k);
-
-                        Eci = EducationCourseItem.parseEducationCourseItem(joesCourse);
-                        educationCourseTable.insertItem(Eci);
-
-                    }
+                    JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
+                    Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
 
                 }
-                if(jo.has("EduExamFees"))
-                {
-                    JSONArray eduExamFees = jo.getJSONArray("EduExamFees");
-
-                    for( int j=0;j<eduExamFees.length();j++)
-                    {
-                        JSONObject joes= eduExamFees.getJSONObject(j);
-
-                        Etf = EducationFeeItem.parseEducationFeeItem(joes);
-                        educationFeeTable.insertItem(Etf);
-
-                    }
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-        countofDb++;
+
     }
+
+
+    private void Saverspot_detailsData(JSONObject jsonObject,int foreign_key)
+    {
+        EntertainmetTypeTable entertainmetTypeTable= new EntertainmetTypeTable(OpeningActivity.this);
+        try {
+
+            EntertainmentTypeItem entertainmentTypeItem=EntertainmentTypeItem.parseEntertainmentTypeItem(foreign_key,jsonObject);
+            entertainmetTypeTable.insertItem(entertainmentTypeItem);
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+
+
+
+
     /**
      * Written by : arafat
      */
-    private void saveHealthServiceProvider(JSONArray healthServiceProvider) {
-        HealthServiceProviderTable healthServiceProviderTable = new HealthServiceProviderTable(OpeningActivity.this);
-        healthServiceProviderTable.dropTable();
-        HealthVaccinesTable healthVaccinesTable = new  HealthVaccinesTable(OpeningActivity.this);
-        healthVaccinesTable.dropTable();
-        HealthSpecialistTable healthSpecialistTable  = new  HealthSpecialistTable (OpeningActivity.this);
-        healthSpecialistTable.dropTable();
-        HealthPharmacyTable healthPharmacyTable = new HealthPharmacyTable(OpeningActivity.this);
-        healthPharmacyTable.dropTable();
-        int healthServiceProviderCount = healthServiceProvider.length();
-        for (int i = 0; i < healthServiceProviderCount; i++) {
-            try {
-                JSONObject jo = healthServiceProvider.getJSONObject(i);
-                HealthServiceProviderItem et = HealthServiceProviderItem.parseHealthServiceProviderItem(jo);
-               // healthServiceProviderTable.insertItemHealth(et);
-
-                if(jo.has("specialist"))
-                {
-                    JSONArray specialist = jo.getJSONArray("specialist");
-
-                    for( int m=0;m<specialist.length();m++)
-                    {
-                        JSONObject joes= specialist.getJSONObject(m);
-
-                        HealthSpecialistItem ets =  HealthSpecialistItem.parseHealthSpecialistItem(joes);
-                        healthSpecialistTable.insertItemHealth(ets);
-
-                    }
-
-                }
-                if(jo.has("vaccine"))
-                {
-                    JSONArray vaccine = jo.getJSONArray("vaccine");
-
-                    for( int n=0;n<vaccine.length();n++)
-                    {
-                        JSONObject joes= vaccine.getJSONObject(n);
-
-                        HealthVaccinesItem etd =  HealthVaccinesItem.parseHealthVaccinesItem(joes);
-                        healthVaccinesTable.insertItemHealth(etd);
-
-                    }
-
-                }
-                if(jo.has("pharmacy"))
-                {
-                    JSONArray pharmacy = jo.getJSONArray("pharmacy");
-
-                    for( int k=0;k<pharmacy.length();k++)
-                    {
-                        JSONObject joes= pharmacy.getJSONObject(k);
-                        HealthPharmacyItem etl = HealthPharmacyItem.parseHealthPharmacyItem(joes);
-                        healthPharmacyTable.insertItemHealthPharmacy(etl);
-
-                    }
-
-                }
 
 
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
-    private void saveEntertainmentServiceProvider(JSONArray entertainmentServiceProvider) {
-        EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(OpeningActivity.this);
-        entertainmentServiceProviderTable.dropTable();
-        EntertainmentBookTable entertainmentBookTable = new EntertainmentBookTable(OpeningActivity.this);
-        entertainmentBookTable.dropTable();
-        EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(OpeningActivity.this);
-        entertainmentFieldTable.dropTable();
-        EntertainmentTheatreTable entertainmentTheatreTable = new EntertainmentTheatreTable(OpeningActivity.this);
-        entertainmentTheatreTable.dropTable();
-        EntertainmentFitnessTable entertainmentFitnessTable = new EntertainmentFitnessTable(OpeningActivity.this);
-        entertainmentFitnessTable.dropTable();
-        int entServiceProviderCount = entertainmentServiceProvider.length();
-        for (int i = 0; i < entServiceProviderCount; i++) {
-            try {
-                JSONObject jo = entertainmentServiceProvider.getJSONObject(i);
-                EntertainmentServiceProviderItem et = EntertainmentServiceProviderItem.parseEntertainmentServiceProviderItem(jo);
-                entertainmentServiceProviderTable.insertItem(et);
-
-
-                if(jo.has("EntFitnessBeauty"))
-                {
-                    JSONArray EntFitnessBeauty = jo.getJSONArray("EntFitnessBeauty");
-
-                    for( int m=0;m<EntFitnessBeauty.length();m++)
-                    {
-                        JSONObject joes= EntFitnessBeauty.getJSONObject(m);
-                        EntertainmentFitnessItem ets = EntertainmentFitnessItem.parseEntertainmentFitnessItem(joes);
-                        entertainmentFitnessTable.insertItem(ets);
-
-                    }
-
-                }
-
-                if(jo.has("EntBookShop"))
-                {
-                    JSONArray EntBookShop = jo.getJSONArray("EntBookShop");
-                    for( int j=0;j<EntBookShop.length();j++)
-                    {
-                        JSONObject joes= EntBookShop.getJSONObject(j);
-                        EntertainmentBookShopItem ets = EntertainmentBookShopItem.parseEntertainmentBookShopItem(joes);
-                        entertainmentBookTable.insertItem(ets);
-
-                    }
-
-                }
-
-                if(jo.has("EntField"))
-                {
-                    JSONArray EntField = jo.getJSONArray("EntField");
-                    for( int k=0;k<EntField.length();k++)
-                    {
-                        JSONObject joes= EntField.getJSONObject(k);
-                        EntertainmentFieldItem ets = EntertainmentFieldItem.parseEntertainmentFieldItem(joes);
-                        entertainmentFieldTable.insertItem(ets);
-
-                    }
-
-
-                }
-
-                if(jo.has("EntTheatre"))
-                {
-                    JSONArray EntTheatre = jo.getJSONArray("EntTheatre");
-                    for( int l=0;l<EntTheatre.length();l++)
-                    {
-                        JSONObject joes= EntTheatre.getJSONObject(l);
-                        EntertainmentTheatreItem etc = EntertainmentTheatreItem.parseEntertainmentTheatreItem(joes);
-                        entertainmentTheatreTable.insertItem(etc);
-
-                    }
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
     private void savenewEdu(JSONArray edu ) {
         EducationNewTable educationNewTable= new EducationNewTable(OpeningActivity.this);
         EducationResultDetailsTable educationResultDetailsTable= new EducationResultDetailsTable(OpeningActivity.this);
@@ -1172,6 +833,7 @@ int countofDb;
                     }
 
                 }
+
 
 
             } catch (JSONException e) {
@@ -1258,51 +920,9 @@ int countofDb;
         }
 
     }
-    private void saveLegalaidServiceProvider(JSONArray legalaidServiceProvider) {
-        LegalAidServiceProviderTable legalAidServiceProviderTable = new LegalAidServiceProviderTable(OpeningActivity.this);
-        legalAidServiceProviderTable.dropTable();
-        int legalaidServiceProviderCount = legalaidServiceProvider.length();
-        LegalAidtypeServiceProviderSalishiTable legalAidtypeServiceProviderSalishiTable = new LegalAidtypeServiceProviderSalishiTable(OpeningActivity.this);
-        legalAidtypeServiceProviderSalishiTable.dropTable();
-        LegalAidtypeServiceProviderLegalAdviceTable legalAidtypeServiceProviderLegalAdviceTable = new LegalAidtypeServiceProviderLegalAdviceTable(OpeningActivity.this);
-        legalAidtypeServiceProviderLegalAdviceTable.dropTable();
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = legalaidServiceProvider.getJSONObject(i);
-                LegalAidServiceProviderItem et = LegalAidServiceProviderItem.parseLegalAidServiceProviderItem(jo);
-                legalAidServiceProviderTable.insertItem(et);
 
-                if(jo.has("LegalAdvice"))
-                {
-                    JSONArray LegalAdvice = jo.getJSONArray("LegalAdvice");
-                    for( int j=0;j<LegalAdvice.length();j++)
-                    {
-                        JSONObject joes= LegalAdvice.getJSONObject(j);
-                        LegalAidLegalAdviceItem lasi = LegalAidLegalAdviceItem.parseLegalAidLegalAdviceItem(joes);
-                        legalAidtypeServiceProviderLegalAdviceTable.insertItem(lasi);
 
-                    }
 
-                }
-                if(jo.has("Salishi"))
-                {
-                    JSONArray Salishi = jo.getJSONArray("Salishi");
-                    for( int j=0;j<Salishi.length();j++)
-                    {
-                        JSONObject joes= Salishi.getJSONObject(j);
-                        LegalAidSalishiItem legalAidSalishiItem = LegalAidSalishiItem.parseLegalAidSalishiItem(joes);
-                        legalAidtypeServiceProviderSalishiTable.insertItem(legalAidSalishiItem);
-
-                    }
-
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
 
     private void savesubcat(JSONArray subcat ) {
         SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(OpeningActivity.this);
@@ -1322,8 +942,53 @@ int countofDb;
                 e.printStackTrace();
             }
         }
+
+
+
+
+    }
+    private void savesubcat2(JSONArray subcat ) {
+        SubCategoryTable subCategoryTable=new SubCategoryTable(OpeningActivity.this);
+
+
+
+        subCategoryTable.dropTable();
+
+        int legalaidServiceProviderCount = subcat.length();
+
+        for (int i = 0; i < legalaidServiceProviderCount; i++) {
+            try {
+                JSONObject jo = subcat.getJSONObject(i);
+                SubCategoryItem et = SubCategoryItem.parseSubCategoryItem(jo);
+                subCategoryTable.insertItem(et);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
     }
 
+    private void saveSubCategoryList(JSONArray subCategoryArray) {
+        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
+        subCatTable.dropTable();
+        int subCatCount = subCategoryArray.length();
+        for (int i = 0; i < subCatCount; i++) {
+            try {
+                JSONObject jo = subCategoryArray.getJSONObject(i);
+                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
+                subCatTable.insertItem(si);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        countofDb++;
+        si2=subCatTable.getAllSubCategories(1);
+        si2.size();
+    }
 
     private void saveFinancialServiceProvider(JSONArray financialServiceProvider) {
         FinancialServiceProviderTable financialServiceProviderTable = new FinancialServiceProviderTable(OpeningActivity.this);
@@ -1480,27 +1145,11 @@ int countofDb;
 //            startActivity(i);
 //
 //        } else {
-        pd.dismiss();
-        SharedPreferences settings = getSharedPreferences("prefs", 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putInt("KValue", countofDb);
-        editor.commit();
-        Log.e("open2",String.valueOf(countofDb));
-        Intent a = new Intent(OpeningActivity.this, PlaceChoiceActivity2.class);//Default Activity
-        overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-        //Intent a = new Intent(OpeningActivity.this, FeedbackActivity.class);
-        startActivity(a);
+
 
         //    }
 
     }
-
-
-
-
-
-
-
 
 
     @Override
@@ -1552,7 +1201,15 @@ int countofDb;
         inFromRight.setInterpolator(new AccelerateInterpolator());
         return inFromRight;
     }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (alertDialog != null) {
+            alertDialog.dismiss();
+            alertDialog = null;
+        }
 
+    }
     @Override
     protected void onStart() {
         // TODO Auto-generated method stub
@@ -1585,6 +1242,741 @@ int countofDb;
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+    public void makeToastWithShortbread(String message) {
+        if (t != null) {
+            t.cancel();
+            t = null;
+        }
+        t = Toast.makeText(this, message, Toast.LENGTH_SHORT);
+        if (t != null)
+            t.show();
+    }
+
+    // ASYNC TASKS
+    abstract class GenericSaveDBTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
+        private Context ctx;
+
+        public GenericSaveDBTask(Context ctx) {
+            this.ctx = ctx;
+        }
+
+        @Override
+        protected void onPostExecute(Result result) {
+            if (((Long) result).longValue() == 0.0 && countofDb < NUMBER_OF_TASKS)  { // Means the task is successful
+                countofDb++;
+                SharedPreferences settings = getSharedPreferences("prefs", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putInt("KValue", countofDb);
+                editor.commit();
+                Log.d("tasks", "Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
+                makeToastWithShortbread("Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
+            }
+        }
+
+    }
+
+    class SaveCategoryListTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveCategoryListTask(Context ctx) {
+            super(ctx);
+        }
+
+        @Override
+        protected Long doInBackground(JSONArray... categoryArrays) {
+            JSONArray categoryArray = categoryArrays[0];
+            CategoryTable catTable = new CategoryTable(OpeningActivity.this);
+            catTable.dropTable();
+            int catCount = categoryArray.length();
+            for (int i = 0; i < catCount; i++) {
+                try {
+                    JSONObject jo = categoryArray.getJSONObject(i);
+                    CategoryItem ci = CategoryItem.parseCategoryItem(jo);
+                    catTable.insertItem(ci);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+    }
+
+    class SaveSubCategoryNewListTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveSubCategoryNewListTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... categoryArrays) {
+            JSONArray subcat = categoryArrays[0];
+            SubCategoryTableNew subCategoryTableNew = new SubCategoryTableNew(OpeningActivity.this);
+            subCategoryTableNew.dropTable();
+
+            int legalaidServiceProviderCount = subcat.length();
+
+            for (int i = 0; i < legalaidServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = subcat.getJSONObject(i);
+                    SubCategoryItemNew et = SubCategoryItemNew.parseSubCategoryItem(jo);
+                    subCategoryTableNew.insertItem(et);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+
+            si3 = subCategoryTableNew.getAllSubCat();
+            si3.size();
+
+            return new Long(0);
+        }
+    }
+
+    class SaveSubCategoryListTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveSubCategoryListTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray subCategoryArray = jsonObjects[0];
+            SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
+            subCatTable.dropTable();
+            int subCatCount = subCategoryArray.length();
+            for (int i = 0; i < subCatCount; i++) {
+                try {
+                    JSONObject jo = subCategoryArray.getJSONObject(i);
+                    SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
+                    subCatTable.insertItem(si);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            si2 = subCatTable.getAllSubCategories(1);
+            si2.size();
+            return new Long(0);
+        }
+    }
+    class SaveRatingTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveRatingTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray RatingArray = jsonObjects[0];
+            RatingTable subCatTable = new RatingTable(OpeningActivity.this);
+            subCatTable.dropTable();
+            int subCatCount = RatingArray.length();
+            for (int i = 0; i < subCatCount; i++) {
+                try {
+                    JSONObject jo = RatingArray.getJSONObject(i);
+                    RatingModel si = RatingModel.parseRatingModel(jo);
+                    subCatTable.insertItem(si);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            si22 = subCatTable.getAllCategories();
+            si22.size();
+            return new Long(0);
+        }
+    }
+
+    class SaveHealthtDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveHealthtDataTask(Context ctx) {
+            super(ctx);
+        }
+
+
+        protected Long doInBackground(JSONArray... jsonArrays) {
+            JSONArray allData = jsonArrays[0];
+            HealthServiceProviderTableNew healthServiceProviderTableNew = new HealthServiceProviderTableNew(OpeningActivity.this);
+            HealthDatSize = allData.length();
+
+            for (int i = 0; i < HealthDatSize; i++) {
+                try {
+                    JSONObject jsonObject = allData.getJSONObject(i);
+                    HealthServiceProviderItemNew healthServiceProviderItemNew = HealthServiceProviderItemNew.parseHealthServiceProviderItem(jsonObject);
+                    healthServiceProviderTableNew.insertItemHealth(healthServiceProviderItemNew);
+                    if (jsonObject.has("health_vaccine_details")) {
+                        JSONArray healthVaccine = jsonObject.getJSONArray("health_vaccine_details");
+                        int HealthVaccineDataSize = healthVaccine.length();
+
+                        for (int v = 0; v < HealthVaccineDataSize; v++) {
+                            JSONObject healthVaccineItem = healthVaccine.getJSONObject(v);
+                            SaveHealthVaccineData(healthVaccineItem, jsonObject.getInt("id"));
+                        }
+                    }
+                    if (jsonObject.has("health_specialist_details")) {
+                        JSONArray health_specialist_details = jsonObject.getJSONArray("health_specialist_details");
+                        int HealthVaccineDataSize = health_specialist_details.length();
+
+                        for (int v = 0; v < HealthVaccineDataSize; v++) {
+                            JSONObject healthSpecialistItem = health_specialist_details.getJSONObject(v);
+                            SaveSpecialistData(healthSpecialistItem, jsonObject.getInt("id"));
+                        }
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+
+        private void SaveSpecialistData(JSONObject jsonObject, int foreign_key) {
+            HealthSpecialistTableDetails healthVaccineTableDetails = new HealthSpecialistTableDetails(OpeningActivity.this);
+            try {
+                HealthSpecialistItemDetails healthSpecialistItemDetails = HealthSpecialistItemDetails.parseHealthSpecialistItem(jsonObject, foreign_key);
+                healthVaccineTableDetails.insertItemHealth(healthSpecialistItemDetails);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        private void SaveHealthVaccineData(JSONObject jsonObject, int foreign_key) {
+            HealthVaccineTableDetails healthVaccineTableDetails = new HealthVaccineTableDetails(OpeningActivity.this);
+            try {
+                HealthVaccineItemDetails healthVaccineItemDetails = HealthVaccineItemDetails.parseHealthVaccinesItem(jsonObject, foreign_key);
+                healthVaccineTableDetails.insertItemHealth(healthVaccineItemDetails);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+    class SaveEntertainmentDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveEntertainmentDataTask(Context ctx) {
+            super(ctx);
+        }
+
+
+        protected Long doInBackground(JSONArray... jsonArrays) {
+            JSONArray allData = jsonArrays[0];
+            int entDataSize = allData.length();
+
+            for (int i = 0; i < entDataSize; i++) {
+                try {
+                    JSONObject jsonObject = allData.getJSONObject(i);
+                    EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew = new EntertainmentServiceProviderTableNew(OpeningActivity.this);
+                    //entertainmentServiceProviderTableNew.dropTable();
+                    EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew = EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject, i);
+                    entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
+
+                    if (jsonObject.has("rspot_details")) {
+                        JSONArray rspot_details = jsonObject.getJSONArray("rspot_details");
+                        int rspot_detailsSize = rspot_details.length();
+
+                        for (int v = 0; v < rspot_detailsSize; v++) {
+                            JSONObject rspot_detailsSizeItem = rspot_details.getJSONObject(v);
+                            Saverspot_detailsData(rspot_detailsSizeItem, jsonObject.getInt("id"));
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+
+        private void Saverspot_detailsData(JSONObject jsonObject, int foreign_key) {
+            EntertainmetTypeTable entertainmetTypeTable = new EntertainmetTypeTable(OpeningActivity.this);
+            try {
+
+                EntertainmentTypeItem entertainmentTypeItem = EntertainmentTypeItem.parseEntertainmentTypeItem(foreign_key, jsonObject);
+                entertainmetTypeTable.insertItem(entertainmentTypeItem);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+
+    class SavenewFinanceTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SavenewFinanceTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonArrays) {
+            JSONArray financial = jsonArrays[0];
+            FinancialServiceNewTable financialServiceNewTable = new FinancialServiceNewTable(OpeningActivity.this);
+
+            FinancialServiceDetailsTable financialServiceDetailsTable = new FinancialServiceDetailsTable(OpeningActivity.this);
+
+            financialServiceDetailsTable.dropTable();
+
+            financialServiceNewTable.dropTable();
+
+
+            int legalaidServiceProviderCount = financial.length();
+
+            for (int i = 0; i < legalaidServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = financial.getJSONObject(i);
+                    FinancialNewItem et = FinancialNewItem.parseFinancialMapInfoItem(jo);
+                    financialServiceNewTable.insertItem(et);
+
+
+                    if (jo.has("fin_service_details"))// need id in fin_service_details
+                    {
+                        JSONArray service_details = jo.getJSONArray("fin_service_details");
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
+                            FinancialServiceDetailsItem financialServiceDetailsItem = FinancialServiceDetailsItem.parseFinancialServiceDetailsItem(joes);
+                            financialServiceDetailsTable.insertItem(financialServiceDetailsItem);
+
+                        }
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+    }
+
+
+    class SavenewGovTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SavenewGovTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonArrays) {
+            JSONArray Gov = jsonArrays[0];
+            GovernmentNewTable governmentNewTable = new GovernmentNewTable(OpeningActivity.this);
+
+            GovernmentServiceDetailsTable governmentServiceDetailsTable = new GovernmentServiceDetailsTable(OpeningActivity.this);
+
+            governmentServiceDetailsTable.dropTable();
+
+            governmentNewTable.dropTable();
+
+
+            int Govcount = Gov.length();
+
+            for (int i = 0; i < Govcount; i++) {
+                try {
+                    JSONObject jo = Gov.getJSONObject(i);
+                    GovernmentNewItem et = GovernmentNewItem.parseGovernmentNewItem(jo);
+                    governmentNewTable.insertItem(et);
+
+                    if (jo.has("govservice_details"))// need id in fin_service_details
+                    {
+                        JSONArray service_details = jo.getJSONArray("govservice_details");
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
+                            GovernmentServiceDetailsItem governmentServiceDetailsItem = GovernmentServiceDetailsItem.parseGovernmentServiceDetailsItem(joes);
+                            governmentServiceDetailsTable.insertItem(governmentServiceDetailsItem);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+    }
+
+
+    /**
+     * Written by : arafat
+     */
+
+
+//            private void savenewEdu (JSONArray edu){
+//                EducationNewTable educationNewTable = new EducationNewTable(OpeningActivity.this);
+//                EducationResultDetailsTable educationResultDetailsTable = new EducationResultDetailsTable(OpeningActivity.this);
+//                EducationTrainingDetailsTable educationTrainingDetailsTable = new EducationTrainingDetailsTable(OpeningActivity.this);
+//                EducationTuitionDetailsTable educationTuitionDetailsTable = new EducationTuitionDetailsTable(OpeningActivity.this);
+//                educationNewTable.dropTable();
+//                educationResultDetailsTable.dropTable();
+//                educationTrainingDetailsTable.dropTable();
+//                educationTuitionDetailsTable.dropTable();
+//
+
+    class SaveLegaltDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveLegaltDataTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonArrays) {
+            JSONArray legal_array = jsonArrays[0];
+            int p = legal_array.length();
+
+
+            for (int i = 0; i < p; i++) {
+                try {
+                    JSONObject jsonObject = legal_array.getJSONObject(i);
+                    LegalAidServiceProviderTableNew legalAidServiceProviderTableNew = new LegalAidServiceProviderTableNew(OpeningActivity.this);
+                    LegalAidServiceProviderItemNew legalAidServiceProviderItemNew = LegalAidServiceProviderItemNew.parseLegalAidServiceProviderItemNew(jsonObject);
+                    legalAidServiceProviderTableNew.insertItem(legalAidServiceProviderItemNew);
+                    if (jsonObject.has("lservice_details")) {
+                        JSONArray lservice_details = jsonObject.getJSONArray("lservice_details");
+                        int lservice_detailsSize = lservice_details.length();
+
+                        for (int v = 0; v < lservice_detailsSize; v++) {
+                            JSONObject lservice_detailsSizeItem = lservice_details.getJSONObject(v);
+                            SaveLegalDetailsData(lservice_detailsSizeItem, jsonObject.getInt("id"));
+                        }
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+
+        private void SaveLegalDetailsData(JSONObject jsonObject, int foreign_key) {
+            LegalAidDetailsTable legalAidDetailsTable = new LegalAidDetailsTable(OpeningActivity.this);
+            try {
+                LeagalAidDetailsItem leagalAidDetailsItem = LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject, foreign_key);
+                legalAidDetailsTable.insertItem(leagalAidDetailsItem);
+
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+    class SaveEducationServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveEducationServiceProviderTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray educationServiceProvider = jsonObjects[0];
+            EducationServiceProviderTable educationServiceProviderTable = new EducationServiceProviderTable(OpeningActivity.this);
+            educationServiceProviderTable.dropTable();
+            EducationFeeTable educationFeeTable = new EducationFeeTable(OpeningActivity.this);
+            EducationCourseTable educationCourseTable = new EducationCourseTable(OpeningActivity.this);
+            educationCourseTable.dropTable();
+            educationFeeTable.dropTable();
+            EducationCourseItem Eci = null;
+            EducationFeeItem Etf = null;
+            EducationServiceProviderItem et = null;
+            int eduServiceProviderCount = educationServiceProvider.length();
+            for (int i = 0; i < eduServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = educationServiceProvider.getJSONObject(i);
+                    et = EducationServiceProviderItem.parseEducationServiceProviderItem(jo);
+                    educationServiceProviderTable.insertItem(et);
+
+                    if (jo.has("EducationServiceProviderCourse")) {
+                        JSONArray eduCourse = jo.getJSONArray("EducationServiceProviderCourse");
+                        for (int k = 0; k < eduCourse.length(); k++) {
+                            JSONObject joesCourse = eduCourse.getJSONObject(k);
+
+                            Eci = EducationCourseItem.parseEducationCourseItem(joesCourse);
+                            educationCourseTable.insertItem(Eci);
+
+                        }
+
+                    }
+                    if (jo.has("EduExamFees")) {
+                        JSONArray eduExamFees = jo.getJSONArray("EduExamFees");
+
+                        for (int j = 0; j < eduExamFees.length(); j++) {
+                            JSONObject joes = eduExamFees.getJSONObject(j);
+
+                            Etf = EducationFeeItem.parseEducationFeeItem(joes);
+                            educationFeeTable.insertItem(Etf);
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+    }
+
+    class SaveHealthServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveHealthServiceProviderTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray healthServiceProvider = jsonObjects[0];
+            HealthServiceProviderTable healthServiceProviderTable = new HealthServiceProviderTable(OpeningActivity.this);
+            healthServiceProviderTable.dropTable();
+            HealthVaccinesTable healthVaccinesTable = new HealthVaccinesTable(OpeningActivity.this);
+            healthVaccinesTable.dropTable();
+            HealthSpecialistTable healthSpecialistTable = new HealthSpecialistTable(OpeningActivity.this);
+            healthSpecialistTable.dropTable();
+            HealthPharmacyTable healthPharmacyTable = new HealthPharmacyTable(OpeningActivity.this);
+            healthPharmacyTable.dropTable();
+            int healthServiceProviderCount = healthServiceProvider.length();
+            for (int i = 0; i < healthServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = healthServiceProvider.getJSONObject(i);
+                    HealthServiceProviderItem et = HealthServiceProviderItem.parseHealthServiceProviderItem(jo);
+                    // healthServiceProviderTable.insertItemHealth(et);
+
+                    if (jo.has("specialist")) {
+                        JSONArray specialist = jo.getJSONArray("specialist");
+
+                        for (int m = 0; m < specialist.length(); m++) {
+                            JSONObject joes = specialist.getJSONObject(m);
+
+                            HealthSpecialistItem ets = HealthSpecialistItem.parseHealthSpecialistItem(joes);
+                            healthSpecialistTable.insertItemHealth(ets);
+
+                        }
+
+                    }
+                    if (jo.has("vaccine")) {
+                        JSONArray vaccine = jo.getJSONArray("vaccine");
+
+                        for (int n = 0; n < vaccine.length(); n++) {
+                            JSONObject joes = vaccine.getJSONObject(n);
+
+                            HealthVaccinesItem etd = HealthVaccinesItem.parseHealthVaccinesItem(joes);
+                            healthVaccinesTable.insertItemHealth(etd);
+
+                        }
+
+                    }
+                    if (jo.has("pharmacy")) {
+                        JSONArray pharmacy = jo.getJSONArray("pharmacy");
+
+                        for (int k = 0; k < pharmacy.length(); k++) {
+                            JSONObject joes = pharmacy.getJSONObject(k);
+                            HealthPharmacyItem etl = HealthPharmacyItem.parseHealthPharmacyItem(joes);
+                            healthPharmacyTable.insertItemHealthPharmacy(etl);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+            return new Long(0);
+        }
+
+
+        private void savesubcat(JSONArray subcat) {
+            SubCategoryTableNew subCategoryTableNew = new SubCategoryTableNew(OpeningActivity.this);
+
+
+            subCategoryTableNew.dropTable();
+
+            int legalaidServiceProviderCount = subcat.length();
+
+            for (int i = 0; i < legalaidServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = subcat.getJSONObject(i);
+                    SubCategoryItemNew et = SubCategoryItemNew.parseSubCategoryItem(jo);
+                    subCategoryTableNew.insertItem(et);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+
+    }
+
+
+
+
+    class SaveEntertainmentServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveEntertainmentServiceProviderTask(Context ctx) {
+            super(ctx);
+        }
+
+        private void saveSubCategoryList(JSONArray subCategoryArray) {
+            SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
+            subCatTable.dropTable();
+            int subCatCount = subCategoryArray.length();
+            for (int i = 0; i < subCatCount; i++) {
+                try {
+                    JSONObject jo = subCategoryArray.getJSONObject(i);
+                    SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
+                    subCatTable.insertItem(si);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            countofDb++;
+            si2 = subCatTable.getAllSubCategories(1);
+            si2.size();
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray entertainmentServiceProvider = jsonObjects[0];
+            EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(OpeningActivity.this);
+            entertainmentServiceProviderTable.dropTable();
+            EntertainmentBookTable entertainmentBookTable = new EntertainmentBookTable(OpeningActivity.this);
+            entertainmentBookTable.dropTable();
+            EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(OpeningActivity.this);
+            entertainmentFieldTable.dropTable();
+            EntertainmentTheatreTable entertainmentTheatreTable = new EntertainmentTheatreTable(OpeningActivity.this);
+            entertainmentTheatreTable.dropTable();
+            EntertainmentFitnessTable entertainmentFitnessTable = new EntertainmentFitnessTable(OpeningActivity.this);
+            entertainmentFitnessTable.dropTable();
+            int entServiceProviderCount = entertainmentServiceProvider.length();
+            for (int i = 0; i < entServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = entertainmentServiceProvider.getJSONObject(i);
+                    EntertainmentServiceProviderItem et = EntertainmentServiceProviderItem.parseEntertainmentServiceProviderItem(jo);
+                    entertainmentServiceProviderTable.insertItem(et);
+
+
+                    if (jo.has("EntFitnessBeauty")) {
+                        JSONArray EntFitnessBeauty = jo.getJSONArray("EntFitnessBeauty");
+
+                        for (int m = 0; m < EntFitnessBeauty.length(); m++) {
+                            JSONObject joes = EntFitnessBeauty.getJSONObject(m);
+                            EntertainmentFitnessItem ets = EntertainmentFitnessItem.parseEntertainmentFitnessItem(joes);
+                            entertainmentFitnessTable.insertItem(ets);
+
+                        }
+
+                    }
+
+                    if (jo.has("EntBookShop")) {
+                        JSONArray EntBookShop = jo.getJSONArray("EntBookShop");
+                        for (int j = 0; j < EntBookShop.length(); j++) {
+                            JSONObject joes = EntBookShop.getJSONObject(j);
+                            EntertainmentBookShopItem ets = EntertainmentBookShopItem.parseEntertainmentBookShopItem(joes);
+                            entertainmentBookTable.insertItem(ets);
+
+                        }
+
+                    }
+
+                    if (jo.has("EntField")) {
+                        JSONArray EntField = jo.getJSONArray("EntField");
+                        for (int k = 0; k < EntField.length(); k++) {
+                            JSONObject joes = EntField.getJSONObject(k);
+                            EntertainmentFieldItem ets = EntertainmentFieldItem.parseEntertainmentFieldItem(joes);
+                            entertainmentFieldTable.insertItem(ets);
+
+                        }
+
+
+                    }
+
+                    if (jo.has("EntTheatre")) {
+                        JSONArray EntTheatre = jo.getJSONArray("EntTheatre");
+                        for (int l = 0; l < EntTheatre.length(); l++) {
+                            JSONObject joes = EntTheatre.getJSONObject(l);
+                            EntertainmentTheatreItem etc = EntertainmentTheatreItem.parseEntertainmentTheatreItem(joes);
+                            entertainmentTheatreTable.insertItem(etc);
+
+                        }
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
+        }
+    }
+
+
+    class SavenewEduTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SavenewEduTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray edu = jsonObjects[0];
+            EducationNewTable educationNewTable = new EducationNewTable(OpeningActivity.this);
+            EducationResultDetailsTable educationResultDetailsTable = new EducationResultDetailsTable(OpeningActivity.this);
+            EducationTrainingDetailsTable educationTrainingDetailsTable = new EducationTrainingDetailsTable(OpeningActivity.this);
+            EducationTuitionDetailsTable educationTuitionDetailsTable = new EducationTuitionDetailsTable(OpeningActivity.this);
+            educationNewTable.dropTable();
+            educationResultDetailsTable.dropTable();
+            educationTrainingDetailsTable.dropTable();
+            educationTuitionDetailsTable.dropTable();
+
+
+            int eduServiceProviderCount = edu.length();
+
+            for (int i = 0; i < eduServiceProviderCount; i++) {
+                try {
+                    JSONObject jo = edu.getJSONObject(i);
+                    EducationNewItem et = EducationNewItem.parseEducationNewItem(jo);
+                    educationNewTable.insertItem(et);
+
+
+                    if (jo.has("tution_details"))//
+                    {
+                        JSONArray service_details = jo.getJSONArray("tution_details");
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
+                            EducationTuitionDetailsItem educationTuitionDetailsItem = EducationTuitionDetailsItem.parseEducationTuitionDetailsItem(joes);
+                            educationTuitionDetailsTable.insertItem(educationTuitionDetailsItem);
+
+                        }
+
+                        countofDb++;
+
+                    }
+
+
+                    if (jo.has("result_details"))//
+                    {
+                        JSONArray service_details = jo.getJSONArray("result_details");
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
+                            EducationResultItemNew educationResultItemNew = EducationResultItemNew.parseEducationResultItemNew(joes);
+                            educationResultDetailsTable.insertItem(educationResultItemNew);
+
+                        }
+
+                    }
+                    if (jo.has("training_details"))//
+                    {
+                        JSONArray service_details = jo.getJSONArray("training_details");
+                        for (int j = 0; j < service_details.length(); j++) {
+                            JSONObject joes = service_details.getJSONObject(j);
+                            EducationTrainingDetailsItem educationTrainingDetailsItem = EducationTrainingDetailsItem.parseEducationTrainingDetailsItem(joes);
+                            educationTrainingDetailsTable.insertItem(educationTrainingDetailsItem);
+                        }
+
+                    }
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            return new Long(0);
         }
     }
 

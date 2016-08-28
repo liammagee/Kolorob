@@ -2,11 +2,12 @@ package demo.kolorob.kolorobdemoversion.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -20,9 +21,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +37,8 @@ public class PhoneRegActivity extends Activity {
     ImageView close,kivabejabejob;
     TextView close_tv;
     ImageButton Feedback;
+    String username="kolorobapp";
+    String password="2Jm!4jFe3WgBZKEN";
     /**
      * Following components are only for LegalAid
      * For other categories this components may vary
@@ -90,7 +90,6 @@ public class PhoneRegActivity extends Activity {
             AlertMessage.showMessage(this, "দুঃখিত আপনার ফোন নম্বরটি সঠিক নয়",
                     "অনুগ্রহ পূর্বক সঠিক ফোন নম্বরটি ইনপুট দিন");
         } else {
-            SharedPreferencesHelper.setNumber(con,phoneNumber);
             sendPhoneNumberToServer(phoneNumber);
         }
     }
@@ -98,37 +97,52 @@ public class PhoneRegActivity extends Activity {
 
     public void sendPhoneNumberToServer(final String phone)
     {
-        String url = "http://www.kolorob.net/KolorobApi/api/customers/register?phone="+phone;
+
+       // http://kolorob.net/demo/api/customer_reg?phone=01711310912
+        String url = "http://kolorob.net/demo/api/customer_reg?phone="+phone+"&username="+username+"&password="+password+"" ;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(PhoneRegActivity.this,response,Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(PhoneRegActivity.this,response,Toast.LENGTH_SHORT).show();
                        // Log.d(">>>>>","status "+response);
                         try {
-                            JSONObject jo = new JSONObject(response);
-                            String forms;
-                            forms = jo.getString("status");
-                            Log.d(">>>>>","status "+forms);
+
                             //Log.d(">>>>>","status ");
 
-                            if(forms.equals("true"))
+                            if(response.equals("true"))
                             {
-                                AlertMessage.showMessage(PhoneRegActivity.this, "রেজিস্টেশনটি সফলভাবে সম্পন্ন হয়েছে",
-                                        "েজিস্টেশন করার জন্য আপনাকে ধন্যবাদ");
+                                SharedPreferencesHelper.setNumber(con,phoneNumber);
+                                AlertDialog alertDialog = new AlertDialog.Builder(PhoneRegActivity.this).create();
+                                alertDialog.setTitle("নিবন্ধনটি সফলভাবে সম্পন্ন হয়েছে");
+                                alertDialog.setMessage("নিবন্ধন করার জন্য আপনাকে ধন্যবাদ");
+                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "আচ্ছা",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+
+
+                                                finish();
+                                            }
+                                        });
+                                alertDialog.show();
                             }
                             else
-                                AlertMessage.showMessage(PhoneRegActivity.this, "রেজিস্টেশনটি সফলভাবে সম্পন্ন হয়ে নি",
-                                        "আপনি ইতিপূর্বে রেজিস্ট্রেশন করে ফেলেছেন");
+                            {
+                                SharedPreferencesHelper.setNumber(con,phoneNumber);
+                                AlertMessage.showMessage(PhoneRegActivity.this, "নিবন্ধনটি সফলভাবে সম্পন্ন হয়ে নি",
+                                        "আপনি ইতিপূর্বে নিবন্ধন করে ফেলেছেন");
+                            }
+
+                                        //  finish();
 
 
 
 
 
 
-
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 

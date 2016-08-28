@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -343,6 +344,134 @@ public class EducationNewTable {
 
     }
 
+    public ArrayList<EducationNewItem> getAllEducationSubCategoriesInfo() {
+        ArrayList<EducationNewItem> subCatList = new ArrayList<>();
+
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +  " ORDER BY " +KEY_NAME_EN, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+
+
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
+    public ArrayList<EducationNewItem> getAllEducationSubCategoriesInfoWithHead(String header) {
+
+
+       // Log.d("cat_id","####"+cat_id);
+        Log.d("header/Query****","####"+header);
+        int[] k = new int[100];
+        ArrayList<EducationNewItem> nameslist = new ArrayList<>();
+        ArrayList<Integer> s = new ArrayList<Integer>();
+
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.SUB_CATEGORY_NEW + " WHERE _headbn = '" + header + "'", null);
+        if (cursor.moveToFirst()) {
+            do {
+
+                s.add(cursor.getInt(5));
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+            Cursor cursor2 = db.rawQuery("SELECT * FROM " + TABLE_NAME , null);
+
+
+            if (cursor2.moveToFirst()) {
+                do {
+
+                    String getter = cursor2.getString(48);
+                    String delims = "[,]";
+                    String[] tokens = getter.split(delims);
+                    for (int j = 0; j < s.size(); j++) {
+                        for (int ii = 0; ii < tokens.length; ii++) {
+                            if (Integer.parseInt(tokens[ii]) == s.get(j)) {
+                                nameslist.add(cursorToSubCatList(cursor2));
+                            }
+                        }
+                    }
+
+                } while (cursor2.moveToNext());
+            }
+            cursor2.close();
+
+        closeDB();
+return nameslist;
+
+    }
+    public ArrayList<EducationNewItem> Edunames(String a,String place) {
+        String subcatnames=null;
+        subcatnames=a;
+        String places;
+        int k =0;
+        ArrayList<EducationNewItem> nameslist=new ArrayList<>();
+        ArrayList<Integer>s=new ArrayList<Integer>();
+        places=place;
+        SQLiteDatabase db = openDB();
+        int i=0;
+        Cursor cursor =db.rawQuery("SELECT * FROM " + DatabaseHelper.SUB_CATEGORY_NEW +  " WHERE _subcatnamebn = '"+subcatnames+"'" ,null);
+        if (cursor.moveToFirst()) {
+            do {
+
+                k=cursor.getInt(5);
+
+
+
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+
+        Cursor cursor2 = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
+                +KEY_AREA+" = '"+places+"'"  , null);
+
+
+        if (cursor2.moveToFirst()) {
+            do {
+
+              String getter=cursor2.getString(48);
+               String delims = "[,]";
+               String[] tokens = getter.split(delims);
+                for (int ii=0;ii<tokens.length;ii++)
+                {
+                    if(Integer.parseInt(tokens[i])==k)
+                    {
+                        nameslist.add(cursorToSubCatList(cursor2));
+                    }
+                }
+
+
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        closeDB();
+        return  nameslist;
+    }
+    public ArrayList<EducationNewItem> getEducationData(String node_id) {
+        ArrayList<EducationNewItem> subCatList = new ArrayList<>();
+        //System.out.println(cat_id+"  "+sub_cat_id);
+        SQLiteDatabase db = openDB();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "+ KEY_NODE_ID +" = "+node_id, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                //System.out.println("abc="+cursor.getString(4));
+                subCatList.add(cursorToSubCatList(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        closeDB();
+        return subCatList;
+    }
     public ArrayList<EducationNewItem> getAllSubCat() {
         ArrayList<EducationNewItem> siList = new ArrayList<>();
 
@@ -358,26 +487,7 @@ public class EducationNewTable {
         closeDB();
         return siList;
     }
-    public ArrayList<EducationNewItem> getAllEducationSubCategoriesInfo() {
-        ArrayList<EducationNewItem> subCatList = new ArrayList<>();
 
-        //System.out.println(cat_id+"  "+sub_cat_id);
-        SQLiteDatabase db = openDB();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " ORDER BY " + KEY_NAME_EN, null);
-
-        if (cursor.moveToFirst()) {
-            do {
-
-
-                //System.out.println("abc="+cursor.getString(4));
-                subCatList.add(cursorToSubCatList(cursor));
-
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        closeDB();
-        return subCatList;
-    }
     public EducationNewItem geteduNode2(int Node) {
 
         SQLiteDatabase db = openDB();
