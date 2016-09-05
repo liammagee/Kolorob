@@ -2,7 +2,7 @@ package demo.kolorob.kolorobdemoversion.fragment;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,36 +10,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.routing.OSRMRoadManager;
-import org.osmdroid.bonuspack.routing.Road;
-import org.osmdroid.bonuspack.routing.RoadManager;
-import org.osmdroid.bonuspack.routing.RoadNode;
+import org.osmdroid.bonuspack.BuildConfig;
 import org.osmdroid.events.MapEventsReceiver;
+import org.osmdroid.tileprovider.constants.OpenStreetMapTileProviderConstants;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.FolderOverlay;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.OverlayItem;
-import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import demo.kolorob.kolorobdemoversion.R;
-import demo.kolorob.kolorobdemoversion.database.RatingTable;
+import demo.kolorob.kolorobdemoversion.adapters.AllHolder;
 import demo.kolorob.kolorobdemoversion.helpers.MyInfoWindow;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
@@ -54,16 +52,10 @@ import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
 /**
  * Created by israt.jahan on 5/5/2016.
- * Modified By Arafat
-
  */
 public class MapFragmentOSM extends Fragment implements View.OnClickListener, MapEventsReceiver {
-    Drawable newMarker;
-    Marker marker;
-    org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay mylocation;
-    private LinearLayout subcatlistholder;
-    GeoPoint pp;
-    int ind = 0;
+
+
     List<String> listData = new ArrayList<String>();
 
     public String getLocationName() {
@@ -78,7 +70,7 @@ public class MapFragmentOSM extends Fragment implements View.OnClickListener, Ma
     private int locationNameId;
     private static double VIEW_WIDTH;
     private int primaryIconWidth;
-
+    boolean firstRun;
     public int getLocationNameId() {
         return locationNameId;
     }
@@ -102,10 +94,22 @@ public class MapFragmentOSM extends Fragment implements View.OnClickListener, Ma
     private ArrayList<FinancialNewItem> financialServiceProvider = null;
     private ArrayList<EducationNewItem> educationServiceProvider = null;
     private ArrayList<GovernmentNewItem> governmentNewItems = null;
+    private  ArrayList<AllHolder>allitems=null;
     MapView mapView,mapp;
+    String datevalue,datevaluebn;
     private int categoryId;
     String user="kolorobapp";
     String pass="2Jm!4jFe3WgBZKEN";
+    String first;
+    final ArrayList<Marker> items = new ArrayList<Marker>();
+    final ArrayList<Marker> items1 = new ArrayList<Marker>();
+    final ArrayList<Marker> items2 = new ArrayList<Marker>();
+    final ArrayList<Marker> items3 = new ArrayList<Marker>();
+    final ArrayList<Marker> items4 = new ArrayList<Marker>();
+    final ArrayList<Marker> items5 = new ArrayList<Marker>();
+    final ArrayList<Marker> items6 = new ArrayList<Marker>();
+    final ArrayList<Marker> items7 = new ArrayList<Marker>();
+    final ArrayList<Marker> items8 = new ArrayList<Marker>();
     ArrayList<RatingModel>rating=new ArrayList<>();
     public ArrayList<GovernmentNewItem> getGovernmentNewItems() {
         return governmentNewItems;
@@ -116,6 +120,14 @@ public class MapFragmentOSM extends Fragment implements View.OnClickListener, Ma
     }
 
     ArrayAdapter arrayAdapter;
+
+    public ArrayList<AllHolder> getAllitems() {
+        return allitems;
+    }
+
+    public void setAllitems(ArrayList<AllHolder> allitems) {
+        this.allitems = allitems;
+    }
 
     public int getCategoryId() {
         return categoryId;
@@ -140,7 +152,7 @@ public class MapFragmentOSM extends Fragment implements View.OnClickListener, Ma
     public void setLegalaidServiceProvider(ArrayList<LegalAidServiceProviderItemNew> et) {
         this.legalaidServiceProvider = et;
     }
-
+    byte[] bytes;
     public void setFinancialServiceProvider(ArrayList<FinancialNewItem> et) {
         this.financialServiceProvider = et;
     }
@@ -150,25 +162,23 @@ public class MapFragmentOSM extends Fragment implements View.OnClickListener, Ma
 
         educationServiceProvider = et;
     }
-
+    double latDouble, longDouble;
+    int i = 0;
     Date today = Calendar.getInstance().getTime();
     int subcategotyId;
     String subcategotyId2;
     View rootView;
-    ArrayList<OverlayItem> anotherOverlayItemArray, anotherOverlayItemArrayfinal, anotherOverlayItemArray2, anotherOverlayItemArray3, anotherOverlayItemArray4, anotherOverlayItemArray7, anotherOverlayItemArray8, anotherOverlayItemArray5, anotherOverlayItemArray6;
 
     public MapFragmentOSM() {
 
     }
 
     LocationManager locationManager;
-    ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay, anotherItemizedIconOverlay2, anotherItemizedIconOverlay7, anotherItemizedIconOverlay8, anotherItemizedIconOverlay3, anotherItemizedIconOverlay4, anotherItemizedIconOverlay5, anotherItemizedIconOverlay6;
-    ArrayList<ItemizedIconOverlay> overlayholder = null;
 
     public ArrayList<HealthServiceProviderItemNew> getHealthServiceProvider() {
         return healthServiceProvider;
     }
-    String ratingavg;
+    String ratingavg,ratingavgbn;
     public void setHealthServiceProvider(ArrayList<HealthServiceProviderItemNew> et) {
         this.healthServiceProvider = et;
     }
@@ -178,29 +188,85 @@ public class MapFragmentOSM extends Fragment implements View.OnClickListener, Ma
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         LayoutInflater li = LayoutInflater.from(getActivity());
-        double latDouble, longDouble;
-        int i = 0;
+
 
         super.onCreate(savedInstanceState);
-
+        SharedPreferences settings = MapFragmentOSM.this.getActivity().getSharedPreferences("prefs", 0);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         rootView = inflater.inflate(R.layout.fragment_map, container,
                 false);
         VIEW_WIDTH = AppUtils.getScreenWidth(getActivity()) * AppConstants.CAT_LIST_LG_WIDTH_PERC;
         primaryIconWidth = (int) Math.floor(VIEW_WIDTH * 0.80);
         mapView = (MapView) rootView.findViewById(R.id.mapview);
-setMapView(mapView);
+        setMapView(mapView);
 
         mapView.setClickable(true);
 
 
         mapView.setBuiltInZoomControls(true);
         mapView.setMultiTouchControls(true);
-        mapView.setUseDataConnection(true);
 
 
-        mapView.setTileSource(TileSourceFactory.MAPNIK);
+
+
         mapView.setTilesScaledToDpi(true);
+        first = settings.getString("First", null);
+        if (first!=null && first.equals("yes"))//if running for first time
+        {   Log.d("ss","********"+first);
+            File path = MapFragmentOSM.this.getActivity().getExternalFilesDir(null);
+
+            File file = new File(path, "kolorob.txt");
+
+            try
+            {
+                int length = (int) file.length();
+
+                bytes = new byte[length];
+
+                FileInputStream in = null;
+                try {
+                    in = new FileInputStream(file);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    try { if(in!=null){
+                        int b=in.read(bytes);}
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } finally {
+                    try {
+                       if(in!=null) in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                String contents = new String(bytes);
+                String delims = "[,]";
+                String[] tokens = contents.split(delims);
+                String text= tokens[0]+",no";
+
+                FileOutputStream fOut = new FileOutputStream(file);
+                OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+                myOutWriter.write("");
+                myOutWriter.append(text);
+                myOutWriter.close();
+                fOut.close();
+            } catch(Exception e)
+            {
+
+            }
+
+            mapView.setUseDataConnection(true);
+            OpenStreetMapTileProviderConstants.setUserAgentValue(BuildConfig.APPLICATION_ID);
+            mapView.setTileSource(TileSourceFactory.MAPNIK);
+        }
+        else {
+            //OpenStreetMapTileProviderConstants.setUserAgentValue(BuildConfig.APPLICATION_ID);
+            mapView.setUseDataConnection(false);
+            //mapView.setTileSource(TileSourceFactory.MAPNIK);
+        }
       /*  mapView.setTilesScaledToDpi(true);
         // Test code
         float density = mapView.isTilesScaledToDpi() ? mapView.getResources().getDisplayMetrics().density : 1;
@@ -222,182 +288,37 @@ setMapView(mapView);
             mapViewController.setCenter(AppConstants.PARIS1);
         }
 
-        RatingTable ratingTable=new RatingTable(MapFragmentOSM.this.getActivity());
-        switch (categoryId) {
-            case AppConstants.EDUCATION:
-                if (educationServiceProvider != null) {
-                    for (EducationNewItem et : educationServiceProvider) {
-                        //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
-                        subcategotyId2 = et.getRefnumm();
-                        latDouble = Double.parseDouble(et.getLat());
 
-                     ratingavg =  ratingTable.getavg(et.getEduId());
-                     if(ratingavg==null)
-                     {
-                         ratingavg="পাওয়া যায় নি";
+// get the time and make a date out of it
+        Date date2 = new Date(settings.getLong("time", 0));
+        Date today=new Date();
+        long diffInMillisec = today.getTime() - date2.getTime();
 
-                     }
-                        else {
-
-
-                        String ratingdate=ratingTable.getdate(et.getEduId());
-                        String current_date=simpleDateFormat.format(today);
-
-                     }
-                        longDouble = Double.parseDouble(et.getLon());
-                      GeoPoint point = new GeoPoint(latDouble, longDouble);
-                        drawMarkerEdu(point, et.getNamebn(), ratingavg, et.getNode_contact(), et.getEduId(),subcategotyId2);
-                    }
-                }
-                break;
-            case AppConstants.HEALTH:
-                for (HealthServiceProviderItemNew et : healthServiceProvider) {
-                    //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
-                    String subcategotyId = et.getCategory();
-                    //Log.d("subcategotyId_Legal","=======");
-                    ratingavg =  ratingTable.getavg(Integer.parseInt(et.getId()));
-                    if(ratingavg==null)
-                    {
-                        ratingavg="পাওয়া যায় নি";
-
-                    }
-                    else {
-
-
-                        String ratingdate=ratingTable.getdate(Integer.parseInt(et.getId()));
-                        String current_date=simpleDateFormat.format(today);
-
-                    }
-                    latDouble = Double.parseDouble(et.getLat());
-                    longDouble = Double.parseDouble(et.getLon());
-                    GeoPoint point = new GeoPoint(latDouble, longDouble);
-                    drawMarkerHealth(point, et.getNode_bn(), ratingavg, et.getNode_contact(), et.getId(), subcategotyId);
-                }
-                break;
-            case AppConstants.ENTERTAINMENT:
-                for (EntertainmentServiceProviderItemNew et : entertainmentServiceProvider) {
-                    //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
-                     String subcategotyId = et.getCategoryId();
-                    latDouble = Double.parseDouble(et.getLatitude());
-                    longDouble = Double.parseDouble(et.getLongitude());
-                    ratingavg =  ratingTable.getavg(Integer.parseInt(et.getNodeId()));
-                    if(ratingavg==null)
-                    {
-                        ratingavg="পাওয়া যায় নি";
-
-                    }
-                    else {
-
-
-                        String ratingdate=ratingTable.getdate(Integer.parseInt(et.getNodeId()));
-                        String current_date=simpleDateFormat.format(today);
-
-                    }
-                    GeoPoint point = new GeoPoint(latDouble, longDouble);
-                    drawMarkerEnt(point, et.getNodeNameBn(), ratingavg, et.getNodeContact(), et.getNodeId(), subcategotyId);
-                }
-                break;
-            case AppConstants.GOVERNMENT:
-                if (governmentNewItems != null) {
-                    for (GovernmentNewItem et : governmentNewItems) {
-                        //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
-                        subcategotyId2 = et.getRefnumm();
-                        latDouble = Double.parseDouble(et.getLat());
-                        longDouble = Double.parseDouble(et.getLon());
-                        ratingavg =  ratingTable.getavg(et.getFinId());
-                        if(ratingavg==null)
-                        {
-                            ratingavg="পাওয়া যায় নি";
-
-                        }
-                        else {
-
-
-                            String ratingdate=ratingTable.getdate(et.getFinId());
-                            String current_date=simpleDateFormat.format(today);
-
-                        }
-                        GeoPoint point = new GeoPoint(latDouble, longDouble);
-                        drawMarkerGov(point, et.getNameen(), ratingavg, et.getNode_contact(), et.getFinId(),subcategotyId2);
-                    }
-                }
-                break;
-            case AppConstants.LEGAL:
-                for (LegalAidServiceProviderItemNew et : legalaidServiceProvider) {
-                    //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
-                    String subcategotyId = et.getCategoryId();
-
-                    latDouble = Double.parseDouble(et.getLatitude());
-                    longDouble = Double.parseDouble(et.getLongitude());
-                    ratingavg =  ratingTable.getavg(Integer.parseInt(et.getIdentifierId()));
-                    if(ratingavg==null)
-                    {
-                        ratingavg="পাওয়া যায় নি";
-
-                    }
-                    else {
-
-
-                        String ratingdate=ratingTable.getdate(Integer.parseInt(et.getIdentifierId()));
-                        String current_date=simpleDateFormat.format(today);
-
-                    }
-                    GeoPoint point = new GeoPoint(latDouble, longDouble);
-                    drawMarkerLeg(point, et.getLegalaidNameBan(), ratingavg, et.getContactNo(), et.getIdentifierId(), subcategotyId);
-                }
-                break;
-            case AppConstants.FINANCIAL:
-                for (FinancialNewItem et : financialServiceProvider) {
-                    //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
-                    subcategotyId2 = et.getRefnumm();
-                    latDouble = Double.parseDouble(et.getLat());
-                    longDouble = Double.parseDouble(et.getLon());
-                    ratingavg =  ratingTable.getavg(et.getFinId());
-                    if(ratingavg==null)
-                    {
-                        ratingavg="পাওয়া যায় নি";
-
-                    }
-                    else {
-
-
-                        String ratingdate=ratingTable.getdate(et.getFinId());
-                        String current_date=simpleDateFormat.format(today);
-
-                    }
-                    GeoPoint point = new GeoPoint(latDouble, longDouble);
-                    drawMarkerFin(point, et.getNamebn(), ratingavg, et.getNode_contact(), et.getFinId(), subcategotyId2);
-                }
-                break;
-            case AppConstants.JOB:
-
-                break;
-            default:
-                break;
-
-
+        long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillisec);
+        if (diffInDays==0) datevalue=" (আজকের তথ্য)";
+        else
+        {
+            datevaluebn=EtoBconversion(String.valueOf(diffInDays));
+            datevalue=" ( "+ datevaluebn + " দিন আগের তথ্য)";
         }
 
 
+
+
         //---
-        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
-        mapView.getOverlays().add(0, mapEventsOverlay);
+
         //Add Scale Bar
         ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(mapView);
         mapView.getOverlays().add(myScaleBarOverlay);
 
 
-        ImageButton curButton=(ImageButton) rootView.findViewById(R.id.currlocation);
-      /*  curButton.setOnClickListener(new View.OnClickListener() {
-
+      /*   ImageButton curButton=(ImageButton) rootView.findViewById(R.id.currlocation);
+       curButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mylocation = new MyLocationNewOverlay(mapView);
                 mylocation.enableMyLocation();
-
                 IMyLocationProvider s= mylocation.getMyLocationProvider();
-
-
                 mylocation.getMyLocation();
                 mapView.getOverlays().add(mylocation);
             }
@@ -405,15 +326,269 @@ setMapView(mapView);
 
 
 
+
         return rootView;
     }
 
+public void eduicons()
+{
+   mapView.removeAllViewsInLayout();
+mapView.getOverlays().clear();
+    MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+    mapView.getOverlays().add(0, mapEventsOverlay);
+    mapView.invalidate();
+    items.clear();
+    items1.clear();
+    items2.clear();
+    items3.clear();
+    items4.clear();
+    items5.clear();
+    if (educationServiceProvider != null) {
+
+
+        for (EducationNewItem et : educationServiceProvider) {
+
+            //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
+            subcategotyId2 = et.getRefnumm();
+            latDouble = Double.parseDouble(et.getLat());
+            ratingavg=et.getRating();
+
+
+            if((ratingavg.equals("null"))||(ratingavg.equals("")))
+            {
+                ratingavg="পাওয়া যায় নি";
+
+            }
+            else  {
+                ratingavgbn=EtoBconversion(ratingavg);
+
+                ratingavg=ratingavgbn.concat(datevalue);
+            }
+            longDouble = Double.parseDouble(et.getLon());
+            GeoPoint point = new GeoPoint(latDouble, longDouble);
+            drawMarkerEdu(point, et.getNamebn(), ratingavg, et.getNode_contact(), et.getEduId(),subcategotyId2);
+        }
+    }
+
+
+}
+    public void healthicons()
+    {
+        mapView.removeAllViewsInLayout();
+        mapView.getOverlays().clear();
+
+        mapView.invalidate();
+        items.clear();
+        items1.clear();
+        items2.clear();
+        items3.clear();
+        items4.clear();
+        items5.clear();
+        items6.clear();
+        if (healthServiceProvider != null) {
+
+            for (HealthServiceProviderItemNew et : healthServiceProvider) {
+
+                //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
+                String subcategotyId = et.getReferences();
+                //Log.d("subcategotyId_Legal","=======");
+
+                ratingavg=et.getRating();
 
 
 
+
+                if((ratingavg.equals("null"))||(ratingavg.equals("")))
+                {
+                    ratingavg="পাওয়া যায় নি";
+                }
+                else  {
+                    ratingavgbn=EtoBconversion(ratingavg);
+
+                    ratingavg=ratingavgbn.concat(datevalue);
+                }
+                latDouble = Double.parseDouble(et.getLat());
+                longDouble = Double.parseDouble(et.getLon());
+                GeoPoint point = new GeoPoint(latDouble, longDouble);
+                drawMarkerHealth(point, et.getNode_bn(), ratingavg, et.getNode_contact(), et.getId(), subcategotyId);
+            }
+        }
+
+
+    }
+
+    public void enticons()
+    {
+        mapView.removeAllViewsInLayout();
+        mapView.getOverlays().clear();
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+        mapView.invalidate();
+        items.clear();
+        items1.clear();
+        items2.clear();
+        items3.clear();
+        items4.clear();
+        items5.clear();
+        items6.clear();
+        items7.clear();
+        items8.clear();
+
+        if (entertainmentServiceProvider != null) {
+
+
+            for (EntertainmentServiceProviderItemNew et : entertainmentServiceProvider) {
+                //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
+                String subcategotyId = et.getNodeAdditional();
+                latDouble = Double.parseDouble(et.getLatitude());
+                longDouble = Double.parseDouble(et.getLongitude());
+                ratingavg=et.getRating();
+
+
+                if((ratingavg.equals("null"))||(ratingavg.equals("")))
+                {
+                    ratingavg="পাওয়া যায় নি";
+
+                }
+                else  {
+                    ratingavgbn=EtoBconversion(ratingavg);
+
+                    ratingavg=ratingavgbn.concat(datevalue);
+                }
+                GeoPoint point = new GeoPoint(latDouble, longDouble);
+                drawMarkerEnt(point, et.getNodeNameBn(), ratingavg, et.getNodeContact(), et.getNodeId(), subcategotyId);
+            }
+        }
+
+
+    }
+//for government
+public void govicons()
+{
+    mapView.removeAllViewsInLayout();
+    mapView.getOverlays().clear();
+
+    mapView.invalidate();
+    items.clear();
+    items1.clear();
+    items2.clear();
+    items3.clear();
+    items4.clear();
+    items5.clear();
+    items6.clear();
+    if (governmentNewItems != null) {
+
+        for (GovernmentNewItem et : governmentNewItems) {
+
+            //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
+            subcategotyId2 = et.getRefnumm();
+            latDouble = Double.parseDouble(et.getLat());
+            longDouble = Double.parseDouble(et.getLon());
+            ratingavg=et.getRating();
+
+            if((ratingavg.equals("null"))||(ratingavg.equals("")))
+            {
+                ratingavg="পাওয়া যায় নি";
+
+            }
+            else  {
+                ratingavgbn=EtoBconversion(ratingavg);
+
+                ratingavg=ratingavgbn.concat(datevalue);
+            }
+            GeoPoint point = new GeoPoint(latDouble, longDouble);
+            drawMarkerGov(point, et.getNamebn(), ratingavg, et.getNode_contact(), et.getFinId(),subcategotyId2);
+        }
+    }
+
+
+}
+
+    //method for legal
+    public void legicons()
+    {
+        mapView.removeAllViewsInLayout();
+        mapView.getOverlays().clear();
+
+        mapView.invalidate();
+        items.clear();
+        items1.clear();
+        items2.clear();
+
+        if (legalaidServiceProvider != null) {
+
+            for (LegalAidServiceProviderItemNew et : legalaidServiceProvider) {
+
+                //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
+                String subcategotyId = et.getCategoryId();
+
+                latDouble = Double.parseDouble(et.getLatitude());
+                longDouble = Double.parseDouble(et.getLongitude());
+                ratingavg=et.getRating();
+
+
+                if((ratingavg.equals("null"))||(ratingavg.equals("")))
+                {
+                    ratingavg="পাওয়া যায় নি";
+
+                }
+                else  {
+                    ratingavgbn=EtoBconversion(ratingavg);
+
+                    ratingavg=ratingavgbn.concat(datevalue);
+                }
+                GeoPoint point = new GeoPoint(latDouble, longDouble);
+                drawMarkerLeg(point, et.getLegalaidNameBan(), ratingavg, et.getContactNo(), et.getIdentifierId(), subcategotyId);
+            }
+        }
+
+
+    }
+
+    //for financial
+    public void finicons()
+    {
+        mapView.removeAllViewsInLayout();
+        mapView.getOverlays().clear();
+
+        mapView.invalidate();
+        items.clear();
+        items1.clear();
+        items2.clear();
+        items3.clear();
+        items4.clear();
+        items5.clear();
+        items6.clear();
+        if (financialServiceProvider != null) {
+
+            for (FinancialNewItem et : financialServiceProvider) {
+
+                //    LatLng location = new LatLng(Double.parseDouble(et.getLatitude()), Double.parseDouble(et.getLongitude()));
+                subcategotyId2 = et.getRefnumm();
+                latDouble = Double.parseDouble(et.getLat());
+                longDouble = Double.parseDouble(et.getLon());
+                ratingavg=et.getRating();
+
+                if((ratingavg.equals("null"))||(ratingavg.equals("")))
+                {
+                    ratingavg="পাওয়া যায় নি";
+
+                }
+                else  {
+                    ratingavgbn=EtoBconversion(ratingavg);
+
+                    ratingavg=ratingavgbn.concat(datevalue);
+                }
+                GeoPoint point = new GeoPoint(latDouble, longDouble);
+                drawMarkerFin(point, et.getNamebn(), ratingavg, et.getNode_contact(), et.getFinId(), subcategotyId2);
+            }
+        }
+
+
+    }
     @Override
     public boolean singleTapConfirmedHelper(GeoPoint p) {
-        Toast.makeText(getActivity(), "Tap on (" + p.getLatitude() + "," + p.getLongitude() + ")", Toast.LENGTH_SHORT).show();
+
         InfoWindow.closeAllInfoWindowsOn(mapView);
         return true;
     }
@@ -425,46 +600,727 @@ setMapView(mapView);
 
     private void drawMarkerEdu(GeoPoint point, String title, String add, String contact, int node, String subcategotyId2) {
 
+
         String delims = "[,]";
         String[] tokens = subcategotyId2.split(delims);
+        Marker marker1 = new Marker(mapView);
+        Marker marker2 = new Marker(mapView);
+        Marker marker3 = new Marker(mapView);
+        Marker marker4 = new Marker(mapView);
+        Marker marker5 = new Marker(mapView);
 
-        Marker marker = new Marker(mapView);
-        marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-    for(int i=0;i<tokens.length;i++) {
-        if (tokens[i]=="")continue;
-        subcategotyId=Integer.parseInt(tokens[i]);
 
-        if (subcategotyId ==179 ||subcategotyId ==163 ||subcategotyId ==161 ||subcategotyId ==123 ||subcategotyId ==145
-        ||subcategotyId ==108 ||subcategotyId ==100 ||subcategotyId ==79 ||subcategotyId ==50 ||subcategotyId ==49
-        ||subcategotyId ==44 ||subcategotyId ==43)
-            marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
-        else if (subcategotyId ==147 ||subcategotyId ==146 ||subcategotyId ==62 ||subcategotyId ==59|| subcategotyId ==52)
-            marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
-        else if (subcategotyId ==164 ||subcategotyId ==93)
-            marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
-        else if (subcategotyId ==150 ||subcategotyId ==149)
-            marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
-        else if (subcategotyId ==128 ||subcategotyId ==94 ||subcategotyId ==64 ||subcategotyId ==63 ||subcategotyId ==7
-        ||subcategotyId ==165|| subcategotyId ==104||subcategotyId ==91||subcategotyId ==32||subcategotyId ==26
-        ||subcategotyId ==180 ||subcategotyId ==78||subcategotyId ==77)
-            marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+        marker1.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
-        InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,add);
-        marker.setInfoWindow(infoWindow);
+        marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
-        mapView.getOverlays().add(marker);
-        //marker.setTitle("Title of the marker");
+        marker3.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker4.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker5.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        mapView.getOverlays().clear();
+
+        for(int i=0;i<tokens.length;i++) {
+            if (tokens[i] == "") continue;
+            subcategotyId = Integer.parseInt(tokens[i]);
+
+            if (subcategotyId == 179 || subcategotyId == 163 || subcategotyId == 161 || subcategotyId == 123 || subcategotyId == 145
+                    || subcategotyId == 108 || subcategotyId == 100 || subcategotyId == 79 || subcategotyId == 50 || subcategotyId == 49
+                    || subcategotyId == 44 || subcategotyId == 43) {
+
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId, add);
+                marker1.setInfoWindow(infoWindow);
+                marker1.setPosition(point);
+                marker1.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+                items1.add(marker1);
+                items.add(marker1);
+            } else if (subcategotyId == 147 || subcategotyId == 146 || subcategotyId == 62 || subcategotyId == 59 || subcategotyId == 52) {
+                marker2.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+                marker2.setPosition(point);
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId, add);
+                marker2.setInfoWindow(infoWindow);
+                items2.add(marker2);
+                items.add(marker2);
+            } else if (subcategotyId == 164 || subcategotyId == 93) {
+                marker3.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
+                marker3.setPosition(point);
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId, add);
+                marker3.setInfoWindow(infoWindow);
+                items3.add(marker3);
+                items.add(marker3);
+            } else if (subcategotyId == 150 || subcategotyId == 149) {
+                marker4.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+                marker4.setPosition(point);
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId, add);
+                marker4.setInfoWindow(infoWindow);
+                items4.add(marker4);
+                items.add(marker4);
+            } else if (subcategotyId == 128 || subcategotyId == 94 || subcategotyId == 64 || subcategotyId == 63 || subcategotyId == 7
+                    || subcategotyId == 165 || subcategotyId == 104 || subcategotyId == 91 || subcategotyId == 32 || subcategotyId == 26
+                    || subcategotyId == 180 || subcategotyId == 78 || subcategotyId == 77) {
+                marker5.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+                marker5.setPosition(point);
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId, add);
+                marker5.setInfoWindow(infoWindow);
+                items5.add(marker5);
+                items.add(marker5);
+            }
+        }
+
+
+
     }
+
+    public void Drawedu(int edid,boolean state)
+    {
+
+        mapView.invalidate();
+        if(edid==-1) {
+            for (Marker m : items) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        if (state==false)  {
+            if (edid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().remove(m);
+
+
+                }
+            } else if (edid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (edid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (edid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (edid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+        }
+        else {
+            if (edid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().add(m);
+
+
+                }
+            } else if (edid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (edid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (edid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (edid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+        }
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+    }
+//for health
+    public void Drawhel(int helid,boolean state)
+    {
+
+        mapView.invalidate();
+        if(helid==-1) {
+            for (Marker m : items) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        if (state==false)  {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().remove(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+            else if (helid ==5 ) {
+                for (Marker m : items6) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+        }
+        else {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().add(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+                else if (helid ==5 ) {
+                    for (Marker m : items6) {
+
+
+                        mapView.getOverlays().add(m);
+
+                    }
+            }
+        }
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+    }
+//for entertainment
+public void Drawent(int edid,boolean state)
+{
+
+    mapView.invalidate();
+    if(edid==-1) {
+        for (Marker m : items) {
+
+
+            mapView.getOverlays().add(m);
+
+        }
+    }
+    if (state==false)  {
+        if (edid == 0) {
+            for (Marker m : items1) {
+
+
+                mapView.getOverlays().remove(m);
+
+
+            }
+        } else if (edid == 1) {
+            for (Marker m : items2) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        } else if (edid == 2) {
+            for (Marker m : items3) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        } else if (edid == 3) {
+            for (Marker m : items4) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        } else if (edid == 4) {
+            for (Marker m : items5) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        }
+        else if (edid == 5) {
+            for (Marker m : items6) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        }
+        else if (edid == 6) {
+            for (Marker m : items7) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        }
+        else if (edid == 7) {
+            for (Marker m : items8) {
+
+
+                mapView.getOverlays().remove(m);
+
+            }
+        }
+    }
+    else {
+        if (edid == 0) {
+            for (Marker m : items1) {
+
+
+                mapView.getOverlays().add(m);
+
+
+            }
+        } else if (edid == 1) {
+            for (Marker m : items2) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        } else if (edid == 2) {
+            for (Marker m : items3) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        } else if (edid == 3) {
+            for (Marker m : items4) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        } else if (edid == 4) {
+            for (Marker m : items5) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        else if (edid == 5) {
+            for (Marker m : items6) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        else if (edid == 6) {
+            for (Marker m : items7) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        else if (edid == 7) {
+            for (Marker m : items8) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+    }
+
+    MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+    mapView.getOverlays().add(0, mapEventsOverlay);
+}
+
+
+    //for government
+    public void Drawgov(int helid,boolean state)
+    {
+
+        mapView.invalidate();
+        if(helid==-1) {
+            for (Marker m : items) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        if (state==false)  {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().remove(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+            else if (helid ==5 ) {
+                for (Marker m : items6) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+        }
+        else {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().add(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+            else if (helid ==5 ) {
+                for (Marker m : items6) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+        }
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+    }
+
+    //method for legal
+    public void Drawleg(int helid,boolean state)
+    {
+
+        mapView.invalidate();
+        if(helid==-1) {
+            for (Marker m : items) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        if (state==false)  {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().remove(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+        }
+        else {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().add(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+        }
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
+    }
+
+    //method for financial
+    public void Drawfin(int helid,boolean state)
+    {
+
+        mapView.invalidate();
+        if(helid==-1) {
+            for (Marker m : items) {
+
+
+                mapView.getOverlays().add(m);
+
+            }
+        }
+        if (state==false)  {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().remove(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            } else if (helid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+            else if (helid ==5 ) {
+                for (Marker m : items6) {
+
+
+                    mapView.getOverlays().remove(m);
+
+                }
+            }
+        }
+        else {
+            if (helid == 0) {
+                for (Marker m : items1) {
+
+
+                    mapView.getOverlays().add(m);
+
+
+                }
+            } else if (helid == 1) {
+                for (Marker m : items2) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 2) {
+                for (Marker m : items3) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 3) {
+                for (Marker m : items4) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            } else if (helid == 4) {
+                for (Marker m : items5) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+            else if (helid ==5 ) {
+                for (Marker m : items6) {
+
+
+                    mapView.getOverlays().add(m);
+
+                }
+            }
+        }
+
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        mapView.getOverlays().add(0, mapEventsOverlay);
     }
     private void drawMarkerGov(GeoPoint point, String title, String address, String contact, int node, String subcategotyId2) {
 
         String delims = "[,]";
         String[] tokens = subcategotyId2.split(delims);
+mapView.getOverlays().clear();
+        Marker marker1 = new Marker(mapView);
+        Marker marker2 = new Marker(mapView);
+        Marker marker3 = new Marker(mapView);
+        Marker marker4 = new Marker(mapView);
+        Marker marker5 = new Marker(mapView);
+        Marker marker6 = new Marker(mapView);
+        mapView.getOverlays().clear();
+        marker1.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
-        Marker marker = new Marker(mapView);
-        marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker3.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker4.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker5.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker6.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         for(int i=0;i<tokens.length;i++) {
             if (tokens[i]=="")continue;
             subcategotyId=Integer.parseInt(tokens[i]);
@@ -472,34 +1328,86 @@ setMapView(mapView);
             if (subcategotyId ==170 ||subcategotyId ==143 ||subcategotyId ==135 ||subcategotyId ==117 ||subcategotyId ==48
                     ||subcategotyId ==47 ||subcategotyId ==151 ||subcategotyId ==80 ||subcategotyId ==70 ||subcategotyId ==69
                     ||subcategotyId ==44 ||subcategotyId ==43)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+            {
+                marker1.setPosition(point);
+                marker1.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker1.setInfoWindow(infoWindow);
+                items1.add(marker1);
+                items.add(marker1);
+            }
             else if (subcategotyId ==172 ||subcategotyId ==171 ||subcategotyId ==120 ||subcategotyId ==119
                     ||subcategotyId ==118 ||subcategotyId ==105 ||subcategotyId ==103 ||subcategotyId ==56 ||subcategotyId ==41
                     ||subcategotyId ==40 )
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+            {
+                marker2.setPosition(point);
+                marker2.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker2.setInfoWindow(infoWindow);
+                items2.add(marker2);
+                items.add(marker2);
+            }
             else if (subcategotyId ==99 ||subcategotyId ==98 )
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
+            {
+                marker3.setPosition(point);
+                marker3.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker3.setInfoWindow(infoWindow);
+                items3.add(marker3);
+                items.add(marker3);
+            }
             else if (subcategotyId ==122)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+            {
+                marker4.setPosition(point);
+                marker4.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker4.setInfoWindow(infoWindow);
+                items4.add(marker4);
+                items.add(marker4);
+            }
             else if (subcategotyId ==35)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+            {
+                marker5.setPosition(point);
+                marker5.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker5.setInfoWindow(infoWindow);
+                items5.add(marker5);
+                items.add(marker5);
+            }
             else if (subcategotyId ==174)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
+            {
+                marker6.setPosition(point);
+                marker6.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker6.setInfoWindow(infoWindow);
+                items6.add(marker6);
+                items.add(marker6);
+            }
 
-            InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
-            marker.setInfoWindow(infoWindow);
 
-            mapView.getOverlays().add(marker);
+
             //marker.setTitle("Title of the marker");
         }
     }
     private void drawMarkerHealth(GeoPoint point, String title, String address, String contact, String node, String subcategotyId2) {
 
-        Marker marker = new Marker(mapView);
-        marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        Marker marker1 = new Marker(mapView);
+        Marker marker2 = new Marker(mapView);
+        Marker marker3 = new Marker(mapView);
+        Marker marker4 = new Marker(mapView);
+        Marker marker5 = new Marker(mapView);
+        Marker marker6 = new Marker(mapView);
+        mapView.getOverlays().clear();
+        marker1.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
-        Log.d("HealthSub","======="+String.valueOf(subcategotyId2));
+        marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker3.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker4.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker5.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker6.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         String subcategory;
         subcategory=subcategotyId2.substring(1);
         String CurrentString = subcategory;
@@ -507,27 +1415,66 @@ setMapView(mapView);
 
 
 
-     //   Log.d("node","========="+node);
         for (int i=0;i<separated.length;i++)
         {
             subcategotyId= Integer.parseInt(separated[i]);
-            if (subcategotyId == 2)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
-            else if (subcategotyId == 9)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
-            else if (subcategotyId == 89)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
-            else if (subcategotyId == 25)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
-            else if (subcategotyId == 20)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
-            else if (subcategotyId == 133)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
+            if (subcategotyId == 3||subcategotyId == 4||subcategotyId == 8||subcategotyId == 84||subcategotyId == 95||subcategotyId == 96||subcategotyId == 162)
 
-            InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
-            marker.setInfoWindow(infoWindow);
+            {
+                marker1.setPosition(point);
+                marker1.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker1.setInfoWindow(infoWindow);
+                items1.add(marker1);
+                items.add(marker1);
+            }
+            else if (subcategotyId == 81||subcategotyId == 88||subcategotyId == 109||subcategotyId == 10||subcategotyId == 127)
+            {
+                marker2.setPosition(point);
+                marker2.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker2.setInfoWindow(infoWindow);
+                items2.add(marker2);
+                items.add(marker2);
+            }
+            else if (subcategotyId == 90||subcategotyId == 142||subcategotyId == 176)
+            {
+                marker3.setPosition(point);
+                marker3.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker3.setInfoWindow(infoWindow);
+                items3.add(marker3);
+                items.add(marker3);
+            }
+            else if (subcategotyId == 26||subcategotyId == 32||subcategotyId == 91||subcategotyId == 104||subcategotyId == 165)
+            {
+                marker4.setPosition(point);
+                marker4.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker4.setInfoWindow(infoWindow);
+                items4.add(marker4);
+                items.add(marker4);
+            }
+            else if (subcategotyId == 134)
+            {
+                marker5.setPosition(point);
+                marker5.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker5.setInfoWindow(infoWindow);
+                items5.add(marker5);
+                items.add(marker5);
+            }
+            else if (subcategotyId == 21)
+            {
+                marker6.setPosition(point);
+                marker6.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker6.setInfoWindow(infoWindow);
+                items6.add(marker6);
+                items.add(marker6);
+            }
 
-            mapView.getOverlays().add(marker);
+
         }
 
 
@@ -536,11 +1483,11 @@ setMapView(mapView);
     }
 
     private void drawMarkerLeg(GeoPoint point, String title, String address, String contact, String node, String subcategotyId2) {
-        Marker marker = new Marker(mapView);
-        marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        Log.d("LegSub","======="+String.valueOf(subcategotyId2));
-
+        Marker marker1 = new Marker(mapView);
+        Marker marker2 = new Marker(mapView);
+        marker1.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        mapView.getOverlays().clear();
         String subcategory;
         subcategory=subcategotyId2.substring(1);
         String CurrentString = subcategory;
@@ -549,14 +1496,25 @@ setMapView(mapView);
         {
             subcategotyId= Integer.parseInt(separated[i]);
             if (subcategotyId == 30)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+            {
+                marker1.setPosition(point);
+                marker1.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker1.setInfoWindow(infoWindow);
+                items1.add(marker1);
+                items.add(marker1);
+            }
 
             else if (subcategotyId ==36)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
-            InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
-            marker.setInfoWindow(infoWindow);
+            {
+                marker2.setPosition(point);
+                marker2.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker2.setInfoWindow(infoWindow);
+                items2.add(marker2);
+                items.add(marker2);
+            }
 
-            mapView.getOverlays().add(marker);
         }
 
 
@@ -565,139 +1523,237 @@ setMapView(mapView);
     private void drawMarkerEnt(GeoPoint point, String title, String address, String contact, String node, String subcategotyId23) {
 
 
-        Marker marker = new Marker(mapView);
-        marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
-        Log.d("subcategotyId23","******" +subcategotyId23);
+        Marker marker1 = new Marker(mapView);
+        Marker marker2 = new Marker(mapView);
+        Marker marker3 = new Marker(mapView);
+        Marker marker4 = new Marker(mapView);
+        Marker marker5 = new Marker(mapView);
+        Marker marker6 = new Marker(mapView);
+        Marker marker7 = new Marker(mapView);
+        Marker marker8 = new Marker(mapView);
+        marker1.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker3.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker4.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker5.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker6.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker7.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker8.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+mapView.getOverlays().clear();
         String subcategory;
         subcategory=subcategotyId23.substring(1);
         String CurrentString = subcategory;
         String[] separated = CurrentString.split(",");
         for (int i=0;i<separated.length;i++) {
             subcategotyId= Integer.parseInt(separated[i]);
-            if (subcategotyId == 129)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
-            else if (subcategotyId == 131)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
-            else if (subcategotyId == 106)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
-            else if (subcategotyId == 15)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
-            else if (subcategotyId == 18)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
-            else if (subcategotyId == 112)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
-            else if (subcategotyId == 23)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_7));
-            else if (subcategotyId == 27)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_8));
+            if (subcategotyId == 130) {
+                marker1.setPosition(point);
+                marker1.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker1.setInfoWindow(infoWindow);
+                items1.add(marker1);
+                items.add(marker1);
+            }
+            else if (subcategotyId == 19||subcategotyId == 22||subcategotyId == 114)
+            {
+                marker2.setPosition(point);
+                marker2.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker2.setInfoWindow(infoWindow);
+                items2.add(marker2);
+                items.add(marker2);
+            }
+            else if (subcategotyId == 113)
+            {
+                marker3.setPosition(point);
+                marker3.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker3.setInfoWindow(infoWindow);
+                items3.add(marker3);
+                items.add(marker3);
+            }
+            else if (subcategotyId == 24||subcategotyId == 111||subcategotyId == 115||subcategotyId == 116||subcategotyId == 141)
+            {
+                marker4.setPosition(point);
+                marker4.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker4.setInfoWindow(infoWindow);
+                items4.add(marker4);
+                items.add(marker4);
+            }
+            else if (subcategotyId == 28||subcategotyId == 45||subcategotyId == 168)
+            {
+                marker5.setPosition(point);
+                marker5.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker5.setInfoWindow(infoWindow);
+                items5.add(marker5);
+                items.add(marker5);
+            }
+            else if (subcategotyId == 132||subcategotyId == 166||subcategotyId == 169)
+            {
+                marker6.setPosition(point);
+                marker6.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker6.setInfoWindow(infoWindow);
+                items6.add(marker6);
+                items.add(marker6);
+            }
+            else if (subcategotyId == 107)
+            {
+                marker7.setPosition(point);
+                marker7.setIcon(this.getResources().getDrawable(R.drawable.pin_map_7));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker7.setInfoWindow(infoWindow);
+                items7.add(marker7);
+                items.add(marker7);
+            }
+            else if (subcategotyId == 16||subcategotyId == 17||subcategotyId == 110||subcategotyId == 167)
+
+            {
+                marker8.setPosition(point);
+                marker8.setIcon(this.getResources().getDrawable(R.drawable.pin_map_8));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker8.setInfoWindow(infoWindow);
+                items8.add(marker8);
+                items.add(marker8);
+            }
         }
 
-        InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
-        marker.setInfoWindow(infoWindow);
 
-        mapView.getOverlays().add(marker);
+
+
     }
 
 
 
     private void drawMarkerFin(GeoPoint point, String title, String address, String contact, int node, String subcategotyId2) {
+        Marker marker1 = new Marker(mapView);
+        Marker marker2 = new Marker(mapView);
+        Marker marker3 = new Marker(mapView);
+        Marker marker4 = new Marker(mapView);
+        Marker marker5 = new Marker(mapView);
+        Marker marker6 = new Marker(mapView);
+        mapView.getOverlays().clear();
+        marker1.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker2.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker3.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker4.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+        marker5.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+        marker6.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         String delims = "[,]";
         String[] tokens = subcategotyId2.split(delims);
 
-        Marker marker = new Marker(mapView);
-        marker.setPosition(point);
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
         for(int i=0;i<tokens.length;i++) {
             if (tokens[i]=="")continue;
             subcategotyId=Integer.parseInt(tokens[i]);
 
             if (subcategotyId ==177||subcategotyId ==125||subcategotyId ==124||subcategotyId ==13)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
-            else if (subcategotyId ==157||subcategotyId ==156||subcategotyId ==154||subcategotyId ==140||subcategotyId ==67||subcategotyId ==66)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
-            else if (subcategotyId ==151||subcategotyId ==80||subcategotyId ==70||subcategotyId ==69)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
-            else if (subcategotyId ==158||subcategotyId ==152||subcategotyId ==87)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
-            else if (subcategotyId ==159||subcategotyId ==153||subcategotyId ==72)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
-            else if (subcategotyId ==74)
-                marker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
-            InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
-            marker.setInfoWindow(infoWindow);
+            {
+                marker1.setPosition(point);
+                marker1.setIcon(this.getResources().getDrawable(R.drawable.pin_map_1));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker1.setInfoWindow(infoWindow);
+                items1.add(marker1);
+                items.add(marker1);
+            }
 
-            mapView.getOverlays().add(marker);
+
+            else if (subcategotyId ==151||subcategotyId ==80||subcategotyId ==70||subcategotyId ==69)
+            {
+                marker2.setPosition(point);
+                marker2.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker2.setInfoWindow(infoWindow);
+                items2.add(marker2);
+                items.add(marker2);
+            }
+            else if (subcategotyId ==87||subcategotyId ==152||subcategotyId ==158)
+            {
+                marker3.setPosition(point);
+                marker3.setIcon(this.getResources().getDrawable(R.drawable.pin_map_3));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker3.setInfoWindow(infoWindow);
+                items3.add(marker3);
+                items.add(marker3);
+            }
+
+            else if (subcategotyId ==159||subcategotyId ==153||subcategotyId ==72)
+            {
+                marker4.setPosition(point);
+                marker4.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker4.setInfoWindow(infoWindow);
+                items4.add(marker4);
+                items.add(marker4);
+            }
+            else if (subcategotyId ==174)
+            {
+                marker5.setPosition(point);
+                marker5.setIcon(this.getResources().getDrawable(R.drawable.pin_map_5));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker5.setInfoWindow(infoWindow);
+                items5.add(marker5);
+                items.add(marker5);
+            }
+            else if (subcategotyId == 66||subcategotyId == 67||subcategotyId == 140||subcategotyId == 154||subcategotyId == 156||subcategotyId == 157)
+            {
+                marker6.setPosition(point);
+                marker6.setIcon(this.getResources().getDrawable(R.drawable.pin_map_6));
+                InfoWindow infoWindow = new MyInfoWindow(R.layout.bonuspack_bubble_black, mapView, MapFragmentOSM.this.getActivity(), point, title, contact, node, categoryId,address);
+                marker6.setInfoWindow(infoWindow);
+                items6.add(marker6);
+                items.add(marker6);
+            }
+
+
+
             //marker.setTitle("Title of the marker");
         }
     }
-public void DrawRoute(String lat, String lon)
-{
-
-    Double servicelat=Double.parseDouble(lat);
-    Double servicelon=Double.parseDouble(lon);
-    GeoPoint servicepoint=new GeoPoint(servicelat,servicelon);
-
-    Double endlat=Double.parseDouble("23.791902");
-    Double endlon=Double.parseDouble("90.411343");
-mapp=getMapView();
-   // double latt=mylocation.getMyLocation().getLatitude();
-
-    Marker destinationmarker=new Marker(mapp);
-    destinationmarker.setPosition(servicepoint);
-    mapp.getOverlays().add(destinationmarker);
-
-    GeoPoint my=new GeoPoint(endlat,endlon);
-
- //   double latitude = my.getLatitudeE6() / 1E6;
-//
- //   double longitude = my.getLongitudeE6() / 1E6;
-
-    //2. Playing with the RoadManager
-    //RoadManager roadManager = new MapQuestRoadManager("YOUR_API_KEY");
-    //roadManager.addRequestOption("routeType=bicycle");
-    ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
-    waypoints.add(my);
-    waypoints.add(servicepoint);
 
 
-    //GeoPoint endPoint = new GeoPoint(48.4, -1.9);
-
-
-    RoadManager roadManager = new OSRMRoadManager(getActivity());
-    Road road = roadManager.getRoad(waypoints);
-    if (road.mStatus != Road.STATUS_OK)
-        Toast.makeText(getActivity(), "Error when loading the road - status=" + road.mStatus, Toast.LENGTH_SHORT).show();
-
-    Polyline roadOverlay = RoadManager.buildRoadOverlay(road, getActivity());
-    mapp.getOverlays().add(roadOverlay);
-
-    //3. Showing the Route steps on the map
-    FolderOverlay roadMarkers = new FolderOverlay(getActivity());
-    mapp.getOverlays().add(roadMarkers);
-    Drawable nodeIcon = getResources().getDrawable(R.drawable.map_marker);
-    for (int i = 0; i < road.mNodes.size(); i++) {
-        RoadNode node = road.mNodes.get(i);
-        Marker nodeMarker = new Marker(mapp);
-        nodeMarker.setPosition(node.mLocation);
-        nodeMarker.setIcon(nodeIcon);
-
-        //4. Filling the bubbles
-        nodeMarker.setTitle("Step " + i);
-        nodeMarker.setSnippet(node.mInstructions);
-        nodeMarker.setSubDescription(Road.getLengthDurationText(getActivity(), node.mLength, node.mDuration));
-        Drawable iconContinue = getResources().getDrawable(R.drawable.map_marker);
-        nodeMarker.setImage(iconContinue);
-        //4. end
-
-        roadMarkers.add(nodeMarker);
-    }
-
-
-}
     @Override
     public void onClick(View v) {
 
+    }
+    public String EtoBconversion(String english_number) {
+        int v = english_number.length();
+        String concatResult = "";
+        for (int i = 0; i < v; i++) {
+            if (english_number.charAt(i) == '1')
+                concatResult = concatResult + "১";
+            else if (english_number.charAt(i) == '2')
+                concatResult = concatResult + "২";
+            else if (english_number.charAt(i) == '3')
+                concatResult = concatResult + "৩";
+            else if (english_number.charAt(i) == '4')
+                concatResult = concatResult + "৪";
+            else if (english_number.charAt(i) == '5')
+                concatResult = concatResult + "৫";
+            else if (english_number.charAt(i) == '6')
+                concatResult = concatResult + "৬";
+            else if (english_number.charAt(i) == '7')
+                concatResult = concatResult + "৭";
+            else if (english_number.charAt(i) == '8')
+                concatResult = concatResult + "৮";
+            else if (english_number.charAt(i) == '9')
+                concatResult = concatResult + "৯";
+            else if (english_number.charAt(i) == '0')
+                concatResult = concatResult + "০";
+            else if (english_number.charAt(i) == '.')
+                concatResult = concatResult + ".";
+        }
+        return concatResult;
     }
 
 
@@ -709,4 +1765,3 @@ mapp=getMapView();
         this.mapView = mapView;
     }
 }
-

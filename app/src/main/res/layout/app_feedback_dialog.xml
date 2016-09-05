@@ -4,8 +4,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/feedback_background"
+    android:background="@drawable/rounded"
     android:padding="10dp">
+
 
     <TextView
         android:layout_width="wrap_content"
@@ -25,8 +26,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:numStars="5"
-        android:stepSize="1.0"
-        android:rating="2.0" />
+        android:stepSize="1.2"
+        android:scaleX="1.0"
+        android:scaleY="1.0"
+
+        android:rating="0" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -37,13 +41,12 @@
 
         android:layout_gravity="center_horizontal"
         android:textSize="17sp"
-        android:layout_marginTop="10dp"
         />
 
 
 
     <EditText
-        android:id="@+id/submit_btn"
+        android:id="@+id/submit_review"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="মতামত"
@@ -57,28 +60,29 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="5dp"
         android:gravity="center">
 
 
         <Button
             android:id="@+id/btnSubmit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:background="@drawable/tick_icon_feedback"
             android:layout_gravity="center_horizontal"
             android:onClick="phonecall"
-            android:padding="10dp" />
+            android:layout_marginRight="10dp"
+            />
 
 
         <Button
             android:id="@+id/btnclose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
             android:background="@drawable/cross_icon_feedback"
             android:layout_gravity="center_horizontal"
             android:onClick="phonecall"
-            android:padding="10dp" />
+         />
     </LinearLayout>
 </LinearLayout>

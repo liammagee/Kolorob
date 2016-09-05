@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -57,7 +56,7 @@ public class EntertainmentServiceProviderTableNew {
     private static final String KEY_POLICE_STATION = "_police_station"; //
     private static final String KEY_CITY = "_city"; //
     private static final String KEY_OFF_DAY = "_off_day"; //
-
+    private static final String KEY_RATING = "_rating"; //
 
     private Context tContext;
 
@@ -105,7 +104,8 @@ public class EntertainmentServiceProviderTableNew {
                 + KEY_POST_OFFICE + " TEXT, "
                 + KEY_POLICE_STATION+ " TEXT, "
                 + KEY_CITY + " TEXT, "
-                + KEY_OFF_DAY + " TEXT, PRIMARY KEY(" + KEY_NODE_ID + "))";
+                + KEY_OFF_DAY + " TEXT, "
+                + KEY_RATING + " TEXT, PRIMARY KEY(" + KEY_NODE_ID + "))";
         db.execSQL(CREATE_TABLE_SQL);
         closeDB();
     }
@@ -153,7 +153,7 @@ public class EntertainmentServiceProviderTableNew {
                 entertainmentServiceProviderItem.getPost_office(),
                 entertainmentServiceProviderItem.getPolice_station(),
                 entertainmentServiceProviderItem.getCity(),
-                entertainmentServiceProviderItem.getOff_day()
+                entertainmentServiceProviderItem.getOff_day(),entertainmentServiceProviderItem.getRating()
         );
     }
 
@@ -190,7 +190,7 @@ public class EntertainmentServiceProviderTableNew {
                            String post_office,
                            String police_station,
                            String city,
-                           String off_day) {
+                           String off_day,String rating) {
         if (isFieldExist(nodeId)) {
             return updateItem(nodeId,
                     entSubCategoryId,
@@ -225,7 +225,7 @@ public class EntertainmentServiceProviderTableNew {
                     post_office,
                     police_station,
                     city,
-                    off_day
+                    off_day,rating
                    );
         }
 
@@ -265,7 +265,7 @@ public class EntertainmentServiceProviderTableNew {
         rowValue.put(KEY_POLICE_STATION   , police_station );
         rowValue.put(KEY_CITY  , city);
         rowValue.put(KEY_OFF_DAY  , off_day );
-
+        rowValue.put(KEY_RATING  , rating );
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
 
@@ -326,7 +326,7 @@ public class EntertainmentServiceProviderTableNew {
                              String post_office,
                              String police_station,
                              String city,
-                             String off_day
+                             String off_day,String rating
     ) {
         ContentValues rowValue = new ContentValues();
         rowValue.put(KEY_NODE_ID , nodeId);
@@ -363,6 +363,7 @@ public class EntertainmentServiceProviderTableNew {
         rowValue.put(KEY_POLICE_STATION   , police_station );
         rowValue.put(KEY_CITY  , city);
         rowValue.put(KEY_OFF_DAY  , off_day );
+        rowValue.put(KEY_RATING  , rating );
         SQLiteDatabase db = openDB();
 
 //        long ret = db.update(TABLE_NAME, rowValue, KEY_IDENTIFIER_ID + " = ? AND " + KEY_EDU_SUBCATEGORY_ID + " = ? AND " + KEY_CATEGORY_ID + " = ? ",
@@ -379,12 +380,12 @@ public class EntertainmentServiceProviderTableNew {
 
 
 
-    public ArrayList<EntertainmentServiceProviderItemNew> getAllEntertainmentSubCategoriesInfo() {
+    public ArrayList<EntertainmentServiceProviderItemNew> getAllEntertainmentSubCategoriesInfo(String place) {
         ArrayList<EntertainmentServiceProviderItemNew> subCatList = new ArrayList<>();
 
         //System.out.println(cat_id+"  "+sub_cat_id);
         SQLiteDatabase db = openDB();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +  " ORDER BY " +KEY_NODE_NAME, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+ KEY_AREA+" = '"+place+"' ORDER BY " +KEY_NODE_NAME,null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -399,12 +400,12 @@ public class EntertainmentServiceProviderTableNew {
         closeDB();
         return subCatList;
     }
-    public ArrayList<EntertainmentServiceProviderItemNew> getAllEntertainmentSubCategoriesInfoWithHead(int cat_id, String header) {
+    public ArrayList<EntertainmentServiceProviderItemNew> getAllEntertainmentSubCategoriesInfoWithHead(String header,String place) {
         ArrayList<EntertainmentServiceProviderItemNew> subCatList = new ArrayList<>();
         //System.out.println(cat_id+"  "+sub_cat_id);
         header=","+header+",";
         SQLiteDatabase db = openDB();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID + " LIKE '%"+header+"%'", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY_ID + " LIKE '%"+header+"%'"+" AND "+ KEY_AREA+" = '"+place+"'", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -552,10 +553,9 @@ public class EntertainmentServiceProviderTableNew {
         SQLiteDatabase db = openDB();
 
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_NODE_EMAIL+ " LIKE '%"+refids+"%'" , null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  + " AND "+ KEY_NODE_ADDITIONAL+ " LIKE '%"+refids+"%'" , null);
         //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  , null);
-        Log.d("Key Area","------"+KEY_NODE_ADDITIONAL);
-         Log.d("Ref Id","------"+"SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_NODE_ADDITIONAL+ " LIKE '%"+refids+"%'");
+
 //        Toast.makeText(this, +cursor,
 //                Toast.LENGTH_LONG).show();
 
@@ -618,7 +618,7 @@ public class EntertainmentServiceProviderTableNew {
                         cursor.getString(30),
                         cursor.getString(31),
                         cursor.getString(32),
-                        cursor.getString(33));
+                        cursor.getString(33),cursor.getString(34));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -662,6 +662,7 @@ public class EntertainmentServiceProviderTableNew {
         String city=cursor.getString(32);
         String off_day=cursor.getString(33);
 
+        String rating=cursor.getString(34);
 
 
         return new EntertainmentServiceProviderItemNew(
@@ -697,7 +698,7 @@ public class EntertainmentServiceProviderTableNew {
                 post_office,
                 police_station,
                 city,
-                off_day);
+                off_day,rating);
     }
 
 

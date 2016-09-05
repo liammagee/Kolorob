@@ -6,142 +6,35 @@
     android:layout_marginRight="8dp"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
-android:visibility="gone"
+    android:visibility="gone"
     >
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-
-
-
         >
 
-        <!--android:visibility="gone"-->
-        <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:id="@+id/header_compare"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content">-->
-
-
-        <!--<LinearLayout-->
-        <!--android:orientation="vertical"-->
-        <!--android:id="@+id/first_screen_logo"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:gravity="center"-->
-        <!--android:layout_height="wrap_content">-->
-
-        <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/school_logo_default"-->
-        <!--android:id="@+id/first_screen_logo_image"-->
-        <!--android:layout_gravity="center_horizontal"-->
-        <!--/>-->
-        <!--</LinearLayout>-->
-
-        <!--<LinearLayout-->
-        <!--android:orientation="vertical"-->
-        <!--android:id="@+id/compare_logo"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content">-->
-
-        <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/compare_logo_default"-->
-
-        <!--android:id="@+id/compare_logo_image"-->
-        <!--/>-->
-        <!--</LinearLayout>-->
-
-        <!--<LinearLayout-->
-        <!--android:orientation="vertical"-->
-        <!--android:id="@+id/second_school_logo"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content">-->
-
-        <!--<ImageView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:background="@drawable/school_logo_default"-->
-
-
-        <!--android:id="@+id/second_school_logo_image"-->
-        <!--/>-->
-        <!--</LinearLayout>-->
-
-
-
-        <!--</LinearLayout>-->
-
-
-        <RelativeLayout
+        <LinearLayout
             android:orientation="horizontal"
             android:id="@+id/header_compare"
-            android:layout_width="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:layout_height="169dp">
+            android:layout_marginTop="15dp"
+            android:gravity="center"
 
-
-
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/school_logo_default"
-                android:id="@+id/first_screen_logo_image"
-                android:layout_gravity="center_horizontal"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="@dimen/comparelogoleft"
-                android:layout_marginBottom="10dp" />
-
-
-
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/compare_logo_default"
-
-                android:layout_gravity="center_horizontal"
-                android:id="@+id/compare_logo_image"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp" />
-
-
-
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/school_logo_default"
-
-
-                android:id="@+id/second_school_logo_image"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginLeft="@dimen/comparelogoleft"
-                android:layout_marginBottom="10dp" />
-
-
-
-
-        </RelativeLayout>
-        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="180dp" >
-<LinearLayout
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="280dp">
+            >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/compare_logo_default"
+                    android:id="@+id/compare_logo_image"
+                    />
+
+        </LinearLayout>
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_marginTop="6dp"
@@ -152,13 +45,27 @@ android:visibility="gone"
 
 
             <LinearLayout
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
                 android:id="@+id/left_school_name"
                 android:layout_marginTop="10dp"
                 android:layout_height="wrap_content">
+                <android.support.v7.widget.AppCompatCheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/checkLeft"
+
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="30dp"
+                    android:scaleX="1.2"
+                    android:scaleY="1.2"
+                    android:paddingLeft="7dp"
+
+                    android:textColor="@color/white"
+                    />
 
                 <TextView
                     android:id="@+id/edu_name_ban22"
@@ -172,7 +79,7 @@ android:visibility="gone"
             </LinearLayout>
 
             <LinearLayout
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:gravity="center"
 
                 android:id="@+id/right_school_name"
@@ -181,6 +88,23 @@ android:visibility="gone"
                 android:layout_weight="0.5"
 
                 android:layout_height="wrap_content">
+
+                <android.support.v7.widget.AppCompatCheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/checkRight"
+
+
+
+                    android:buttonTint="@color/white"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="30dp"
+                    android:scaleX="1.2"
+                    android:scaleY="1.2"
+                    android:paddingLeft="7dp"
+
+                    android:textColor="@color/white"
+                    />
 
                 <TextView
                     android:id="@+id/edu_name_ban3"
@@ -195,6 +119,17 @@ android:visibility="gone"
             </LinearLayout>
 
         </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/scrolling_part"
+          >
+           <LinearLayout
+           android:orientation="vertical"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+          >
+
 
         <LinearLayout
             android:orientation="horizontal"

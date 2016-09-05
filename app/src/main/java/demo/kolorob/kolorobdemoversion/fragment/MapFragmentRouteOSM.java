@@ -1,12 +1,14 @@
 package demo.kolorob.kolorobdemoversion.fragment;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
@@ -20,9 +22,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -45,10 +45,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.FolderOverlay;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.MapEventsOverlay;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.ScaleBarOverlay;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
@@ -58,19 +56,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import demo.kolorob.kolorobdemoversion.R;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.Job.JobServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.LegalAid.LegalAidServiceProviderItem;
+import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 
 /**
  * Created by israt.jahan on 5/5/2016.
  */
-public class MapFragmentRouteOSM extends Fragment implements View.OnClickListener, MapEventsReceiver, GoogleApiClient.ConnectionCallbacks,
+public class MapFragmentRouteOSM extends Activity implements View.OnClickListener, MapEventsReceiver, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
     Drawable newMarker;
     Marker marker;
@@ -97,33 +91,16 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
     private static double VIEW_WIDTH;
     private int primaryIconWidth;
     double roadlength;
-    public int getLocationNameId() {
-        return locationNameId;
-    }
 
-    public void setLocationNameId(int locationNameId) {
-        this.locationNameId = locationNameId;
-        if (locationNameId == AppConstants.PLACE_BAUNIABADH) {
-            listData.add(AppConstants.BAUNIABADH);
-            listData.add(AppConstants.PARIS_ROAD);
-        } else {
-            listData.add(AppConstants.PARIS_ROAD);
-            listData.add(AppConstants.BAUNIABADH);
-        }
-    }
 
     private ArrayList<HealthServiceProviderItem> healthServiceProvider = null;
     GeoPoint markerlocation, userlocation;
     Marker usermarker;
-    private ArrayList<EntertainmentServiceProviderItem> entertainmentServiceProvider = null;
-    private ArrayList<LegalAidServiceProviderItem> legalaidServiceProvider = null;
-    private ArrayList<JobServiceProviderItem> jobServiceProvider = null;
-    private ArrayList<FinancialServiceProviderItem> financialServiceProvider = null;
-    private ArrayList<EducationServiceProviderItem> educationServiceProvider = null;
-    MapView mapView, mapp;
+
+    MapView mapView;
     private int categoryId;
 
-    ArrayAdapter arrayAdapter;
+
 
     public int getCategoryId() {
         return categoryId;
@@ -134,25 +111,10 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
     }
 
 
-    public void setEntertainmentServiceProvider(ArrayList<EntertainmentServiceProviderItem> et) {
-        this.entertainmentServiceProvider = et;
-    }
 
-    public void setLegalaidServiceProvider(ArrayList<LegalAidServiceProviderItem> et) {
-        this.legalaidServiceProvider = et;
-    }
-
-    public void setFinancialServiceProvider(ArrayList<FinancialServiceProviderItem> et) {
-        this.financialServiceProvider = et;
-    }
-
-    public void setEducationServiceProvider(ArrayList<EducationServiceProviderItem> et) {
-        educationServiceProvider = et;
-    }
 
     int subcategotyId,height,width;
     View rootView;
-    ArrayList<OverlayItem> anotherOverlayItemArray, anotherOverlayItemArrayfinal, anotherOverlayItemArray2, anotherOverlayItemArray3, anotherOverlayItemArray4, anotherOverlayItemArray7, anotherOverlayItemArray8, anotherOverlayItemArray5, anotherOverlayItemArray6;
 
     public MapFragmentRouteOSM() {
 
@@ -161,47 +123,40 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
     LocationManager locationManager;
     String provider;
     boolean havePolyLine;
-    ItemizedIconOverlay<OverlayItem> anotherItemizedIconOverlay, anotherItemizedIconOverlay2, anotherItemizedIconOverlay7, anotherItemizedIconOverlay8, anotherItemizedIconOverlay3, anotherItemizedIconOverlay4, anotherItemizedIconOverlay5, anotherItemizedIconOverlay6;
-    ArrayList<ItemizedIconOverlay> overlayholder = null;
 
-    public ArrayList<HealthServiceProviderItem> getHealthServiceProvider() {
-        return healthServiceProvider;
-    }
-
-    public void setHealthServiceProvider(ArrayList<HealthServiceProviderItem> et) {
-        this.healthServiceProvider = et;
-    }
-
+    Marker curposition;
     boolean statusofservice = false;
     Location location;
+    ProgressDialog dialog;
     IMapController mapViewController;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+     public void onCreate(Bundle savedInstanceState) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-        WindowManager wm = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
-
+        dialog = new ProgressDialog(MapFragmentRouteOSM.this);
+        dialog.setMessage("দয়া করে অপেক্ষা করুন");
+        dialog.show();
         DisplayMetrics metrics = new DisplayMetrics();
         display.getMetrics(metrics);
         width = metrics.widthPixels;
         height = metrics.heightPixels;
-        LayoutInflater li = LayoutInflater.from(getActivity());
+        LayoutInflater li = LayoutInflater.from(this);
 
         double latDouble, longDouble;
         int i = 0;
 
+        setContentView(R.layout.fragment_map1);
         super.onCreate(savedInstanceState);
 
 
-        rootView = inflater.inflate(R.layout.fragment_map, container,
-                false);
-        VIEW_WIDTH = AppUtils.getScreenWidth(getActivity()) * AppConstants.CAT_LIST_LG_WIDTH_PERC;
+        VIEW_WIDTH = AppUtils.getScreenWidth(this) * AppConstants.CAT_LIST_LG_WIDTH_PERC;
 
         primaryIconWidth = (int) Math.floor(VIEW_WIDTH * 0.80);
-        mapView = (MapView) rootView.findViewById(R.id.mapview);
+        mapView = (MapView)findViewById(R.id.mapview);
+
         havePolyLine = false;
         if (havePolyLine) {
             mapView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
@@ -220,7 +175,7 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
         mapView.setTilesScaledToDpi(true);
 
         mapViewController = mapView.getController();
-        SharedPreferences pref = getActivity().getSharedPreferences("MyPref", Context.MODE_PRIVATE);
+        SharedPreferences pref = this.getSharedPreferences("MyPref", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
 
         String Latitude = pref.getString("Latitude", null);
@@ -229,27 +184,29 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
         locationNameId = pref.getInt("LocationNameId", 0);
         double lat = Double.parseDouble(Latitude);
         double lon = Double.parseDouble(Longitude);
-        markerlocation = new GeoPoint(lat, lon);
+        markerlocation = new GeoPoint(lat,lon);
         Marker centermarker = new Marker(mapView);
+        curposition = new Marker(mapView);
         centermarker.setPosition(markerlocation);
-        centermarker.setTitle("Destination");
+        centermarker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_4));
+        centermarker.setTitle("     গন্তব্য");
 
         mapView.getOverlays().add(centermarker);
 
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity());
+        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
         final int gpsVersion = getResources().getInteger(com.google.android.gms.R.integer.google_play_services_version);
 
         // Showing status
         if (gpsVersion >= 8400000) {
-            Toast.makeText(getActivity(), "Playservice available", Toast.LENGTH_SHORT).show();
+
             statusofservice = true;
             buildGoogleApiClient();
         } else {
-            Toast.makeText(getActivity(), "Not available", Toast.LENGTH_SHORT).show();
+
             int requestCode = 10;
-            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, getActivity(), requestCode);
+            Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, requestCode);
             dialog.show();//dialog needs to be modified more of an alert dialog
-            locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+            locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
             // Creating an empty criteria object
             Criteria criteria = new Criteria();
@@ -271,10 +228,10 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
                     onLocationChanged(location);
                     Drawroute(userlocation, markerlocation);
                 } else
-                    Toast.makeText(getActivity(), "Location can't be retrieved", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Location can't be retrieved", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(getActivity(), "No Provider Found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No Provider Found", Toast.LENGTH_SHORT).show();
             }
         }
         mapViewController.setZoom(18);
@@ -283,18 +240,19 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
 
 
         //---
-        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(getActivity(), this);
+        MapEventsOverlay mapEventsOverlay = new MapEventsOverlay(this, this);
         mapView.getOverlays().add(0, mapEventsOverlay);
         //Add Scale Bar
         ScaleBarOverlay myScaleBarOverlay = new ScaleBarOverlay(mapView);
         mapView.getOverlays().add(myScaleBarOverlay);
 
 
-        /*ImageButton curButton = (ImageButton) rootView.findViewById(R.id.currlocation);
+        ImageButton curButton = (ImageButton) findViewById(R.id.imageButton);
         curButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
+                mapView.getOverlays().remove(curposition);
                 if (mLastLocation != null|| location!=null) {
                     Location setloc;
                     if (mLastLocation!=null) {
@@ -307,107 +265,132 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
                     else {
                         setloc=location;
                         onLocationChanged(location);}
-                    Drawroute(userlocation, markerlocation);
+
+
+                    curposition.setPosition(new GeoPoint(setloc));
+                    curposition.setIcon(getApplicationContext().getResources().getDrawable(R.drawable.my_location_2_icon));
                     mapViewController.animateTo(new GeoPoint(setloc));
+                    mapView.getOverlays().add(curposition);
+                    curposition.setTitle("আপনি এখন এখানে");
                 }
             }
-        });*/
+        });
 
 
 
-        return rootView;
     }
     public void calltransportlayout()
     {
         RelativeLayout trlayout,headlayout;
         TextView disttext,Bustext,Ricksawtext,Cngtext,Walkingtext,headtext;
-        trlayout=(RelativeLayout)rootView.findViewById(R.id.transportdetailslayout);
+        //trlayout=(RelativeLayout)rootView.findViewById(R.id.transportdetailslayout);
 
-        trlayout.setVisibility(View.VISIBLE);
-        headlayout=(RelativeLayout)rootView.findViewById(R.id.headerlayout);
+      //  trlayout.setVisibility(View.VISIBLE);
+        headlayout=(RelativeLayout)findViewById(R.id.headerlayout);
         headlayout.setVisibility(View.VISIBLE);
-        headtext=(TextView)rootView.findViewById(R.id.headtext);
+        headtext=(TextView)findViewById(R.id.headtext);
         headtext.setText(centername);
         String distance= String.format("%.2f", roadlength);
-        ///  disttext=(TextView)rootView.findViewById(R.id.distancetext);
-        Cngtext=(TextView)rootView.findViewById(R.id.cngtext);
-        Bustext=(TextView)rootView.findViewById(R.id.bustext);
-        Ricksawtext=(TextView)rootView.findViewById(R.id.ricksawtext);
-        Walkingtext=(TextView)rootView.findViewById(R.id.walkingtext);
-     //   disttext.setText(getString(R.string.distance) +": " +distance+ " km" );
-        double Busfare=roadlength*1.55;
-        double bustime=(roadlength/15)*60;
-        if (Busfare <=7.00)Bustext.setText( "7 " + "Taka ");
+        disttext=(TextView)findViewById(R.id.textView16);
+        disttext.setVisibility(View.GONE);
+        Cngtext=(TextView)findViewById(R.id.cngtext);
+        Bustext=(TextView)findViewById(R.id.bustext);
+        Ricksawtext=(TextView)findViewById(R.id.ricksawtext);
+        Walkingtext=(TextView)findViewById(R.id.walkingtext);
+      String bdistance= EtoBconversion(distance);
+        disttext.setText(getString(R.string.distance) +": " +bdistance+ " কি.মি" );
+        disttext.setVisibility(View.VISIBLE);
+        String Busfare= EtoBconversion(String.valueOf((int) Math.round(roadlength*1.7)));
+        String Busfare2= EtoBconversion(String.valueOf((int) Math.round(roadlength*3.7)));
+        String bustime= EtoBconversion(String.valueOf((int) Math.round((roadlength/15)*60)));
+        if (Integer.parseInt(Busfare) <=7.00)Bustext.setText( "৭ "+ "টাকা এবং খুব কম সময় লাগার কথা");
         else {
-            String Bfare=String.format("%.2f", Busfare);
-            String Btime=String.format("%.2f", bustime);
-            Bustext.setText(Bfare + " Taka and might take " + Btime+ " minutes"  );
+
+            Bustext.setText("আনুমানিক "+Busfare + "- "+Busfare2+" টাকা এবং "  + bustime+ " মিনিট সময় লাগতে পারে"  );
         }
-        double CNGfare=(roadlength-2)*12+40;
-        double CNGtime=(roadlength/13)*60;
-        if (CNGfare <=40.00)Cngtext.setText( "40 " + "Taka and very minimum time required");
+        String CNGfare= EtoBconversion(String.valueOf((int) Math.round((roadlength-2)*12+40)));
+        String CNGfare2= EtoBconversion(String.valueOf((int) Math.round((roadlength-2)*12+70)));
+        String CNGtime= EtoBconversion(String.valueOf((int) Math.round((roadlength/13)*60)));
+        if (Integer.parseInt(CNGfare) <=40.00)Cngtext.setText( "৪০ " + "টাকা এবং খুব কম সময় লাগার কথা");
         else {
-            String Cfare=String.format("%.2f", CNGfare);
-            String Ctime=String.format("%.2f", CNGtime);
-            Cngtext.setText(Cfare + " Taka and might take " + Ctime+ " minutes"  );
+
+            Cngtext.setText("আনুমানিক "+CNGfare + "- "+CNGfare2+" টাকা এবং " + CNGtime+ " মিনিট সময় লাগতে পারে"  );
         }
-        double rickfare=(roadlength)*15;
-        double ricktime=(roadlength/10)*60;
-        if (rickfare <=10.00)Ricksawtext.setText( "10 " + "Taka and very minimum time required");
+        String rickfare= EtoBconversion(String.valueOf((int) Math.round((roadlength)*20)));
+        String ricktime=EtoBconversion( String.valueOf((int) Math.round((roadlength/10)*60)));
+        if (Integer.parseInt(rickfare) <=10.00)Ricksawtext.setText( "১০ " + "টাকা এবং খুব কম সময় লাগার কথা");
         else {
-            String Rfare=String.format("%.2f", rickfare);
-            String Rtime=String.format("%.2f", ricktime);
-            Ricksawtext.setText(Rfare + " Taka and might take " + Rtime+ " minutes"  );
+
+            Ricksawtext.setText("আনুমানিক "+rickfare + " টাকা এবং " + ricktime+ " মিনিট সময় লাগতে পারে"  );
         }
-        double wfare=0.0;
-        double wtime=(roadlength/8)*60;
+
+        String wtime=EtoBconversion( String.valueOf((int) Math.round((roadlength/8)*60)));
 
 
-        String wwfare=String.format("%.2f", wfare);
-        String wwtime=String.format("%.2f", wtime);
-        Walkingtext.setText(wwfare + " Taka and might take " + wwtime+ " minutes"  );
+        Walkingtext.setText( wtime+ " মিনিট সময় লাগতে পারে"  );
 
     }
     public void Drawroute(GeoPoint Ulocation, GeoPoint Mlocation) {
+        dialog.dismiss();
         mapView.getOverlays().remove(roadOverlay);
-        RoadManager roadManager = new OSRMRoadManager(getActivity());
+
+
         ArrayList<GeoPoint> waypoints = new ArrayList<GeoPoint>();
         waypoints.add(userlocation);
         waypoints.add(markerlocation);
+
+        RoadManager roadManager=new OSRMRoadManager(this);
+
+
         Road road = roadManager.getRoad(waypoints);
-        if (road.mStatus != Road.STATUS_OK)
-            Toast.makeText(getActivity(), "Error when loading the road - status=" + road.mStatus, Toast.LENGTH_SHORT).show();
+        if (road.mStatus != Road.STATUS_OK) {
 
-        roadOverlay = RoadManager.buildRoadOverlay(road, getActivity());
-        roadOverlay.setColor(Color.YELLOW);
-        roadlength=road.mLength;
-        mapView.getOverlays().add(roadOverlay);
-        havePolyLine = true;
-        if (havePolyLine) {
-            mapView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            AlertMessage.showMessage(this,"দুঃখিত!"," যান্ত্রিক গোলযোগের কারনে পথ দেখানো সম্ভব  হচ্ছে না। দয়া করে কিছুক্ষণ পরে চেষ্টা করুন!");
+
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//            builder.setMessage("দুঃখিত! যান্ত্রিক গোলযোগের কারনে পথ দেখানো সম্ভব  হচ্ছে না। দয়া করে কিছুক্ষণ পরে চেষ্টা করুন!")
+//                    .setCancelable(false)
+//                    .setPositiveButton("ঠিক আছে", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            //do things
+//                        }
+//                    });
+//            AlertDialog alert = builder.create();
+//            alert.show();
+
         }
-        //3. Showing the Route steps on the map
-        FolderOverlay roadMarkers = new FolderOverlay(getActivity());
-        mapView.getOverlays().add(roadMarkers);
-        Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
-        for (int ii = 0; ii < road.mNodes.size(); ii++) {
-            RoadNode node = road.mNodes.get(ii);
-            Marker nodeMarker = new Marker(mapView);
-            nodeMarker.setPosition(node.mLocation);
-            nodeMarker.setIcon(nodeIcon);
+        else {
+            roadOverlay = roadManager.buildRoadOverlay(road, this);
+            roadOverlay.setColor(getResources().getColor(R.color.orange));
+            roadlength = road.mLength;
+            mapView.getOverlays().add(roadOverlay);
+            havePolyLine = true;
+            if (havePolyLine) {
+                mapView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+            }
+            //3. Showing the Route steps on the map
+            FolderOverlay roadMarkers = new FolderOverlay(this);
+            mapView.getOverlays().add(roadMarkers);
+            Drawable nodeIcon = getResources().getDrawable(R.drawable.marker_node);
+            for (int ii = 0; ii < road.mNodes.size(); ii++) {
+                RoadNode node = road.mNodes.get(ii);
+                Marker nodeMarker = new Marker(mapView);
+                nodeMarker.setPosition(node.mLocation);
+                nodeMarker.setIcon(nodeIcon);
 
-            //4. Filling the bubbles
-            nodeMarker.setTitle("Step " + ii);
-            nodeMarker.setSnippet(node.mInstructions);
-            nodeMarker.setSubDescription(Road.getLengthDurationText(getActivity(), node.mLength, node.mDuration));
-            Drawable iconContinue = getResources().getDrawable(R.drawable.ic_continue);
-            nodeMarker.setImage(iconContinue);
-            //4. end
+                //4. Filling the bubbles
+                nodeMarker.setTitle("Step " + ii);
+                nodeMarker.setSnippet(node.mInstructions);
+                nodeMarker.setSubDescription(Road.getLengthDurationText(this, node.mLength, node.mDuration));
+                Drawable iconContinue = getResources().getDrawable(R.drawable.ic_continue);
+                nodeMarker.setImage(iconContinue);
+                //4. end
 
-            roadMarkers.add(nodeMarker);
-            mapView.invalidate();
+                roadMarkers.add(nodeMarker);
+                mapView.invalidate();
+            }
+            calltransportlayout();
         }
-        calltransportlayout();
     }
 
     @Override
@@ -438,15 +421,18 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
     }
 
     public void onLocationChanged(Location location) {
+        dialog.dismiss();
         // Getting reference to TextView tv_longitude
         if (statusofservice == false) {
             mapView.getOverlays().remove(usermarker);
-            Toast.makeText(getActivity(), "Tap on locationmanager (" + location.getLatitude() + "," + location.getLongitude() + ")", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(this, "Tap on locationmanager (" + location.getLatitude() + "," + location.getLongitude() + ")", Toast.LENGTH_SHORT).show();
             usermarker = new Marker(mapView);
             laat = location.getLatitude();
             longg = location.getLongitude();
-            userlocation = new GeoPoint(laat, longg);
+            userlocation = new GeoPoint(laat,longg);
             usermarker.setPosition(userlocation);
+            usermarker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+            usermarker.setTitle("     গন্তব্য");
             mapView.getOverlays().add(usermarker);
         } else {
             mapView.getOverlays().remove(usermarker);
@@ -457,8 +443,10 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
             usermarker = new Marker(mapView);
             userlocation = new GeoPoint(laat, longg);
             usermarker.setPosition(userlocation);
+            usermarker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
+            usermarker.setTitle("১ম অবস্থান");
             mapView.getOverlays().add(usermarker);
-            Toast.makeText(getActivity(), "Tap on (" + stlat + "," + stlong + ")", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(this, "Tap on (" + stlat + "," + stlong + ")", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -487,7 +475,7 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
 //        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, getActivity());
 
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -507,11 +495,12 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
             userlocation=new GeoPoint(laat,longg);
             usermarker=new Marker(mapView);
             usermarker.setPosition(userlocation);
+            usermarker.setIcon(this.getResources().getDrawable(R.drawable.pin_map_2));
             mapView.getOverlays().add(usermarker);
             Drawroute(userlocation, markerlocation);
 
         }
-        Toast.makeText(getActivity(), "Tap on (" + stlat + "," + stlong + ")", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, "Tap on (" + stlat + "," + stlong + ")", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -526,7 +515,7 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
 
     }
     synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
@@ -556,7 +545,35 @@ public class MapFragmentRouteOSM extends Fragment implements View.OnClickListene
     }
 
 
-
+    public String EtoBconversion(String english_number) {
+        int v = english_number.length();
+        String concatResult = "";
+        for (int i = 0; i < v; i++) {
+            if (english_number.charAt(i) == '1')
+                concatResult = concatResult + "১";
+            else if (english_number.charAt(i) == '2')
+                concatResult = concatResult + "২";
+            else if (english_number.charAt(i) == '3')
+                concatResult = concatResult + "৩";
+            else if (english_number.charAt(i) == '4')
+                concatResult = concatResult + "৪";
+            else if (english_number.charAt(i) == '5')
+                concatResult = concatResult + "৫";
+            else if (english_number.charAt(i) == '6')
+                concatResult = concatResult + "৬";
+            else if (english_number.charAt(i) == '7')
+                concatResult = concatResult + "৭";
+            else if (english_number.charAt(i) == '8')
+                concatResult = concatResult + "৮";
+            else if (english_number.charAt(i) == '9')
+                concatResult = concatResult + "৯";
+            else if (english_number.charAt(i) == '0')
+                concatResult = concatResult + "০";
+            else if (english_number.charAt(i) == '.')
+                concatResult = concatResult + ".";
+        }
+        return concatResult;
+    }
 
    /* @Override
     public void onBackPressed() {

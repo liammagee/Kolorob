@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/about_us_screen"
+    android:weightSum="3.2"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="50dp"
+        android:layout_height="@dimen/aboutusupheight"
+        android:layout_weight="1">
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+
+        android:layout_height="@dimen/aboutuscenterheight"
+
+
+
+        android:layout_weight="1">
+
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/aboutusscrollheight"
+            style="@style/scrollbar_shape_style"
+            android:fadeScrollbars="false"
+            android:scrollbarStyle="insideInset"
+
+            android:id="@+id/scrollView4"
+            android:scrollIndicators="right">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+
+                android:layout_height="120dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/aboutus"
+                    android:textSize="@dimen/abttext"
+                    android:id="@+id/aboutus"
+                    android:textColor="#ffffff"
+
+                    android:layout_marginLeft="15dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/abttext"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/abouttext"
+                    android:id="@+id/textView20"
+                    android:textColor="#ffffff"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                   />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+
+        android:layout_height="@dimen/aboutuslowerheight"
+        android:weightSum="2"
+        android:layout_weight="1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="আমাদের সাথে যোগ দিন "
+            android:id="@+id/connecttext"
+
+            android:layout_gravity="center|top"
+            android:textSize="@dimen/abttext"
+            android:layout_marginBottom="@dimen/aboutusbottompadding"
+            android:layout_marginTop="@dimen/aboutustoppadding" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center"
+                android:gravity="center"
+
+              >
+
+
+                <ImageButton
+                    android:id="@+id/btnfb"
+                    android:layout_width="@dimen/bwidth"
+                    android:layout_height="@dimen/bwidth"
+                    android:background="@drawable/facebook_icon"
+                    android:layout_gravity="center_horizontal"
+
+                    android:layout_marginRight="@dimen/aboutusleftpadding"
+                    />
+
+
+                <ImageButton
+                    android:id="@+id/btntwt"
+                    android:layout_width="@dimen/bwidth"
+                    android:layout_height="@dimen/bwidth"
+                    android:layout_marginLeft="@dimen/aboutusleftpadding"
+                    android:layout_marginRight="@dimen/aboutusleftpadding"
+                    android:background="@drawable/twitter_icon"
+                    android:layout_gravity="center_horizontal"
+
+                    />
+                <ImageButton
+                    android:id="@+id/btninsta"
+                    android:layout_width="@dimen/bwidth"
+                    android:layout_height="@dimen/bwidth"
+                    android:layout_marginLeft="@dimen/aboutusleftpadding"
+                    android:layout_marginRight="@dimen/aboutusleftpadding"
+                    android:background="@drawable/instagram_icon"
+                    android:layout_gravity="center_horizontal"
+
+                    />
+                <ImageButton
+                    android:id="@+id/btnweb"
+                    android:layout_width="@dimen/bwidth"
+                    android:layout_height="@dimen/bwidth"
+                    android:layout_marginLeft="@dimen/aboutusleftpadding"
+
+                    android:background="@drawable/web_icon"
+                    android:layout_gravity="center"
+
+                    />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="যোগাযোগ করুন"
+
+                android:id="@+id/textView18"
+                android:layout_gravity="center_horizontal|top"
+                android:textSize="@dimen/abttext"
+                android:layout_marginBottom="@dimen/aboutusbottompadding"
+                android:layout_margin="@dimen/aboutusallpadding" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+
+
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/aboutustoppadding"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:weightSum="2"
+                >
+
+
+                <ImageButton
+                    android:id="@+id/btnphn"
+                    android:layout_width="@dimen/bwidth"
+                    android:layout_height="@dimen/bwidth"
+                    android:background="@drawable/phone_icon_orange"
+                    android:layout_gravity="center_horizontal"
+
+                    android:layout_marginRight="@dimen/aboutusleftpadding"
+                    />
+
+
+                <ImageButton
+                    android:id="@+id/btnemail"
+                    android:layout_width="@dimen/bwidth"
+                    android:layout_height="@dimen/bwidth"
+                    android:layout_marginLeft="@dimen/aboutusleftpadding"
+
+                    android:background="@drawable/email_icon_orange"
+                    android:layout_gravity="center_horizontal"
+
+                    />
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+    </LinearLayout>
+</LinearLayout>

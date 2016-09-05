@@ -1,48 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-
+    android:orientation="horizontal"
+    android:gravity="center_horizontal"
     android:layout_height="match_parent">
 
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:paddingLeft="10dp"
         android:paddingTop="2dp"
+        android:textStyle="bold"
         android:paddingBottom="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"        android:text="Vaccine Name"
+        android:textAppearance="?android:attr/textAppearanceMedium"        android:text="key"
         android:textColor="@color/black"
-        android:id="@+id/v_name" />
+        android:id="@+id/key" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="16sp"
         android:paddingLeft="10dp"
-        android:visibility="gone"
-        android:paddingTop="2dp"
-        android:paddingBottom="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"        android:text="Vaccine Fee"
-        android:textColor="@color/black"
-
-        android:id="@+id/v_fee" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:paddingLeft="10dp"
-        android:visibility="gone"
 
         android:paddingTop="2dp"
         android:paddingBottom="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Vaccine Remark"
+        android:textAppearance="?android:attr/textAppearanceMedium"        android:text="value"
         android:textColor="@color/black"
-        android:id="@+id/v_remark" />
+
+        android:id="@+id/value" />
+
+
 
 
 </LinearLayout>

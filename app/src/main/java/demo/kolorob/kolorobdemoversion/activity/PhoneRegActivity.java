@@ -2,12 +2,11 @@ package demo.kolorob.kolorobdemoversion.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -49,6 +48,8 @@ public class PhoneRegActivity extends Activity {
     private TextView itemType;
     private TextView itemContact;
     private String phoneNumber;
+    private int width;
+    private int height;
 
     private EditText phone;
     private EditText name;
@@ -71,7 +72,9 @@ public class PhoneRegActivity extends Activity {
 
 
         con = this;
-
+        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
+        height = displayMetrics.heightPixels;
+        width = displayMetrics.widthPixels;
 
     }
 
@@ -83,7 +86,12 @@ public class PhoneRegActivity extends Activity {
         if (size != 11) {
             AlertMessage.showMessage(this, "দুঃখিত আপনার ফোন নম্বরটি সঠিক নয়",
                     "অনুগ্রহ পূর্বক সঠিক ফোন নম্বরটি ইনপুট দিন");
-        } else if (phoneNumber.charAt(0) != '0' && phoneNumber.charAt(0) != '1') {
+        }
+        else if (phoneNumber.charAt(0) != '0') {
+            AlertMessage.showMessage(this, "দুঃখিত আপনার ফোন নম্বরটি সঠিক নয়",
+                    "অনুগ্রহ পূর্বক সঠিক ফোন নম্বরটি ইনপুট দিন");
+        }
+        else if (phoneNumber.charAt(1) != '1') {
             AlertMessage.showMessage(this, "দুঃখিত আপনার ফোন নম্বরটি সঠিক নয়",
                     "অনুগ্রহ পূর্বক সঠিক ফোন নম্বরটি ইনপুট দিন");
         } else if (phoneNumber.charAt(2) == '2' || phoneNumber.charAt(2) == '3' || phoneNumber.charAt(2) == '4') {
@@ -98,7 +106,7 @@ public class PhoneRegActivity extends Activity {
     public void sendPhoneNumberToServer(final String phone)
     {
 
-       // http://kolorob.net/demo/api/customer_reg?phone=01711310912
+       // http://192.168.43.57/demo/api/customer_reg?phone=01711310912
         String url = "http://kolorob.net/demo/api/customer_reg?phone="+phone+"&username="+username+"&password="+password+"" ;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -107,32 +115,36 @@ public class PhoneRegActivity extends Activity {
                     public void onResponse(String response) {
                        // Toast.makeText(PhoneRegActivity.this,response,Toast.LENGTH_SHORT).show();
                        // Log.d(">>>>>","status "+response);
+
+                        String notvalid=response;
+
                         try {
 
-                            //Log.d(">>>>>","status ");
+                            //
 
                             if(response.equals("true"))
                             {
                                 SharedPreferencesHelper.setNumber(con,phoneNumber);
-                                AlertDialog alertDialog = new AlertDialog.Builder(PhoneRegActivity.this).create();
-                                alertDialog.setTitle("নিবন্ধনটি সফলভাবে সম্পন্ন হয়েছে");
-                                alertDialog.setMessage("নিবন্ধন করার জন্য আপনাকে ধন্যবাদ");
-                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "আচ্ছা",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
+                                AlertMessage.showMessage(PhoneRegActivity.this, "রেজিস্ট্রেশন সফলভাবে সম্পন্ন হয়েছে",
+                                        " রেজিস্ট্রেশন করার জন্য আপনাকে ধন্যবাদ");
 
 
-                                                finish();
-                                            }
-                                        });
-                                alertDialog.show();
                             }
+
+                            else if(response.equals("\"Invalid Phone Number\""))
+                            {
+                                AlertMessage.showMessage(PhoneRegActivity.this, "দুঃখিত আপনার ফোন নম্বরটি সঠিক নয়",
+                                        "অনুগ্রহ পূর্বক সঠিক ফোন নম্বরটি ইনপুট দিন");                            }
                             else
                             {
+
+
+
+
                                 SharedPreferencesHelper.setNumber(con,phoneNumber);
-                                AlertMessage.showMessage(PhoneRegActivity.this, "নিবন্ধনটি সফলভাবে সম্পন্ন হয়ে নি",
-                                        "আপনি ইতিপূর্বে নিবন্ধন করে ফেলেছেন");
+
+                                AlertMessage.showMessage(PhoneRegActivity.this, "দুঃখিত",
+                                        "আপনি ইতিপূর্বে  রেজিস্ট্রেশন করে ফেলেছেন");
                             }
 
                                         //  finish();

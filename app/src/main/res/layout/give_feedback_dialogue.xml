@@ -1,107 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="50dp"
-    android:gravity="center">
+    android:background="@drawable/rounded"
+    android:padding="10dp">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="মতামত"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/orange"
+
+
+        android:textSize="@dimen/feedbackalltext"
+        android:layout_gravity="center" />
 
     <RadioGroup
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:id="@+id/feedRadio"
+
         android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="30dp"
+      android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:gravity="left">
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line_de"/>
+
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/feedback1"
+            android:drawableRight="@drawable/five"
+            android:text="@string/feedback5"
             android:layout_marginLeft="1dp"
+            android:drawablePadding="@dimen/fifthstarspace"
             android:textColor="@color/orange"
-            android:id="@+id/bad" />
+            android:textSize="@dimen/feedbacktextsize"
+            android:id="@+id/best" />
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line_de"/>
+
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/feedback2"
+            android:drawableRight="@drawable/four"
             android:layout_marginLeft="1dp"
+            android:drawablePadding="@dimen/fourthstarspace"
             android:textColor="@color/orange"
-
-            android:id="@+id/moderate" />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line_de"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/feedback3"
-            android:textColor="@color/orange"
-
-            android:id="@+id/good" />
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line_de"/>
-
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/feedback4"
+            android:textSize="@dimen/feedbacktextsize"
+            android:id="@+id/good" />
+
+
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableRight="@drawable/three"
+            android:textSize="@dimen/feedbacktextsize"
             android:textColor="@color/orange"
             android:checked="true"
-            android:id="@+id/feedback4" />
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line_de"/>
+            android:drawablePadding="@dimen/thirdstarspace"
+            android:text="@string/feedback3"
+            android:id="@+id/medium" />
+
 
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/feedback5"
+            android:drawableRight="@drawable/two"
+            android:textSize="@dimen/feedbacktextsize"
+            android:drawablePadding="@dimen/secondstarspace"
             android:textColor="@color/orange"
+            android:text="@string/feedback2"
+            android:id="@+id/bad" />
 
-            android:id="@+id/feedback5" />
 
-        <EditText
-            android:layout_width="match_parent"
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:drawableRight="@drawable/one"
             android:layout_height="wrap_content"
-            android:hint="Feedback"
-            android:id="@+id/feedback_comment"
+            android:textSize="@dimen/feedbacktextsize"
+            android:drawablePadding="@dimen/firststarspace"
+            android:textColor="@color/orange"
+            android:text="@string/feedback1"
+            android:id="@+id/worst" />
 
 
-            />
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/line_de"/>
 
 
     </RadioGroup>
-
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="দেয়া হয়েছে"
-        android:background="@color/orange"
-        android:textColor="@color/white"
-        android:id="@+id/submit" />
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="বিস্তারিত লিখুন"
+            android:textColor="@color/orange"
+
+
+            android:textSize="@dimen/feedbackalltext"
+            />
+
+
+
+        <EditText
+            android:id="@+id/feedback_comment"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="মতামত"
+            android:gravity="center"
+            android:background="@color/white"
+            android:lines="4"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:layout_margin="10dp">
+
+
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="@dimen/bwidth"
+            android:layout_height="@dimen/bheight"
+            android:background="@drawable/tick_icon_feedback"
+            android:layout_gravity="center_horizontal"
+
+            android:layout_marginRight="10dp"
+            />
+
+
+        <Button
+            android:id="@+id/btnclose"
+            android:layout_width="@dimen/bwidth"
+            android:layout_height="@dimen/bheight"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/cross_icon_feedback"
+            android:layout_gravity="center_horizontal"
+
+            />
+    </LinearLayout>
 
 
 </LinearLayout>

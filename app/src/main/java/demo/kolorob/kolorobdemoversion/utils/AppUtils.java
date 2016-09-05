@@ -2,6 +2,7 @@ package demo.kolorob.kolorobdemoversion.utils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,15 +26,23 @@ import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.text.SpannableString;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.security.PublicKey;
 import java.util.Collections;
 import java.util.List;
 
+import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.activity.OpeningActivity;
 import demo.kolorob.kolorobdemoversion.helpers.AndroidUnicodedFontSupport;
 
@@ -40,24 +51,74 @@ import demo.kolorob.kolorobdemoversion.helpers.AndroidUnicodedFontSupport;
  * @author touhid
  */
 public class AppUtils {
-
+    public static int width;
+    public static int height;
     private static OpeningActivity open;
     private static Typeface bengaliFontNormalSolmn, bengaliFontBoldSolmn;
 
+    public static void showMessage(final Context c, final String title,
+                                   final String body) {
 
+        DisplayMetrics displayMetrics = c.getResources().getDisplayMetrics();
+        height = displayMetrics.heightPixels;
+        width = displayMetrics.widthPixels;
+
+        LayoutInflater layoutInflater = LayoutInflater.from(c);
+        View promptView = layoutInflater.inflate(R.layout.gps_alert, null);
+
+
+        final Dialog alertDialog = new Dialog(c);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(promptView);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+
+        final TextView header = (TextView) promptView.findViewById(R.id.headers);
+        final TextView bodys = (TextView) promptView.findViewById(R.id.body);
+        final ImageView okay=(ImageView)promptView.findViewById(R.id.okay);
+        final ImageView close=(ImageView)promptView.findViewById(R.id.close);
+        header.setText(title);
+        bodys.setText(body);
+
+        okay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(
+                        Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                c.startActivity(intent);
+                alertDialog.dismiss();
+            }
+        });
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.setCancelable(false);
+//		if(SharedPreferencesHelper.isTabletDevice(c))
+//			textAsk.setTextSize(23);
+//		else
+//			textAsk.setTextSize(17);
+        alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
+
+    }
     public static void showSettingsAlert(Context con) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(con);
         final Context cont;
         cont = con;
         // Setting Dialog Title
-        alertDialog.setTitle("GPS is disabled!");
+        alertDialog.setTitle("জিপিএস বন্ধ করা রয়েছে!");
 
         // Setting Dialog Message
         alertDialog
-                .setMessage("GPS is not enabled. Do you want to go to settings menu?");
+                .setMessage(" আপনি কি আপনার মোবাইলের জিপিএস টি চালু করতে চান?");
 
         // On pressing Settings button
-        alertDialog.setPositiveButton("Settings",
+        alertDialog.setPositiveButton("সেটিংস",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(
@@ -67,7 +128,7 @@ public class AppUtils {
                 });
 
         // on pressing cancel button
-        alertDialog.setNegativeButton("Cancel",
+        alertDialog.setNegativeButton("দরকার নেই",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
@@ -209,6 +270,21 @@ public class AppUtils {
 
     public static boolean isDevicePortrait(Resources res) {
         return res.getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+    }
+
+    //Created by Arafat
+
+    public static Double ScreenSize(Context context)
+    {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        int densityDpi = (displayMetrics.densityDpi);
+
+        Double diagonal;
+
+        diagonal =  Math.sqrt(width*width+height*height)/densityDpi;
+        return diagonal;
     }
 
 

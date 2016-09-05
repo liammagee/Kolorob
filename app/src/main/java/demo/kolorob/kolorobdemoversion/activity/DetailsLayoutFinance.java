@@ -1,21 +1,25 @@
 package demo.kolorob.kolorobdemoversion.activity;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -23,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,15 +38,17 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import demo.kolorob.kolorobdemoversion.R;
+import demo.kolorob.kolorobdemoversion.adapters.DefaultAdapter;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialServiceDetailsTable;
+import demo.kolorob.kolorobdemoversion.fragment.MapFragmentRouteOSM;
+import demo.kolorob.kolorobdemoversion.helpers.Helpes;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialNewItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceDetailsItem;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
@@ -52,7 +59,7 @@ import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
 /**
  * Created by israt.jahan on 7/17/2016.
  */
-public class DetailsLayoutFinance extends Activity {
+public class DetailsLayoutFinance extends AppCompatActivity {
     Dialog dialog;
     String username="kolorobapp";
     String password="2Jm!4jFe3WgBZKEN";
@@ -65,8 +72,12 @@ public class DetailsLayoutFinance extends Activity {
     String user="kolorobapp";
     String pass="2Jm!4jFe3WgBZKEN";
     Context con;
+    String[] key;
+    String[] value;
+    int increment=0;
+    ListView alldata;
     FinancialNewItem financialNewItem;
-EditText feedback_comment;
+    EditText feedback_comment;
     ArrayList<FinancialServiceDetailsItem> financialServiceDetailsItems;
     private TextView totalStudents;
     private TextView totalClasses;
@@ -81,7 +92,9 @@ EditText feedback_comment;
     RadioButton rb1, rb2, rb3;
     String status = "", phone_num = "", registered = "";
     String result_concate = "";
-
+    RatingBar ratingBar;
+    Float rating;
+    String datevalue,datevaluebn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +117,7 @@ EditText feedback_comment;
 
 
         FinancialServiceDetailsTable financialServiceDetailsTable = new FinancialServiceDetailsTable(DetailsLayoutFinance.this);
-
+        setRatingBar();
 
 
         courseListView = (ListView) findViewById(R.id.courseListView);
@@ -129,13 +142,14 @@ EditText feedback_comment;
         hostel = (TextView) findViewById(R.id.tv_hostel_fac);
         transport = (TextView) findViewById(R.id.tv_transport_facility);
         ratingText = (TextView) findViewById(R.id.ratingText);
-        serviceDetails = (TextView) findViewById(R.id.serviceDetails);
+        ratingBar=(RatingBar)findViewById(R.id.ratingBar);
+
         close_button = (ImageView) findViewById(R.id.close_buttonc);
 
 
         top_logo = (ImageView) findViewById(R.id.top_logo);
 
-        school_logo_default = (ImageView) findViewById(R.id.service_logo);
+
 
 
         distance_left = (ImageView) findViewById(R.id.distance_left);
@@ -143,49 +157,97 @@ EditText feedback_comment;
         feedback = (ImageView) findViewById(R.id.feedback);
 
 
+        key = new String[600];
+
+        value = new String[600];
+        alldata=(ListView)findViewById(R.id.allData);
+
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) alldata
+                .getLayoutParams();
+
+        mlp.setMargins(width/100,0,width/990,width/8);
 
 
+        CheckConcate("পরিচিত স্থান  ", financialNewItem.getLandmark());
+        CheckConcate("ঠিকানা  ", financialNewItem.getAddress());
+        CheckConcate("ফ্লোর  ", English_to_bengali_number_conversion(financialNewItem.getFloor()));
+        CheckConcate("বাড়ির নাম  ", financialNewItem.getHousename());
+        CheckConcate("রাস্তা  ", English_to_bengali_number_conversion(financialNewItem.getRoad()));
+        CheckConcate("লাইন  ", English_to_bengali_number_conversion(financialNewItem.getLine()));
+        CheckConcate("এভিনিউ  ", English_to_bengali_number_conversion(financialNewItem.getAvenue()));
+        CheckConcate("পোস্ট অফিস  ", financialNewItem.getPostoffice());
+        CheckConcate("পুলিশ স্টেশন ", financialNewItem.getPolicestation());
 
-        CheckConcate("পরিচিত স্থান :", financialNewItem.getLandmark());
-        CheckConcate("ঠিকানা :", financialNewItem.getAddress());
-        CheckConcate("ফ্লোর :", financialNewItem.getFloor());
-        CheckConcate("বাড়ির নাম :", financialNewItem.getHousename());
-        CheckConcate("রাস্তা :", financialNewItem.getRoad());
-        CheckConcate("লাইন :", financialNewItem.getLine());
-        CheckConcate("এভিনিউ :", financialNewItem.getAvenue());
-        CheckConcate("পোস্ট অফিস :", financialNewItem.getPostoffice());
-        CheckConcate("পুলিশ স্টেশন:", financialNewItem.getPolicestation());
-
-        CheckConcate("যোগাযোগ:", financialNewItem.getNode_contact());
-        CheckConcate("যোগাযোগ:", financialNewItem.getNode_contact2());
-        CheckConcate("ইমেইল :", financialNewItem.getNode_email());
-        CheckConcate("ওয়েব সাইট :", financialNewItem.getNode_website());
-        CheckConcate("ফেসবুক  :", financialNewItem.getNode_facebook());
-        CheckConcate("দায়িত্বপ্রাপ্ত ব্যাক্ত:", financialNewItem.getNode_designation());
+        CheckConcate("যোগাযোগ ", financialNewItem.getNode_contact());
+        CheckConcate("যোগাযোগ ", financialNewItem.getNode_contact2());
+        CheckConcate("ইমেইল  ", financialNewItem.getNode_email());
+        CheckConcate("ওয়েব সাইট  ", financialNewItem.getNode_website());
+        CheckConcate("ফেসবুক   ", financialNewItem.getNode_facebook());
+        CheckConcate("দায়িত্বপ্রাপ্ত ব্যাক্ত ", financialNewItem.getNode_designation());
 
 
-        timeProcessing("খোলার সময় :", financialNewItem.getOpeningtime());
-        timeProcessing("বন্ধের সময় :", financialNewItem.getClosetime());
+        timeProcessing("খোলার সময়  ", financialNewItem.getOpeningtime());
+        timeProcessing("বন্ধের সময়  ", financialNewItem.getClosetime());
         if(!financialNewItem.getBreaktime().equals("null")&&!financialNewItem.getBreaktime().equals(""))
-        breakTimeProcessing("বিরতির সময় :", financialNewItem.getBreaktime());
-        CheckConcate("বন্ধের দিন :", financialNewItem.getOffday());
-        CheckConcate("রেজিস্ট্রেশন নাম্বার:", financialNewItem.getRegisterednumber());
-        CheckConcate("কাদের সাথে রেজিস্টার্ড  :", financialNewItem.getRegisteredwith());
+            breakTimeProcessing("বিরতির সময়  ", financialNewItem.getBreaktime());
+        CheckConcate("বন্ধের দিন  ", financialNewItem.getOffday());
+
+        CheckConcate("কাদের সাথে রেজিস্টার্ড   ", financialNewItem.getRegisteredwith());
 
         financialServiceDetailsItems = financialServiceDetailsTable.getfinanceinfo(financialNewItem.getFinId());
         int tuition_size = financialServiceDetailsItems.size();
         if (tuition_size != 0) {
-            for (FinancialServiceDetailsItem financialServiceDetailsItem : financialServiceDetailsItems) {
+            for (FinancialServiceDetailsItem financialServiceDetailsItem:   financialServiceDetailsItems) {
                 //result_concate="";
-                CheckConcate("সুবিধার ধরন :", financialServiceDetailsItem.getServicetype());
-                CheckConcate("সুবিধার নাম :", financialServiceDetailsItem.getServicesubtype());
-                CheckConcate("খরচ :", financialServiceDetailsItem.getServicecost());
-                CheckConcate("মন্তব্য :", financialServiceDetailsItem.getServiceremark());
+                CheckConcate("সুবিধার ধরন  ", financialServiceDetailsItem.getServicetype());
+                CheckConcate("সুবিধার নাম  ", financialServiceDetailsItem.getServicesubtype());
+                CheckConcate("খরচ  ", financialServiceDetailsItem.getServicecost()+" টাকা");
+                CheckConcate("মন্তব্য  ", financialServiceDetailsItem.getServiceremark());
             }
         }
 
 
-        serviceDetails.setText(result_concate);
+        SharedPreferences settings = DetailsLayoutFinance.this.getSharedPreferences("prefs", 0);
+        Date date2 = new Date(settings.getLong("time", 0));
+        Date today=new Date();
+        long diffInMillisec = today.getTime() - date2.getTime();
+
+        long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillisec);
+        if (diffInDays==0) datevalue=" আজকের তথ্য";
+        else
+        {
+            datevaluebn=English_to_bengali_number_conversion(String.valueOf(diffInDays));
+            datevalue=""+ datevaluebn + " দিন আগের তথ্য";
+        }
+        LayoutInflater inflater = getLayoutInflater();
+
+        View toastView = inflater.inflate(R.layout.toast_view,null);
+        Toast toast = new Toast(this);
+        // Set the Toast custom layout
+        toast.setView(toastView);
+
+
+        //   View toastView = toast.getView(); //This'll return the default View of the Toast.
+
+        /* And now you can get the TextView of the default View of the Toast. */
+
+
+
+        TextView toastMessage = (TextView) toastView.findViewById(R.id.toasts);
+        toastMessage.setTextSize(25);
+        toastMessage.setTextColor(getResources().getColor(R.color.orange));
+        toastMessage.setText(datevalue);
+
+
+        //  toastMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.kolorob_logo, 0, 0, 0);
+        // toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+
+        toastMessage.setGravity(Gravity.CENTER);
+        toastMessage.setCompoundDrawablePadding(26);
+        //  toastView.setBackgroundColor(getResources().getColor(R.color.orange));
+        toast.show();
+
+
 
         close_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,9 +259,12 @@ EditText feedback_comment;
         right_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!financialNewItem.getNode_contact2().equals("")) {
+                if (financialNewItem.getNode_email().equals("")||financialNewItem.getNode_email().equals("null")) {
                     AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
                             "ই মেইল আই ডি পাওয়া যায়নি");
+                }
+                else{
+                    Helpes.sendEmail(DetailsLayoutFinance.this, financialNewItem.getNode_email());
                 }
             }
         });
@@ -237,8 +302,7 @@ EditText feedback_comment;
         left_image.getLayoutParams().height = width / 8;
         left_image.getLayoutParams().width = width / 8;
 
-        school_logo_default.getLayoutParams().height = width / 5;
-        school_logo_default.getLayoutParams().width = width / 5;
+
 
 
         LinearLayout.LayoutParams params_middle_phone = (LinearLayout.LayoutParams) middle_phone.getLayoutParams();
@@ -253,16 +317,18 @@ EditText feedback_comment;
         right_email.setLayoutParams(params_right_email);
 
         ups_text = (TextView) findViewById(R.id.ups_text);
-        ups_text.setTextSize(width / 25);
-        ratingText.setTextSize(width / 25);
+
+        ups_text.setTextSize(23);
+        ratingText.setTextSize(23);
         ups_text.setText(financialNewItem.getNamebn());
 
         LinearLayout.LayoutParams feedbacks = (LinearLayout.LayoutParams) feedback.getLayoutParams();
-        feedbacks.height = width / 6;
-        feedbacks.width = width / 6;
+        feedbacks.height = width / 8;
+        feedbacks.width = width / 8;
         feedback.setLayoutParams(feedbacks);
-      //  feedbacks.setMargins(0, 0, width / 30, 0);
-
+        //  feedbacks.setMargins(0, 0, width / 30, 0);
+        DefaultAdapter defaultAdapter= new DefaultAdapter(this,key,value,increment);
+        alldata.setAdapter(defaultAdapter);
         middle_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -291,7 +357,7 @@ EditText feedback_comment;
 
 
 
-       distance_left.setOnClickListener(new View.OnClickListener() {
+        distance_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
@@ -325,30 +391,35 @@ EditText feedback_comment;
                     }
 
 
-                    finish();
+                    Intent intentJ = new Intent(DetailsLayoutFinance.this,MapFragmentRouteOSM.class);
+                    startActivity(intentJ);
 
                 }
                 else if(!AppUtils.displayGpsStatus(getApplicationContext())){
 
-                    AppUtils.showSettingsAlert(DetailsLayoutFinance.this);
+                    AppUtils.showMessage(con, "জিপিএস বন্ধ করা রয়েছে!",
+                            "আপনি কি আপনার মোবাইলের জিপিএস টি চালু করতে চান?");
 
                 }
 
                 else
                 {
-
-                    AlertDialog alertDialog = new AlertDialog.Builder(DetailsLayoutFinance.this, AlertDialog.THEME_HOLO_LIGHT).create();
-                    alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্চিন্ন ");
-                    alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়। \n পথ দেখতে চাইলে অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি সচল করুন।  ");
-                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                }
-                            });
-                    alertDialog.show();
+                    AlertMessage.showMessage(con, "দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।",
+                            "দিকনির্দেশনা দেখতে চাইলে অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন।  ");
+//                    AlertDialog alertDialog = new AlertDialog.Builder(DetailsLayoutFinance.this, AlertDialog.THEME_HOLO_LIGHT).create();
+//                    alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্চিন্ন ");
+//                    alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়। \n পথ দেখতে চাইলে অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি সচল করুন।  ");
+//                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    dialog.dismiss();
+//                                }
+//                            });
+//                    alertDialog.show();
 
                 }
+
+
             }
         });
     }
@@ -397,16 +468,25 @@ EditText feedback_comment;
 
         LayoutInflater layoutInflater = LayoutInflater.from(DetailsLayoutFinance.this);
         final View promptView = layoutInflater.inflate(R.layout.give_feedback_dialogue, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailsLayoutFinance.this);
-        alertDialogBuilder.setView(promptView);
+        final Dialog alertDialog = new Dialog(DetailsLayoutFinance.this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(promptView);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
 
         final Button submit = (Button) promptView.findViewById(R.id.submit);
 
+        final Button close = (Button) promptView.findViewById(R.id.btnclose);
 
-        final AlertDialog alert;
-        alert = alertDialogBuilder.create();
 
+
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -419,59 +499,103 @@ EditText feedback_comment;
                 //  declareRadiobutton();
                 sendReviewToServer();
 
-                alert.cancel();
+                alertDialog.cancel();
 
             }
         });
-        alertDialogBuilder.setCancelable(false);
+        alertDialog.setCancelable(false);
 
 
-        alert.show();
+        alertDialog.show();
     }
+
+
+    public void setRatingBar()
+    {
+//        getRequest(DetailsLayoutFinance.this, "http://kolorob.net/demo/api/get_sp_rating/financial?username=kolorobapp&password=2Jm!4jFe3WgBZKEN", new VolleyApiCallback() {
+//                    @Override
+//                    public void onResponse(int status, String apiContent) {
+//                        if (status == AppConstants.SUCCESS_CODE) {
+//                            try {
+//                                JSONArray jo = new JSONArray(apiContent);
+//                                int size= jo.length();
+//                                for(int i=0;i<size;i++)
+//                                {
+//                                    JSONObject ratingH=jo.getJSONObject(i);
+//                                    String id= ratingH.getString("id");
+//
+//                                    if(id.equals(String.valueOf(financialNewItem.getFinId())))
+//                                    {
+//
+//
+//                                        rating=Float.parseFloat(ratingH.getString("avg"));
+        try {
+            ratingBar.setRating(Float.parseFloat(financialNewItem.getRating()));
+        }
+        catch (Exception e)
+        {
+
+        }
+//                                        break;
+//
+//                                    }
+//
+//
+//                                }
+//
+//
+//
+//
+//
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }
+//        );
+    }
+
+
 
 
     public void sendReviewToServer()
     {
         int rating;
-        if(status.equals(R.string.feedback1))
-            rating=1;
-        else if(status.equals(R.string.feedback2))
-            rating=2;
-        else if(status.equals(R.string.feedback3))
-            rating=3;
-        else if(status.equals(R.string.feedback4))
-            rating=4;
+        if(status.equals(getString(R.string.feedback1)))
+            rating= 1;
+        else if(status.equals(getString(R.string.feedback2)))
+            rating=  2;
+        else if(status.equals(getString(R.string.feedback3)))
+            rating= 3;
+        else if(status.equals(getString(R.string.feedback4)))
+            rating=  4;
         else
-            rating=5;
+            rating= 5;
+
         String comment="";
         comment=feedback_comment.getText().toString();
-        String url = "http://kolorob.net/demo/api/sp_rating/"+financialNewItem.getFinId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating+"&username="+username+"&password="+password+"";
+        String url = "http://kolorob.net/demo/api/sp_rating/"+financialNewItem.getFinId()+"?"+"phone=" +phone_num +"&review=" +comment.replace(' ','+')+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(DetailsLayoutFinance.this,response,Toast.LENGTH_SHORT).show();
-                        // Log.d(">>>>>","status "+response);
+
+                        Log.d("========", "status " + response);
                         try {
-                            JSONObject jo = new JSONObject(response);
-                            String forms;
-                            forms = jo.getString("status");
-                            Log.d(">>>>>","status "+forms);
-                            //Log.d(">>>>>","status ");
 
 
-                            if(forms.equals("true"))
-                            {
-                                AlertMessage.showMessage(DetailsLayoutFinance.this, "আপনার মতামত দেয়া হয়েছে",
-                                        "আপনার মতামতের জন্য আপনাকে ধন্যবাদ!");
+                            if (response.equals("true")) {
+                                AlertMessage.showMessage(DetailsLayoutFinance.this, "মতামতটি গ্রহন করা হয়েছে",
+                                        "মতামত প্রদান করার জন্য আপনাকে ধন্যবাদ");
                             }
                             else
-                                AlertMessage.showMessage(DetailsLayoutFinance.this, "আপনার মতামত দেয়া  হয় নি",
-                                        "দয়া করে আবার চেষ্টা করুন");
+                                AlertMessage.showMessage(DetailsLayoutFinance.this, "মতামতটি গ্রহন করা হয় নি",
+                                        "অনুগ্রহ পূর্বক পুনরায় চেস্টা করুন।");
 
 
-                        } catch (JSONException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -494,52 +618,61 @@ EditText feedback_comment;
 
         };
 
- //Adding request to request queue
+        //Adding request to request queue
 
         RequestQueue requestQueue = Volley.newRequestQueue(DetailsLayoutFinance.this);
-       requestQueue.add(stringRequest);
+        requestQueue.add(stringRequest);
     }
 
 
-   public void requestToRegister()
-    {
+    public void requestToRegister() {
         LayoutInflater layoutInflater = LayoutInflater.from(DetailsLayoutFinance.this);
         View promptView = layoutInflater.inflate(R.layout.verify_reg_dialog, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailsLayoutFinance.this);
-        alertDialogBuilder.setView(promptView);
 
 
-        final ImageView yes= (ImageView)promptView.findViewById(R.id.yes);
-        final ImageView no= (ImageView)promptView.findViewById(R.id.no);
+        final Dialog alertDialog = new Dialog(DetailsLayoutFinance.this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(promptView);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
-        final AlertDialog alert = alertDialogBuilder.create();
+
+        final ImageView yes = (ImageView) promptView.findViewById(R.id.yes);
+        final ImageView no = (ImageView) promptView.findViewById(R.id.no);
+        final TextView textAsk=(TextView)promptView.findViewById(R.id.textAsk);
+        String text="  মতামত দেয়ার আগে আপনাকে"+"\n"+"       রেজিস্ট্রেশন করতে হবে"+"\n"+"আপনি কি রেজিস্ট্রেশন করতে চান?";
+        textAsk.setText(text);
+        if(SharedPreferencesHelper.isTabletDevice(DetailsLayoutFinance.this))
+            textAsk.setTextSize(23);
+        else
+            textAsk.setTextSize(17);
+        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                Intent intentPhoneRegistration= new Intent(DetailsLayoutFinance.this,PhoneRegActivity.class);
+                Intent intentPhoneRegistration = new Intent(DetailsLayoutFinance.this, PhoneRegActivity.class);
+                alertDialog.cancel();
                 startActivity(intentPhoneRegistration);
 
             }
         });
 
 
-
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alert.cancel();
+                alertDialog.cancel();
 
             }
         });
-        // setup a dialog window
-        alertDialogBuilder.setCancelable(false);
+        //   setup a dialog window
+        alertDialog.setCancelable(false);
 
 
-
-        alert.show();
+        alertDialog.show();
     }
 //
 //
@@ -547,6 +680,8 @@ EditText feedback_comment;
 
 
     public String English_to_bengali_number_conversion(String english_number) {
+        if(english_number.equals("null")||english_number.equals(""))
+            return english_number;
         int v = english_number.length();
         String concatResult = "";
         for (int i = 0; i < v; i++) {
@@ -570,6 +705,14 @@ EditText feedback_comment;
                 concatResult = concatResult + "৯";
             else if (english_number.charAt(i) == '0')
                 concatResult = concatResult + "০";
+            else if (english_number.charAt(i) == '.')
+                concatResult = concatResult + ".";
+            else if(english_number.charAt(i) == '/')
+                concatResult = concatResult + "/";
+            else {
+                return english_number;
+            }
+
         }
         return concatResult;
     }
@@ -601,7 +744,9 @@ EditText feedback_comment;
             int hour = Integer.valueOf(separated[0]);
             int times = Integer.valueOf(separated[1]);
 
-            if (hour >= 6 && hour < 12)
+            if (hour ==0 && times==0)
+                timeInBengali = "রাত ১২";
+            else if (hour >= 6 && hour < 12)
                 timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
             else if (hour == 12)
                 timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
@@ -666,10 +811,13 @@ EditText feedback_comment;
     private void CheckConcate(String value1,String value2){
 
 
-        if(!value2.equals("null")&&!value2.equals("")) {
 
-            String value ="      "+ value1 +"  "+ value2;
-            result_concate = result_concate + value + "\n";
+
+        if (!value2.equals("null") && !value2.equals("")&&!value2.equals(" টাকা")) {
+            key[increment] = value1;
+            value[increment] = value2;
+            increment++;
+
         }
 
 
@@ -678,4 +826,3 @@ EditText feedback_comment;
 
     }
 }
-

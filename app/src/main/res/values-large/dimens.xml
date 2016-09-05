@@ -8,6 +8,8 @@
     <dimen name="fab_margin">5dp</dimen>
     <dimen name="margincheckbox">30dp</dimen>
     <dimen name="comparelogoleft">80dp</dimen>
+    <dimen name="transportscroll">200dp</dimen>
+    <dimen name="leftpadding">33dp</dimen>
     <dimen name="transportlayout">100dp</dimen>
     <dimen name="bottomtransport">80dp</dimen>
     <dimen name="search_margin">15dp</dimen>
@@ -17,6 +19,7 @@
     <dimen name="fab_marginforsearch">100dp</dimen>
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_heightcat">16dp</dimen>
+    <dimen name="siderighttop">80dp</dimen>
     <dimen name="nav_header_heightcat2">70dp</dimen>
     <dimen name="catbuttonheight">90dp</dimen>
     <dimen name="catlayouttop">100dp</dimen>
@@ -25,6 +28,24 @@
     <dimen name="nav_header_height2">230dp</dimen>
     <dimen name="nav_header_height3">300dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
+    //feedbackstars
+    <dimen name="firststarspace">63dp</dimen>
+    <dimen name="secondstarspace">127dp</dimen>
+    <dimen name="thirdstarspace">100dp</dimen>
+    <dimen name="fourthstarspace">152dp</dimen>
+    <dimen name="fifthstarspace">87dp</dimen>
+    <dimen name="feedbacktextsize">30dp</dimen>
+    <dimen name="feedbackalltext">35dp</dimen>
+    <dimen name="bwidth">70dp</dimen>
+    <dimen name="bheight">70dp</dimen>
 
-
+    <dimen name="aboutusupheight">180dp</dimen>
+    <dimen name="aboutuslowerheight">70dp</dimen>
+    <dimen name="aboutuscenterheight">150dp</dimen>
+    <dimen name="aboutusscrollheight">300dp</dimen>
+    <dimen name="aboutusleftpadding">20dp</dimen>
+    <dimen name="aboutusallpadding">5dp</dimen>
+    <dimen name="aboutustoppadding">10dp</dimen>
+    <dimen name="aboutusbottompadding">20dp</dimen>
+    <dimen name="abttext">28dp</dimen>
 </resources>

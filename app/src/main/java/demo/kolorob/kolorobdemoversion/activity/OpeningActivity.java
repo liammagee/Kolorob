@@ -4,14 +4,17 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,14 +23,18 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.AppIndex;
@@ -37,36 +44,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.database.CategoryTable;
 import demo.kolorob.kolorobdemoversion.database.DatabaseHelper;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationCourseTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationFeeTable;
+import demo.kolorob.kolorobdemoversion.database.DatabaseManager;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationNewTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationResultDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTrainingDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Education.EducationTuitionDetailsTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentBookTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFieldTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentFitnessTable;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentServiceProviderTableNew;
-import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmentTheatreTable;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmetTypeTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialBillsTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialInsuranceTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialLoanTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialPaymentTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialServiceDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Financial.FinancialServiceNewTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialServiceProviderTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialSocialTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTaxTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTransactionTable;
-import demo.kolorob.kolorobdemoversion.database.Financial.FinancialTuitionTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentNewTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentServiceDetailsTable;
 import demo.kolorob.kolorobdemoversion.database.Health.HealthPharmacyTable;
@@ -81,35 +77,17 @@ import demo.kolorob.kolorobdemoversion.database.LegalAid.LegalAidServiceProvider
 import demo.kolorob.kolorobdemoversion.database.RatingTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTable;
 import demo.kolorob.kolorobdemoversion.database.SubCategoryTableNew;
-import demo.kolorob.kolorobdemoversion.helpers.AppDialogManager;
-import demo.kolorob.kolorobdemoversion.interfaces.RetryCallBackForNoInternet;
 import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
+import demo.kolorob.kolorobdemoversion.model.BazarItem;
 import demo.kolorob.kolorobdemoversion.model.CategoryItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationCourseItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationFeeItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationNewItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationResultItemNew;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTrainingDetailsItem;
 import demo.kolorob.kolorobdemoversion.model.Education.EducationTuitionDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentBookShopItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFieldItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentFitnessItem;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
-import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTheatreItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTypeItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialBillsItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialInsuranceItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialLoanItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialNewItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialPaymentItem;
 import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceDetailsItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialSocialItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTaxItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTransactionItem;
-import demo.kolorob.kolorobdemoversion.model.FInancial.FinancialTuitionItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentNewItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentServiceDetailsItem;
 import demo.kolorob.kolorobdemoversion.model.Health.HealthPharmacyItem;
@@ -126,10 +104,11 @@ import demo.kolorob.kolorobdemoversion.model.SubCategoryItem;
 import demo.kolorob.kolorobdemoversion.model.SubCategoryItemNew;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
+import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
 
 import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
 
-//import demo.kolorob.kolorobdemoversion.adapters.Trialholder;
+
 /**
  * Created by Yeakub Hassan Rafi on 27-Dec-15.
  * @author mity,arafat
@@ -139,9 +118,13 @@ public class OpeningActivity extends Activity {
     public static final String DB_NAME = "kolorob.db";
     private final static int SPLASH_TIME_OUT = 500;
     private static final int INTERNET_PERMISSION = 1;
-    private static final int NUMBER_OF_TASKS = 10;
+    private static int NUMBER_OF_TASKS = 10;
+    private static final String LOADINF_MODE="SQL"; //SQL or JSON
     String user="kolorobapp";
     String pass="2Jm!4jFe3WgBZKEN";
+    String app_ver="";
+    Boolean drop=false;
+    String first=null;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -159,13 +142,18 @@ public class OpeningActivity extends Activity {
     private int EntDataSize,HealthDatSize;
     private static final int ANIM_INTERVAL = 200;
     int countofDb;
+    String checkversion;
     ArrayList<SubCategoryItem>si2=new ArrayList<>();
     ArrayList<RatingModel>si22=new ArrayList<>();
     ArrayList<SubCategoryItemNew>si3=new ArrayList<>();
-
+    HealthVaccineTableDetails healthVaccineTableDetails;
+    HealthSpecialistTableDetails healthVaccineTableDetails1;
+    LegalAidDetailsTable legalAidDetailsTable;
     // LM's variables
     private Toast t = null;
     static int countOfDBLocal = 0;
+    byte[] bytes;
+    RelativeLayout mainLayout;
 
 
     public int getCountofDb() {
@@ -183,60 +171,318 @@ public class OpeningActivity extends Activity {
     private Handler handler;
     int in = 0;
     View view=null;
+    Float currentVersion;
 
+    //==========================================================Code for Bazar Starts==========================================
+    //bazar items
+    ArrayList<BazarItem> allBazar = new ArrayList<BazarItem>();
+    //loads the bazar items into arrays
+    private void loadBazar(){
+        getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/getadvsql?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                    @Override
+                    public void onResponse(int status, String apiContent) {
+
+                        if (status == AppConstants.SUCCESS_CODE) {
+                            //ge the db instance
+                            SQLiteDatabase db = DatabaseManager.getInstance(OpeningActivity.this).openDatabase();
+
+                            //split into single sql queries
+                            String[] sql = apiContent.split("~");
+
+                            //run the sqls one by one
+                            for (int i = 0; i<sql.length;i++)
+                            {
+                                db.execSQL(sql[i]);
+                            }
+
+                            //now reload the data taht has beed saved
+
+                            //get all data from db
+                            Cursor cursor =  db.rawQuery("select * from custom_advertisement", null);
+                            allBazar = new ArrayList<BazarItem>();
+                            while (cursor.moveToNext()) {
+                                allBazar.add(new BazarItem(cursor));
+                            }
+
+                            //tester. You may delete this portion
+                            Context context = getApplicationContext();
+                            CharSequence text = allBazar.get(0).toString();
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                            //tester ends======
+
+                        }
+                    }
+                }
+        );
+    }
+    private void saveBazar(BazarItem b){
+        getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/post_advertise?username=" + user +"&password="+ pass
+                +"&description=" + b.description +
+                "&type=" + b.type +
+                "&phone=" + b.phone +
+                "&contact=" + b.contact +
+                "&condition=" + b.condition +
+                "&contact_person=" + b.contact_person +
+                "&price=" + b.price,
+                new VolleyApiCallback() {
+                    @Override
+                    public void onResponse(int status, String apiContent) {
+
+                        if (status == AppConstants.SUCCESS_CODE) {
+                            //tester. You may delete this portion
+                            Context context = getApplicationContext();
+                            CharSequence text = apiContent;
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                            //tester ends======
+                        }
+                    }
+                }
+        );
+
+
+
+    }
+    //==========================================================Code for Bazar Ends==========================================
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-
+        //=========================================Bazar Calling starts here============================================
+       /* //load the bazar
+        loadBazar();
+        //save a bazar
+        BazarItem b = new BazarItem();
+        b.description="descriptions";
+        b.type = "Sell";
+        b.phone = "01711310912"; //MUST BE REGISTERED
+        b.contact = "2342352523";
+        b.condition = "qwdadasd";
+        b.contact_person = "ASDsdSDS";
+        b.price = 50;
+        saveBazar(b);*/
+        //=========================================Bazar Calling Ends here============================================
 
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_opening);
 
         ImageView kolorobLogo = (ImageView) findViewById(R.id.iv_kolorob_logo);//need to add bengali
+        try
+        {
+            app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+
+            Float currentVersion= Float.parseFloat(app_ver);
+            Float previousVersion=Float.parseFloat(SharedPreferencesHelper.getVersion(OpeningActivity.this));
+            if(currentVersion >previousVersion)
+            {
+                File path = OpeningActivity.this.getApplicationContext().getExternalFilesDir(null);
+
+                File file = new File(path, "kolorob.txt");
+                if(file.exists())
+                {
+                    file.delete();
+                }
+             /*  File dir = new File(Environment.getExternalStorageDirectory()+"/osmdroid");
+                if (dir.isDirectory())
+                {
+                    String[] children = dir.list();
+                    for (int i = 0; i < children.length; i++)
+                    {
+                        new File(dir, children[i]).delete();
+                    }
+                }*/
+            }
+            if(currentVersion>=previousVersion)
+                drop=true;
+            else
+                drop=false;
+
+        }
+        catch (Exception e)
+        {
+
+        }
 
 
         context = this;
-
+        mainLayout =(RelativeLayout)findViewById(R.id.mainLayout);
+        mainLayout.setBackgroundResource(R.drawable.bg);
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         width=displayMetrics.widthPixels;
         height=displayMetrics.heightPixels;
 
+        File path = context.getExternalFilesDir(null);
 
+        File file = new File(path, "kolorob.txt");
+        if(! new File(path, "kolorob.txt").exists()) {
+            FileOutputStream stream = null;
+            try {
+                stream = new FileOutputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                try {
+                    String body = app_ver + ",yes";
+                    if (stream!=null){
+                    stream.write(body.getBytes());}
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if(stream!=null){
+
+                    stream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            int length = (int) file.length();
+
+            bytes = new byte[length];
+
+            FileInputStream in = null;
+            try {
+                in = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                try {
+                    if(in!=null){
+                        int b= in.read(bytes);}
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if(in!=null) {
+                        in.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            String contents = new String(bytes);
+            String delims = "[,]";
+            String[] tokens = contents.split(delims);
+            first=tokens[1];
+        }
+        else {
+            int length = (int) file.length();
+
+            bytes = new byte[length];
+
+            FileInputStream in = null;
+            try {
+                in = new FileInputStream(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            try {
+                try {
+                    if(in!=null){
+                      int b=  in.read(bytes);}
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } finally {
+                try {
+                    if(in!=null) {
+                        in.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            String contents = new String(bytes);
+            String delims = "[,]";
+            String[] tokens = contents.split(delims);
+
+            first=tokens[1];
+        }
 
         SharedPreferences settings = getSharedPreferences("prefs", 0);
         firstRun = settings.getBoolean("firstRun", false);
-        if (firstRun == false)//if running for first time
+        if (first.equals("yes"))//if running for first time
         {
             SharedPreferences.Editor editor = settings.edit();
-            editor.putBoolean("firstRun", true);
-            editor.commit();
+
+
 
             if(!AppUtils.isNetConnected(getApplicationContext())) {
-                alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
-                alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.setMessage(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                SharedPreferences settings = getSharedPreferences("prefs", 0);
-                                SharedPreferences.Editor editor = settings.edit();
-                                editor.putBoolean("firstRun", false);
-                                editor.commit();
-                                finish();
-                            }
-                        });
+
+
+                LayoutInflater layoutInflater = LayoutInflater.from(this);
+                View promptView = layoutInflater.inflate(R.layout.default_alert, null);
+
+
+                final Dialog alertDialog = new Dialog(this);
+                alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                alertDialog.setContentView(promptView);
+                alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 alertDialog.show();
+
+
+                final TextView header = (TextView) promptView.findViewById(R.id.headers);
+                final TextView bodys = (TextView) promptView.findViewById(R.id.body);
+                final ImageView okay=(ImageView)promptView.findViewById(R.id.okay);
+
+                header.setText("ইন্টারনেট সংযোগ সচল নয়");
+                bodys.setText(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
+
+                okay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        alertDialog.cancel();
+                        SharedPreferences settings = getSharedPreferences("prefs", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putBoolean("firstRun", false);
+                        editor.apply();
+                        finish();
+                    }
+                });
+
+                alertDialog.setCancelable(false);
+//		if(SharedPreferencesHelper.isTabletDevice(c))
+//			textAsk.setTextSize(23);
+                WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+                lp.dimAmount=0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+                alertDialog.getWindow().setAttributes(lp);
+//		else
+//			textAsk.setTextSize(17);
+                alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
+
+
+
+
+//                alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+//                alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+//                alertDialog.setCanceledOnTouchOutside(false);
+//                alertDialog.setMessage(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
+//                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+//                        new DialogInterface.OnClickListener() {
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//
+//                            }
+//                        });
+//                alertDialog.show();
             }
             else
 
-
-
             {
+
+                settings.edit().putLong("time", System.currentTimeMillis()).apply();
+// get the time and make a date out of it
+
 //                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
 //                pd.setIndeterminate(true);
 //                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
@@ -244,68 +490,163 @@ public class OpeningActivity extends Activity {
 
                 //   pd.dismiss();
             }
-        } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
-            alertDialog.setTitle("আপনি কি তথ্য হালনাগাদ করতে চান? ");
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "না",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+        } else
+        {
 
-                            Log.e("open4",String.valueOf(getCountofDb()));
-                            Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
-                            overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-                            startActivity(i);
 
-                            dialog.dismiss();
-                            finish();
-                        }
-                    });
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "হ্যাঁ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
 
-                            if (AppUtils.isNetConnected(getApplicationContext())) {
-                                countofDb=0 ;
-                                SharedPreferences settings = getSharedPreferences("prefs", 0);
-                                SharedPreferences.Editor editor = settings.edit();
-                                editor.putInt("KValue", countofDb);
-                                editor.commit();
+
+
+            LayoutInflater layoutInflater = LayoutInflater.from(OpeningActivity.this);
+            View promptView = layoutInflater.inflate(R.layout.verify_reg_dialog, null);
+
+
+
+            final Dialog alertDialog = new Dialog(OpeningActivity.this);
+
+            alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            alertDialog.setContentView(promptView);
+            alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
+
+            alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            alertDialog.show();
+            WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+            lp.dimAmount=0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+            alertDialog.getWindow().setAttributes(lp);
+
+
+            mainLayout.setBackgroundResource(R.drawable.bg);
+
+            final ImageView yes = (ImageView) promptView.findViewById(R.id.yes);
+            final ImageView no = (ImageView) promptView.findViewById(R.id.no);
+            final TextView textAsk=(TextView)promptView.findViewById(R.id.textAsk);
+            String text="আপনি কি তথ্য আপডেট করতে চান? ";
+            textAsk.setText(text);
+            if(SharedPreferencesHelper.isTabletDevice(OpeningActivity.this))
+                textAsk.setTextSize(23);
+            else
+                textAsk.setTextSize(17);
+//            alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+
+            yes.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (AppUtils.isNetConnected(getApplicationContext())) {
+                        countofDb=0 ;
+                        SharedPreferences settings = getSharedPreferences("prefs", 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString("First", first);
+                        settings.edit().putLong("time", System.currentTimeMillis()).apply();
+
+                        editor.putInt("KValue", countofDb);
+                        editor.apply();
 //                                pd = new ProgressDialog(OpeningActivity.this, ProgressDialog.STYLE_SPINNER);
 //                                pd.setIndeterminate(true);
 //                                pd.show(OpeningActivity.this, AppConstants.WAITTAG, AppConstants.WAITDET);
 
 
-                                LoadData();
-                            } else {
-                                AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+                        LoadData();
+                    } else {
 
-                                alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
-                                alertDialog.setCanceledOnTouchOutside(false);
-                                alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।  ");
-                                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-                                        new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                                Log.e("open3",String.valueOf(countofDb));
-                                                Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
-                                                overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-                                                startActivity(i);
-                                                dialog.dismiss();
-                                                finish();
-                                            }
-                                        });
-                                alertDialog.show();
 
+                        LayoutInflater layoutInflater = LayoutInflater.from(OpeningActivity.this);
+                        View promptView = layoutInflater.inflate(R.layout.default_alert, null);
+
+
+                        final Dialog alertDialog = new Dialog(OpeningActivity.this);
+                        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        alertDialog.setContentView(promptView);
+                        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        alertDialog.show();
+
+
+                        final TextView header = (TextView) promptView.findViewById(R.id.headers);
+                        final TextView bodys = (TextView) promptView.findViewById(R.id.body);
+                        final ImageView okay=(ImageView)promptView.findViewById(R.id.okay);
+
+                        header.setText("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
+                        bodys.setText(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।  ");
+
+                        okay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialog.cancel();
+                                Log.e("open3",String.valueOf(countofDb));
+                                Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
+                                overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                                startActivity(i);
+                                finish();
 
                             }
+                        });
 
-                        }
-                    });
+                        alertDialog.setCancelable(false);
+//		if(SharedPreferencesHelper.isTabletDevice(c))
+//			textAsk.setTextSize(23);
+//		else
+//			textAsk.setTextSize(17);
+                        alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
+
+                    }
+                    alertDialog.cancel();
+
+
+                }
+            });
+
+
+            no.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("open4",String.valueOf(getCountofDb()));
+
+                    Intent i = new Intent(OpeningActivity.this, PlaceSelectionActivity.class);
+                    overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+                    startActivity(i);
+
+
+                    finish();
+                    alertDialog.cancel();
+
+                }
+            });
+            //   setup a dialog window
+            alertDialog.setCancelable(false);
+
 
             alertDialog.show();
-            alertDialog.setCanceledOnTouchOutside(false);
+
+
+
+
+
+
+
+
+
+//
+//            AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
+//            alertDialog.setTitle("আপনি কি তথ্য আপডেট করতে চান? ");
+//            alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+//            alertDialog.setCanceledOnTouchOutside(false);
+//            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "না",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//
+//
+//                        }
+//                    });
+//            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "হ্যাঁ",
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                        }
+//                    });
+//
+//            alertDialog.show();
+//            alertDialog.setCanceledOnTouchOutside(false);
         }
     }
     public void LoadData()
@@ -343,8 +684,13 @@ public class OpeningActivity extends Activity {
             int timeCounter = 0;
             @Override
             public void run() {
-                if (OpeningActivity.this.countofDb >= NUMBER_OF_TASKS || timeCounter > 60000) {
+                if (OpeningActivity.this.countofDb >= NUMBER_OF_TASKS || timeCounter > 120000) {
                     overridePendingTransition(0, 0);
+                    SharedPreferences settings = getSharedPreferences("prefs", 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("First", first);
+
+                    editor.apply();
                     handler.removeCallbacks(this);
                     Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
                     frameAnimation.stop();
@@ -368,188 +714,247 @@ public class OpeningActivity extends Activity {
 
         if ((AppUtils.isNetConnected(getApplicationContext()) )&&(ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)== PackageManager.PERMISSION_GRANTED )
                 ) {
+            if(LOADINF_MODE=="SQL") { //for the newer version loading
+                NUMBER_OF_TASKS = 1;
+
+                new SaveSQL(OpeningActivity.this).execute("1");
 
 
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                @Override
-                public void onResponse(int status, String apiContent) {
-                    if (status == AppConstants.SUCCESS_CODE) {
-                        try {
 
-                            JSONArray allData = new JSONArray(apiContent);
-                            new SaveHealthtDataTask(OpeningActivity.this).execute(allData);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                //first third
+                /*if(sql1==null) {
+                    getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/getsql1?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                                @Override
+                                public void onResponse(int status, String apiContent) {
+                                    if (status == AppConstants.SUCCESS_CODE) {
+                                        new SaveSQL(OpeningActivity.this).execute(apiContent);
+                                    }
+                                }
+                            }
+                    );
                 }
-            });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-
-                                try {
-                                    JSONArray jo = new JSONArray(apiContent);
-                                    new SaveSubCategoryListTask(OpeningActivity.this).execute(jo);
-                                    // String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    // if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                    //     new SaveSubCategoryListTask(OpeningActivity.this).execute(jo.getJSONArray(AppConstants.KEY_DATA));
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/get_sp_rating?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-
-                                try {
-                                    JSONArray jo = new JSONArray(apiContent);
-                                    new SaveRatingTask(OpeningActivity.this).execute(jo);
-                                    // String apiSt = jo.getString(AppConstants.KEY_STATUS);
-                                    // if (apiSt.equals(AppConstants.KEY_SUCCESS))
-                                    //     new SaveSubCategoryListTask(OpeningActivity.this).execute(jo.getJSONArray(AppConstants.KEY_DATA));
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-                                try {
-
-                                    JSONArray jo = new JSONArray(apiContent);
-
-                                    new SaveCategoryListTask(OpeningActivity.this).execute(jo);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-            //
-            //
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-
-                                try {
-                                    JSONArray jo = new JSONArray(apiContent);
-
-                                    new SaveSubCategoryNewListTask(OpeningActivity.this).execute(jo);
-
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-
-                                try {
-
-                                    JSONArray allData = new JSONArray(apiContent);
-                                    new SavenewEduTask(OpeningActivity.this).execute(allData);
-
-//                                          frameAnimation.stop();
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-            );
-
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                @Override
-                public void onResponse(int status, String apiContent) {
-
-
-                    try {
-
-                        JSONArray allData = new JSONArray(apiContent);
-                        new SaveEntertainmentDataTask(OpeningActivity.this).execute(allData);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
+                else{
+                    new SaveSQL(OpeningActivity.this).execute(sql1);
                 }
-            });
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-                                try {
 
-                                    JSONArray jo = new JSONArray(apiContent);
-                                    new SavenewFinanceTask(OpeningActivity.this).execute(jo);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                //Second third
+                if(sql2==null) {
+                    getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/getsql2?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                                @Override
+                                public void onResponse(int status, String apiContent) {
+                                    if (status == AppConstants.SUCCESS_CODE) {
+                                        new SaveSQL(OpeningActivity.this).execute(apiContent);
+                                    }
                                 }
                             }
-                        }
-                    }
-            );
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
-                            if (status == AppConstants.SUCCESS_CODE) {
-                                try {
+                    );
+                }
+                else{
+                    new SaveSQL(OpeningActivity.this).execute(sql2);
+                }
 
-                                    JSONArray jo = new JSONArray(apiContent);
-                                    new SavenewGovTask(OpeningActivity.this).execute(jo);
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                //Third third
+                if(sql3==null) {
+                    getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/getsql3?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                                @Override
+                                public void onResponse(int status, String apiContent) {
+                                    if (status == AppConstants.SUCCESS_CODE) {
+                                        new SaveSQL(OpeningActivity.this).execute(apiContent);
+                                    }
                                 }
                             }
-                        }
-                    }
-            );
-
-
-            getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                        @Override
-                        public void onResponse(int status, String apiContent) {
+                    );
+                }
+                else{
+                    new SaveSQL(OpeningActivity.this).execute(sql3);
+                }*/
+            }
+            else if(LOADINF_MODE=="JSON") {//fot json older version loading
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/health?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                    @Override
+                    public void onResponse(int status, String apiContent) {
+                        if (status == AppConstants.SUCCESS_CODE) {
                             try {
 
-                                JSONArray legal_array = new JSONArray(apiContent);
-                                new SaveLegaltDataTask(OpeningActivity.this).execute(legal_array);
+                                JSONArray allData = new JSONArray(apiContent);
+                                healthVaccineTableDetails= new HealthVaccineTableDetails(OpeningActivity.this);
+                                healthVaccineTableDetails.dropTable();
+                                healthVaccineTableDetails1 = new HealthSpecialistTableDetails(OpeningActivity.this);
+                                healthVaccineTableDetails1.dropTable();
+                                new SaveHealthtDataTask(OpeningActivity.this).execute(allData);
+
+
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
                         }
                     }
-            );
+                });
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/get_sp_rating?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+
+
+                                    try {
+                                        JSONArray jo = new JSONArray(apiContent);
+                                        new SaveRatingTask(OpeningActivity.this).execute(jo);
+                                        // String apiSt = jo.getString(AppConstants.KEY_STATUS);
+                                        // if (apiSt.equals(AppConstants.KEY_SUCCESS))
+                                        //     new SaveSubCategoryListTask(OpeningActivity.this).execute(jo.getJSONArray(AppConstants.KEY_DATA));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs_old?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+
+
+                                    try {
+                                        JSONArray jo = new JSONArray(apiContent);
+                                        new SaveSubCategoryListTask(OpeningActivity.this).execute(jo);
+                                        // String apiSt = jo.getString(AppConstants.KEY_STATUS);
+                                        // if (apiSt.equals(AppConstants.KEY_SUCCESS))
+                                        //     new SaveSubCategoryListTask(OpeningActivity.this).execute(jo.getJSONArray(AppConstants.KEY_DATA));
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/categories?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+
+                                    try {
+
+                                        JSONArray jo = new JSONArray(apiContent);
+
+                                        new SaveCategoryListTask(OpeningActivity.this).execute(jo);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/refs?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+
+
+                                    try {
+                                        JSONArray jo = new JSONArray(apiContent);
+
+                                        new SaveSubCategoryNewListTask(OpeningActivity.this).execute(jo);
+
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/education?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+
+                                    try {
+
+                                        JSONArray allData = new JSONArray(apiContent);
+                                        new SavenewEduTask(OpeningActivity.this).execute(allData);
+
+    //                                          frameAnimation.stop();
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/entertainment?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                    @Override
+                    public void onResponse(int status, String apiContent) {
+
+
+                        try {
+
+                            JSONArray allData = new JSONArray(apiContent);
+                            new SaveEntertainmentDataTask(OpeningActivity.this).execute(allData);
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/financial?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+                                    try {
+
+                                        JSONArray jo = new JSONArray(apiContent);
+                                        new SavenewFinanceTask(OpeningActivity.this).execute(jo);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/government?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                if (status == AppConstants.SUCCESS_CODE) {
+                                    try {
+
+                                        JSONArray jo = new JSONArray(apiContent);
+                                        new SavenewGovTask(OpeningActivity.this).execute(jo);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }
+                );
+                getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/sp/legal?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                            @Override
+                            public void onResponse(int status, String apiContent) {
+                                try {
+
+                                    JSONArray legal_array = new JSONArray(apiContent);
+                                    legalAidDetailsTable = new LegalAidDetailsTable(OpeningActivity.this);
+                                    legalAidDetailsTable.dropTable();
+                                    new SaveLegaltDataTask(OpeningActivity.this).execute(legal_array);
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                );
+            }
 
         } else {
             if (!AppUtils.isNetConnected(getApplicationContext())) {
@@ -568,12 +973,8 @@ public class OpeningActivity extends Activity {
                     this.finish();
                 }
                 else {
-                    AppDialogManager.showNoInternetDialog(this, new RetryCallBackForNoInternet() {
-                        @Override
-                        public void retry() {
-                            LoadData();
-                        }
-                    });
+                    Toast.makeText(this, "আপনার ফোনে ইন্টারনেট সংযোগ নেই। অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন। ...",
+                            Toast.LENGTH_LONG).show();
                 }
 
             } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED )
@@ -591,566 +992,6 @@ public class OpeningActivity extends Activity {
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
 
     }
-
-
-    private void saveCategoryList(JSONArray categoryArray) {
-        CategoryTable catTable = new CategoryTable(OpeningActivity.this);
-        catTable.dropTable();
-        int catCount = categoryArray.length();
-        for (int i = 0; i < catCount; i++) {
-            try {
-                JSONObject jo = categoryArray.getJSONObject(i);
-                CategoryItem ci = CategoryItem.parseCategoryItem(jo);
-                catTable.insertItem(ci);
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-    }
-
-    private void SaveLegaltData(JSONObject jsonObject)
-    {
-        LegalAidServiceProviderTableNew legalAidServiceProviderTableNew= new LegalAidServiceProviderTableNew(OpeningActivity.this);
-        try {
-            LegalAidServiceProviderItemNew legalAidServiceProviderItemNew=LegalAidServiceProviderItemNew.parseLegalAidServiceProviderItemNew(jsonObject);
-            legalAidServiceProviderTableNew.insertItem(legalAidServiceProviderItemNew);
-            if (jsonObject.has("lservice_details"))
-            {
-                JSONArray lservice_details=jsonObject.getJSONArray("lservice_details");
-                int lservice_detailsSize=lservice_details.length();
-
-                for (int v=0;v<lservice_detailsSize;v++)
-                {
-                    JSONObject lservice_detailsSizeItem= lservice_details.getJSONObject(v);
-                    SaveLegalDetailsData(lservice_detailsSizeItem,jsonObject.getInt("id"));
-                }
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void SaveHealthtData(JSONObject jsonObject)
-    {
-        HealthServiceProviderTableNew healthServiceProviderTableNew= new HealthServiceProviderTableNew(OpeningActivity.this);
-        try {
-            HealthServiceProviderItemNew healthServiceProviderItemNew=HealthServiceProviderItemNew.parseHealthServiceProviderItem(jsonObject);
-            healthServiceProviderTableNew.insertItemHealth(healthServiceProviderItemNew);
-            if (jsonObject.has("health_vaccine_details"))
-            {
-                JSONArray healthVaccine=jsonObject.getJSONArray("health_vaccine_details");
-                int HealthVaccineDataSize=healthVaccine.length();
-
-                for (int v=0;v<HealthVaccineDataSize;v++)
-                {
-                    JSONObject healthVaccineItem= healthVaccine.getJSONObject(v);
-                    SaveHealthVaccineData(healthVaccineItem,jsonObject.getInt("id"));
-                }
-            }
-            if (jsonObject.has("health_specialist_details"))
-            {
-                JSONArray health_specialist_details=jsonObject.getJSONArray("health_specialist_details");
-                int HealthVaccineDataSize=health_specialist_details.length();
-
-
-                for (int v=0;v<HealthVaccineDataSize;v++)
-                {
-                    JSONObject healthSpecialistItem= health_specialist_details.getJSONObject(v);
-                    SaveSpecialistData(healthSpecialistItem,jsonObject.getInt("id"));
-                }
-            }
-
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    private void SaveHealthVaccineData(JSONObject jsonObject,int foreign_key)
-    {
-        HealthVaccineTableDetails healthVaccineTableDetails= new HealthVaccineTableDetails(OpeningActivity.this);
-        try {
-            HealthVaccineItemDetails healthVaccineItemDetails=HealthVaccineItemDetails.parseHealthVaccinesItem(jsonObject,foreign_key);
-            healthVaccineTableDetails.insertItemHealth(healthVaccineItemDetails);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-    private void SaveLegalDetailsData(JSONObject jsonObject,int foreign_key)
-    {
-        LegalAidDetailsTable legalAidDetailsTable= new LegalAidDetailsTable(OpeningActivity.this);
-        try {
-            LeagalAidDetailsItem leagalAidDetailsItem=LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject,foreign_key);
-            legalAidDetailsTable.insertItem(leagalAidDetailsItem);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-    private void SaveSpecialistData(JSONObject jsonObject,int foreign_key)
-    {
-        HealthSpecialistTableDetails healthVaccineTableDetails= new HealthSpecialistTableDetails(OpeningActivity.this);
-        try {
-            HealthSpecialistItemDetails healthSpecialistItemDetails=HealthSpecialistItemDetails.parseHealthSpecialistItem(jsonObject,foreign_key);
-            healthVaccineTableDetails.insertItemHealth(healthSpecialistItemDetails);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-    private void SaveEntertainmentData(JSONObject jsonObject, int i) {
-        EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew= new EntertainmentServiceProviderTableNew(OpeningActivity.this);
-        //entertainmentServiceProviderTableNew.dropTable();
-        try {
-            EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew=EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject,i);
-            entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
-
-            if (jsonObject.has("rspot_details"))
-            {
-                JSONArray rspot_details=jsonObject.getJSONArray("rspot_details");
-                int rspot_detailsSize=rspot_details.length();
-
-
-                for (int v=0;v<rspot_detailsSize;v++)
-                {
-                    JSONObject rspot_detailsSizeItem= rspot_details.getJSONObject(v);
-                    Saverspot_detailsData(rspot_detailsSizeItem,jsonObject.getInt("id"));
-
-                }
-            }
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-
-    private void Saverspot_detailsData(JSONObject jsonObject,int foreign_key)
-    {
-        EntertainmetTypeTable entertainmetTypeTable= new EntertainmetTypeTable(OpeningActivity.this);
-        try {
-
-            EntertainmentTypeItem entertainmentTypeItem=EntertainmentTypeItem.parseEntertainmentTypeItem(foreign_key,jsonObject);
-            entertainmetTypeTable.insertItem(entertainmentTypeItem);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
-
-
-
-
-
-    /**
-     * Written by : arafat
-     */
-
-
-    private void savenewEdu(JSONArray edu ) {
-        EducationNewTable educationNewTable= new EducationNewTable(OpeningActivity.this);
-        EducationResultDetailsTable educationResultDetailsTable= new EducationResultDetailsTable(OpeningActivity.this);
-        EducationTrainingDetailsTable educationTrainingDetailsTable=new EducationTrainingDetailsTable(OpeningActivity.this);
-        EducationTuitionDetailsTable educationTuitionDetailsTable=new EducationTuitionDetailsTable(OpeningActivity.this);
-        educationNewTable.dropTable();
-        educationResultDetailsTable.dropTable();
-        educationTrainingDetailsTable.dropTable();
-        educationTuitionDetailsTable.dropTable();
-
-
-        int eduServiceProviderCount = edu.length();
-
-        for (int i = 0; i < eduServiceProviderCount; i++) {
-            try {
-                JSONObject jo = edu.getJSONObject(i);
-                EducationNewItem et = EducationNewItem.parseEducationNewItem(jo);
-                educationNewTable.insertItem(et);
-
-
-                if(jo.has("tution_details"))//
-                {
-                    JSONArray service_details = jo.getJSONArray("tution_details");
-                    for( int j=0;j<service_details.length();j++)
-                    {
-                        JSONObject joes= service_details.getJSONObject(j);
-                        EducationTuitionDetailsItem educationTuitionDetailsItem = EducationTuitionDetailsItem.parseEducationTuitionDetailsItem(joes);
-                        educationTuitionDetailsTable.insertItem(educationTuitionDetailsItem);
-
-                    }
-
-                }
-                if(jo.has("result_details"))//
-                {
-                    JSONArray service_details = jo.getJSONArray("result_details");
-                    for( int j=0;j<service_details.length();j++)
-                    {
-                        JSONObject joes= service_details.getJSONObject(j);
-                        EducationResultItemNew educationResultItemNew=EducationResultItemNew.parseEducationResultItemNew(joes);
-                        educationResultDetailsTable.insertItem(educationResultItemNew);
-
-                    }
-
-                }
-                if(jo.has("training_details"))//
-                {
-                    JSONArray service_details = jo.getJSONArray("training_details");
-                    for( int j=0;j<service_details.length();j++)
-                    {
-                        JSONObject joes= service_details.getJSONObject(j);
-                        EducationTrainingDetailsItem educationTrainingDetailsItem = EducationTrainingDetailsItem.parseEducationTrainingDetailsItem(joes);
-                        educationTrainingDetailsTable.insertItem(educationTrainingDetailsItem);
-
-                    }
-
-                }
-
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-    private void savenewFinance(JSONArray financial ) {
-        FinancialServiceNewTable financialServiceNewTable=new FinancialServiceNewTable(OpeningActivity.this);
-
-        FinancialServiceDetailsTable financialServiceDetailsTable=new FinancialServiceDetailsTable(OpeningActivity.this);
-
-        financialServiceDetailsTable.dropTable();
-
-        financialServiceNewTable.dropTable();
-
-
-        int legalaidServiceProviderCount = financial.length();
-
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = financial.getJSONObject(i);
-                FinancialNewItem et = FinancialNewItem.parseFinancialMapInfoItem(jo);
-                financialServiceNewTable.insertItem(et);
-
-
-                if(jo.has("fin_service_details"))// need id in fin_service_details
-                {
-                    JSONArray service_details = jo.getJSONArray("fin_service_details");
-                    for( int j=0;j<service_details.length();j++)
-                    {
-                        JSONObject joes= service_details.getJSONObject(j);
-                        FinancialServiceDetailsItem financialServiceDetailsItem = FinancialServiceDetailsItem.parseFinancialServiceDetailsItem(joes);
-                        financialServiceDetailsTable.insertItem(financialServiceDetailsItem);
-
-                    }
-
-                }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-    private void savenewGov(JSONArray Gov ) {
-        GovernmentNewTable governmentNewTable=new GovernmentNewTable(OpeningActivity.this);
-
-        GovernmentServiceDetailsTable governmentServiceDetailsTable=new GovernmentServiceDetailsTable(OpeningActivity.this);
-
-        governmentServiceDetailsTable.dropTable();
-
-        governmentNewTable.dropTable();
-
-
-        int Govcount = Gov.length();
-
-        for (int i = 0; i < Govcount; i++) {
-            try {
-                JSONObject jo = Gov.getJSONObject(i);
-                GovernmentNewItem et =GovernmentNewItem.parseGovernmentNewItem(jo);
-                governmentNewTable.insertItem(et);
-
-
-                if(jo.has("govservice_details"))// need id in fin_service_details
-                {
-                    JSONArray service_details = jo.getJSONArray("govservice_details");
-                    for( int j=0;j<service_details.length();j++)
-                    {
-                        JSONObject joes= service_details.getJSONObject(j);
-                        GovernmentServiceDetailsItem governmentServiceDetailsItem = GovernmentServiceDetailsItem.parseGovernmentServiceDetailsItem(joes);
-                        governmentServiceDetailsTable.insertItem(governmentServiceDetailsItem);
-
-                    }
-
-                }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-
-
-
-    private void savesubcat(JSONArray subcat ) {
-        SubCategoryTableNew subCategoryTableNew=new SubCategoryTableNew(OpeningActivity.this);
-
-
-
-        subCategoryTableNew.dropTable();
-
-        int legalaidServiceProviderCount = subcat.length();
-
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = subcat.getJSONObject(i);
-                SubCategoryItemNew et = SubCategoryItemNew.parseSubCategoryItem(jo);
-                subCategoryTableNew.insertItem(et);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-
-    }
-    private void savesubcat2(JSONArray subcat ) {
-        SubCategoryTable subCategoryTable=new SubCategoryTable(OpeningActivity.this);
-
-
-
-        subCategoryTable.dropTable();
-
-        int legalaidServiceProviderCount = subcat.length();
-
-        for (int i = 0; i < legalaidServiceProviderCount; i++) {
-            try {
-                JSONObject jo = subcat.getJSONObject(i);
-                SubCategoryItem et = SubCategoryItem.parseSubCategoryItem(jo);
-                subCategoryTable.insertItem(et);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
-
-    }
-
-    private void saveSubCategoryList(JSONArray subCategoryArray) {
-        SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
-        subCatTable.dropTable();
-        int subCatCount = subCategoryArray.length();
-        for (int i = 0; i < subCatCount; i++) {
-            try {
-                JSONObject jo = subCategoryArray.getJSONObject(i);
-                SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
-                subCatTable.insertItem(si);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        countofDb++;
-        si2=subCatTable.getAllSubCategories(1);
-        si2.size();
-    }
-
-    private void saveFinancialServiceProvider(JSONArray financialServiceProvider) {
-        FinancialServiceProviderTable financialServiceProviderTable = new FinancialServiceProviderTable(OpeningActivity.this);
-        financialServiceProviderTable.dropTable();
-        FinancialBillsTable financialBillsTable = new FinancialBillsTable(OpeningActivity.this);
-        financialBillsTable.dropTable();
-        FinancialInsuranceTable financialInsuranceTable = new FinancialInsuranceTable(OpeningActivity.this);
-        financialInsuranceTable.dropTable();
-        FinancialTaxTable financialTaxTable = new FinancialTaxTable(OpeningActivity.this);
-        financialTaxTable.dropTable();
-        FinancialTransactionTable financialTransactionTable = new FinancialTransactionTable(OpeningActivity.this);
-        financialTransactionTable.dropTable();
-        FinancialTuitionTable financialTuitionTable = new FinancialTuitionTable(OpeningActivity.this);
-        financialTuitionTable.dropTable();
-        FinancialSocialTable financialSocialTable = new FinancialSocialTable(OpeningActivity.this);
-        financialSocialTable.dropTable();
-        FinancialLoanTable financialLoanTable = new FinancialLoanTable(OpeningActivity.this);
-        financialLoanTable.dropTable();
-        FinancialPaymentTable financialPaymentTable = new FinancialPaymentTable(OpeningActivity.this);
-        financialPaymentTable.dropTable();
-        int financialServiceProviderCount = financialServiceProvider.length();
-        for (int i = 0; i < financialServiceProviderCount; i++) {
-            try {
-                JSONObject jo = financialServiceProvider.getJSONObject(i);
-                FinancialServiceProviderItem et = FinancialServiceProviderItem.parseFinancialServiceProviderItem(jo);
-                financialServiceProviderTable.insertItem(et);
-
-                if(jo.has("Bills"))
-                {
-                    JSONArray Bills = jo.getJSONArray("Bills");
-
-                    for( int k=0;k<Bills.length();k++)
-                    {
-                        JSONObject joes= Bills.getJSONObject(k);
-
-                        FinancialBillsItem ets = FinancialBillsItem.parseFinancialBillsItem(joes);
-                        financialBillsTable.insertItem(ets);
-
-                    }
-
-                }
-
-                if(jo.has("Insurance"))
-                {
-                    JSONArray Insurance = jo.getJSONArray("Insurance");
-                    for( int l=0;l<Insurance.length();l++)
-                    {
-                        JSONObject joes= Insurance.getJSONObject(l);
-                        FinancialInsuranceItem etx = FinancialInsuranceItem.parseFinancialInsuranceItem(joes);
-                        financialInsuranceTable.insertItem(etx);
-
-                    }
-
-                }
-
-                if(jo.has("Tax"))
-                {
-                    JSONArray Tax = jo.getJSONArray("Tax");
-                    for( int k=0;k<Tax.length();k++)
-                    {
-                        JSONObject joes= Tax.getJSONObject(k);
-
-                        FinancialTaxItem etd =  FinancialTaxItem.parseFinancialTaxItem(joes);
-                        financialTaxTable.insertItem(etd);
-
-                    }
-
-                }
-
-                if(jo.has("Transaction"))
-                {
-                    JSONArray Transaction = jo.getJSONArray("Transaction");
-                    for( int k=0;k<Transaction.length();k++)
-                    {
-                        JSONObject joes= Transaction.getJSONObject(k);
-
-                        FinancialTransactionItem etc = FinancialTransactionItem.parseFinancialTransactionItem(joes);
-                        financialTransactionTable.insertItem(etc);
-
-                    }
-
-                }
-
-                if(jo.has("Tuition"))
-                {
-                    JSONArray Tuition = jo.getJSONArray("Tuition");
-                    for( int k=0;k<Tuition.length();k++)
-                    {
-                        JSONObject joes= Tuition.getJSONObject(k);
-                        FinancialTuitionItem etk = FinancialTuitionItem.parseFinancialTuitionItem(joes);
-                        financialTuitionTable.insertItem(etk);
-
-                    }
-
-                }
-
-
-                if(jo.has("Social"))
-                {
-                    JSONArray Social = jo.getJSONArray("Social");
-                    for( int k=0;k<Social.length();k++)
-                    {
-                        JSONObject joes= Social.getJSONObject(k);
-                        FinancialSocialItem ect = FinancialSocialItem.parseFinancialSocialItem(joes);
-                        financialSocialTable.insertItem(ect);
-
-                    }
-
-                }
-
-
-                if(jo.has("Loan"))
-                {
-                    JSONArray Loan = jo.getJSONArray("Loan");
-                    for( int k=0;k<Loan.length();k++)
-                    {
-                        JSONObject joes= Loan.getJSONObject(k);
-                        FinancialLoanItem cet = FinancialLoanItem.parseFinancialLoanItem(joes);
-                        financialLoanTable.insertItem(cet);
-
-                    }
-
-                }
-
-                if(jo.has("PaymentDocs"))
-                {
-                    JSONArray PaymentDocs = jo.getJSONArray("PaymentDocs");
-                    for( int k=0;k<PaymentDocs.length();k++)
-                    {
-                        JSONObject joes= PaymentDocs.getJSONObject(k);
-                        FinancialPaymentItem etm = FinancialPaymentItem.parseFinancialPaymentItem(joes);
-                        financialPaymentTable.insertItem(etm);
-
-                    }
-
-                }
-
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        countofDb++;
-
-//        if (firstRun == false)//if running for first time
-//        {
-//            pd.dismiss();
-//          //  Intent i = new Intent(OpeningActivity.this, LocationAskActivity.class);
-//         //   overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
-//            //Activity to be     launched For the First time
-//            // Intent i = new Intent(OpeningActivity.this, FeedbackActivity.class);//Activity to be     launched For the First time
-//            startActivity(i);
-//
-//        } else {
-
-
-        //    }
-
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1269,9 +1110,9 @@ public class OpeningActivity extends Activity {
                 SharedPreferences settings = getSharedPreferences("prefs", 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putInt("KValue", countofDb);
-                editor.commit();
+                editor.apply();
                 Log.d("tasks", "Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
-                makeToastWithShortbread("Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
+                makeToastWithShortbread("তথ্য সংগ্রহ চলছে");
             }
         }
 
@@ -1358,32 +1199,7 @@ public class OpeningActivity extends Activity {
             return new Long(0);
         }
     }
-    class SaveRatingTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
-        public SaveRatingTask(Context ctx) {
-            super(ctx);
-        }
 
-        protected Long doInBackground(JSONArray... jsonObjects) {
-            JSONArray RatingArray = jsonObjects[0];
-            RatingTable subCatTable = new RatingTable(OpeningActivity.this);
-            subCatTable.dropTable();
-            int subCatCount = RatingArray.length();
-            for (int i = 0; i < subCatCount; i++) {
-                try {
-                    JSONObject jo = RatingArray.getJSONObject(i);
-                    RatingModel si = RatingModel.parseRatingModel(jo);
-                    subCatTable.insertItem(si);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return new Long(-1);
-                }
-            }
-            si22 = subCatTable.getAllCategories();
-            si22.size();
-            return new Long(0);
-        }
-    }
 
     class SaveHealthtDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SaveHealthtDataTask(Context ctx) {
@@ -1394,10 +1210,15 @@ public class OpeningActivity extends Activity {
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray allData = jsonArrays[0];
             HealthServiceProviderTableNew healthServiceProviderTableNew = new HealthServiceProviderTableNew(OpeningActivity.this);
+                healthServiceProviderTableNew.dropTable();
+
             HealthDatSize = allData.length();
+
+            Log.d("HealthData","********"+HealthDatSize);
 
             for (int i = 0; i < HealthDatSize; i++) {
                 try {
+
                     JSONObject jsonObject = allData.getJSONObject(i);
                     HealthServiceProviderItemNew healthServiceProviderItemNew = HealthServiceProviderItemNew.parseHealthServiceProviderItem(jsonObject);
                     healthServiceProviderTableNew.insertItemHealth(healthServiceProviderItemNew);
@@ -1430,10 +1251,11 @@ public class OpeningActivity extends Activity {
         }
 
         private void SaveSpecialistData(JSONObject jsonObject, int foreign_key) {
-            HealthSpecialistTableDetails healthVaccineTableDetails = new HealthSpecialistTableDetails(OpeningActivity.this);
+
             try {
                 HealthSpecialistItemDetails healthSpecialistItemDetails = HealthSpecialistItemDetails.parseHealthSpecialistItem(jsonObject, foreign_key);
-                healthVaccineTableDetails.insertItemHealth(healthSpecialistItemDetails);
+
+                healthVaccineTableDetails1.insertItemHealth(healthSpecialistItemDetails);
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1442,7 +1264,8 @@ public class OpeningActivity extends Activity {
         }
 
         private void SaveHealthVaccineData(JSONObject jsonObject, int foreign_key) {
-            HealthVaccineTableDetails healthVaccineTableDetails = new HealthVaccineTableDetails(OpeningActivity.this);
+
+
             try {
                 HealthVaccineItemDetails healthVaccineItemDetails = HealthVaccineItemDetails.parseHealthVaccinesItem(jsonObject, foreign_key);
                 healthVaccineTableDetails.insertItemHealth(healthVaccineItemDetails);
@@ -1465,12 +1288,15 @@ public class OpeningActivity extends Activity {
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray allData = jsonArrays[0];
             int entDataSize = allData.length();
+            EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew = new EntertainmentServiceProviderTableNew(OpeningActivity.this);
+            EntertainmetTypeTable entertainmetTypeTable = new EntertainmetTypeTable(OpeningActivity.this);
+            entertainmetTypeTable.dropTable();
+                entertainmentServiceProviderTableNew.dropTable();
 
             for (int i = 0; i < entDataSize; i++) {
                 try {
                     JSONObject jsonObject = allData.getJSONObject(i);
-                    EntertainmentServiceProviderTableNew entertainmentServiceProviderTableNew = new EntertainmentServiceProviderTableNew(OpeningActivity.this);
-                    //entertainmentServiceProviderTableNew.dropTable();
+
                     EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew = EntertainmentServiceProviderItemNew.parseEntertainmentServiceProviderItem(jsonObject, i);
                     entertainmentServiceProviderTableNew.insertItem(entertainmentServiceProviderItemNew);
 
@@ -1480,7 +1306,9 @@ public class OpeningActivity extends Activity {
 
                         for (int v = 0; v < rspot_detailsSize; v++) {
                             JSONObject rspot_detailsSizeItem = rspot_details.getJSONObject(v);
-                            Saverspot_detailsData(rspot_detailsSizeItem, jsonObject.getInt("id"));
+
+                            EntertainmentTypeItem entertainmentTypeItem = EntertainmentTypeItem.parseEntertainmentTypeItem(jsonObject.getInt("id"), rspot_detailsSizeItem);
+                            entertainmetTypeTable.insertItem(entertainmentTypeItem);
                         }
                     }
                 } catch (JSONException e) {
@@ -1491,21 +1319,35 @@ public class OpeningActivity extends Activity {
             return new Long(0);
         }
 
-        private void Saverspot_detailsData(JSONObject jsonObject, int foreign_key) {
-            EntertainmetTypeTable entertainmetTypeTable = new EntertainmetTypeTable(OpeningActivity.this);
-            try {
-
-                EntertainmentTypeItem entertainmentTypeItem = EntertainmentTypeItem.parseEntertainmentTypeItem(foreign_key, jsonObject);
-                entertainmetTypeTable.insertItem(entertainmentTypeItem);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
 
     }
 
+    class SaveRatingTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
+        public SaveRatingTask(Context ctx) {
+            super(ctx);
+        }
+
+        protected Long doInBackground(JSONArray... jsonObjects) {
+            JSONArray RatingArray = jsonObjects[0];
+            RatingTable subCatTable = new RatingTable(OpeningActivity.this);
+            subCatTable.dropTable();
+            int subCatCount = RatingArray.length();
+            for (int i = 0; i < subCatCount; i++) {
+                try {
+                    JSONObject jo = RatingArray.getJSONObject(i);
+                    RatingModel si = RatingModel.parseRatingModel(jo);
+                    subCatTable.insertItem(si);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return new Long(-1);
+                }
+            }
+            si22 = subCatTable.getAllCategories();
+            si22.size();
+            return new Long(0);
+        }
+    }
 
     class SavenewFinanceTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SavenewFinanceTask(Context ctx) {
@@ -1555,6 +1397,78 @@ public class OpeningActivity extends Activity {
     }
 
 
+
+    //this class gets the entire sql string breaks it down and executes
+    class SaveSQL extends GenericSaveDBTask<String, Integer, Long> {
+        public SaveSQL(Context ctx) {
+            super(ctx);
+        }
+
+
+        protected Long doInBackground(String... sqls) {
+
+            String query="";
+
+            int tmr = 20;
+            while(DatabaseHelper.sql==null){
+
+                //if 10 msec passed make another attempt
+                if(tmr==10){
+                    getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/getsql?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
+                                @Override
+                                public void onResponse(int status, String apiContent) {
+                                    if (status == AppConstants.SUCCESS_CODE) {
+                                        DatabaseHelper.sql = apiContent;
+                                    }
+                                }
+                            }
+                    );
+                }
+                //if 20 secons passed end it!!
+                if(tmr<0){
+                    //two possible options
+                    //either it is the first time in that case close app
+                    //or continue with the app... not done
+
+                    return new Long(0);
+                }
+
+                tmr--;
+                try {
+                    Thread.sleep(1000);
+                }catch (Exception e){
+                    continue;
+                }
+
+            }
+            query = DatabaseHelper.sql;
+
+            //ge the db instance
+            SQLiteDatabase db = DatabaseManager.getInstance(OpeningActivity.this).openDatabase();
+
+            //split into single sql queries
+            String[] sql = query.split("~");
+
+            //block db
+            //db.beginTransaction();
+
+            //run the sqls one by one
+            for (int i = 0; i<sql.length;i++)
+            {
+                db.execSQL(sql[i]);
+            }
+
+            //unblock db
+            //db.endTransaction();
+
+            //close db
+            DatabaseManager.getInstance(OpeningActivity.this).closeDatabase();
+
+            return new Long(0);
+        }
+
+    }
+
     class SavenewGovTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SavenewGovTask(Context ctx) {
             super(ctx);
@@ -1598,21 +1512,6 @@ public class OpeningActivity extends Activity {
     }
 
 
-    /**
-     * Written by : arafat
-     */
-
-
-//            private void savenewEdu (JSONArray edu){
-//                EducationNewTable educationNewTable = new EducationNewTable(OpeningActivity.this);
-//                EducationResultDetailsTable educationResultDetailsTable = new EducationResultDetailsTable(OpeningActivity.this);
-//                EducationTrainingDetailsTable educationTrainingDetailsTable = new EducationTrainingDetailsTable(OpeningActivity.this);
-//                EducationTuitionDetailsTable educationTuitionDetailsTable = new EducationTuitionDetailsTable(OpeningActivity.this);
-//                educationNewTable.dropTable();
-//                educationResultDetailsTable.dropTable();
-//                educationTrainingDetailsTable.dropTable();
-//                educationTuitionDetailsTable.dropTable();
-//
 
     class SaveLegaltDataTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SaveLegaltDataTask(Context ctx) {
@@ -1622,13 +1521,14 @@ public class OpeningActivity extends Activity {
         protected Long doInBackground(JSONArray... jsonArrays) {
             JSONArray legal_array = jsonArrays[0];
             int p = legal_array.length();
-
+            LegalAidServiceProviderTableNew legalAidServiceProviderTableNew = new LegalAidServiceProviderTableNew(OpeningActivity.this);
+                legalAidServiceProviderTableNew.dropTable();
 
             for (int i = 0; i < p; i++) {
                 try {
                     JSONObject jsonObject = legal_array.getJSONObject(i);
-                    LegalAidServiceProviderTableNew legalAidServiceProviderTableNew = new LegalAidServiceProviderTableNew(OpeningActivity.this);
                     LegalAidServiceProviderItemNew legalAidServiceProviderItemNew = LegalAidServiceProviderItemNew.parseLegalAidServiceProviderItemNew(jsonObject);
+
                     legalAidServiceProviderTableNew.insertItem(legalAidServiceProviderItemNew);
                     if (jsonObject.has("lservice_details")) {
                         JSONArray lservice_details = jsonObject.getJSONArray("lservice_details");
@@ -1641,7 +1541,8 @@ public class OpeningActivity extends Activity {
                     }
 
 
-                } catch (JSONException e) {
+                } catch (JSONException e)
+                {
                     e.printStackTrace();
                     return new Long(-1);
                 }
@@ -1650,7 +1551,7 @@ public class OpeningActivity extends Activity {
         }
 
         private void SaveLegalDetailsData(JSONObject jsonObject, int foreign_key) {
-            LegalAidDetailsTable legalAidDetailsTable = new LegalAidDetailsTable(OpeningActivity.this);
+
             try {
                 LeagalAidDetailsItem leagalAidDetailsItem = LeagalAidDetailsItem.parseLegalAidDetailsItem(jsonObject, foreign_key);
                 legalAidDetailsTable.insertItem(leagalAidDetailsItem);
@@ -1664,58 +1565,7 @@ public class OpeningActivity extends Activity {
     }
 
 
-    class SaveEducationServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
-        public SaveEducationServiceProviderTask(Context ctx) {
-            super(ctx);
-        }
 
-        protected Long doInBackground(JSONArray... jsonObjects) {
-            JSONArray educationServiceProvider = jsonObjects[0];
-            EducationServiceProviderTable educationServiceProviderTable = new EducationServiceProviderTable(OpeningActivity.this);
-            educationServiceProviderTable.dropTable();
-            EducationFeeTable educationFeeTable = new EducationFeeTable(OpeningActivity.this);
-            EducationCourseTable educationCourseTable = new EducationCourseTable(OpeningActivity.this);
-            educationCourseTable.dropTable();
-            educationFeeTable.dropTable();
-            EducationCourseItem Eci = null;
-            EducationFeeItem Etf = null;
-            EducationServiceProviderItem et = null;
-            int eduServiceProviderCount = educationServiceProvider.length();
-            for (int i = 0; i < eduServiceProviderCount; i++) {
-                try {
-                    JSONObject jo = educationServiceProvider.getJSONObject(i);
-                    et = EducationServiceProviderItem.parseEducationServiceProviderItem(jo);
-                    educationServiceProviderTable.insertItem(et);
-
-                    if (jo.has("EducationServiceProviderCourse")) {
-                        JSONArray eduCourse = jo.getJSONArray("EducationServiceProviderCourse");
-                        for (int k = 0; k < eduCourse.length(); k++) {
-                            JSONObject joesCourse = eduCourse.getJSONObject(k);
-
-                            Eci = EducationCourseItem.parseEducationCourseItem(joesCourse);
-                            educationCourseTable.insertItem(Eci);
-
-                        }
-
-                    }
-                    if (jo.has("EduExamFees")) {
-                        JSONArray eduExamFees = jo.getJSONArray("EduExamFees");
-
-                        for (int j = 0; j < eduExamFees.length(); j++) {
-                            JSONObject joes = eduExamFees.getJSONObject(j);
-
-                            Etf = EducationFeeItem.parseEducationFeeItem(joes);
-                            educationFeeTable.insertItem(Etf);
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return new Long(-1);
-                }
-            }
-            return new Long(0);
-        }
-    }
 
     class SaveHealthServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
         public SaveHealthServiceProviderTask(Context ctx) {
@@ -1808,103 +1658,7 @@ public class OpeningActivity extends Activity {
 
 
 
-    class SaveEntertainmentServiceProviderTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
-        public SaveEntertainmentServiceProviderTask(Context ctx) {
-            super(ctx);
-        }
 
-        private void saveSubCategoryList(JSONArray subCategoryArray) {
-            SubCategoryTable subCatTable = new SubCategoryTable(OpeningActivity.this);
-            subCatTable.dropTable();
-            int subCatCount = subCategoryArray.length();
-            for (int i = 0; i < subCatCount; i++) {
-                try {
-                    JSONObject jo = subCategoryArray.getJSONObject(i);
-                    SubCategoryItem si = SubCategoryItem.parseSubCategoryItem(jo);
-                    subCatTable.insertItem(si);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            countofDb++;
-            si2 = subCatTable.getAllSubCategories(1);
-            si2.size();
-        }
-
-        protected Long doInBackground(JSONArray... jsonObjects) {
-            JSONArray entertainmentServiceProvider = jsonObjects[0];
-            EntertainmentServiceProviderTable entertainmentServiceProviderTable = new EntertainmentServiceProviderTable(OpeningActivity.this);
-            entertainmentServiceProviderTable.dropTable();
-            EntertainmentBookTable entertainmentBookTable = new EntertainmentBookTable(OpeningActivity.this);
-            entertainmentBookTable.dropTable();
-            EntertainmentFieldTable entertainmentFieldTable = new EntertainmentFieldTable(OpeningActivity.this);
-            entertainmentFieldTable.dropTable();
-            EntertainmentTheatreTable entertainmentTheatreTable = new EntertainmentTheatreTable(OpeningActivity.this);
-            entertainmentTheatreTable.dropTable();
-            EntertainmentFitnessTable entertainmentFitnessTable = new EntertainmentFitnessTable(OpeningActivity.this);
-            entertainmentFitnessTable.dropTable();
-            int entServiceProviderCount = entertainmentServiceProvider.length();
-            for (int i = 0; i < entServiceProviderCount; i++) {
-                try {
-                    JSONObject jo = entertainmentServiceProvider.getJSONObject(i);
-                    EntertainmentServiceProviderItem et = EntertainmentServiceProviderItem.parseEntertainmentServiceProviderItem(jo);
-                    entertainmentServiceProviderTable.insertItem(et);
-
-
-                    if (jo.has("EntFitnessBeauty")) {
-                        JSONArray EntFitnessBeauty = jo.getJSONArray("EntFitnessBeauty");
-
-                        for (int m = 0; m < EntFitnessBeauty.length(); m++) {
-                            JSONObject joes = EntFitnessBeauty.getJSONObject(m);
-                            EntertainmentFitnessItem ets = EntertainmentFitnessItem.parseEntertainmentFitnessItem(joes);
-                            entertainmentFitnessTable.insertItem(ets);
-
-                        }
-
-                    }
-
-                    if (jo.has("EntBookShop")) {
-                        JSONArray EntBookShop = jo.getJSONArray("EntBookShop");
-                        for (int j = 0; j < EntBookShop.length(); j++) {
-                            JSONObject joes = EntBookShop.getJSONObject(j);
-                            EntertainmentBookShopItem ets = EntertainmentBookShopItem.parseEntertainmentBookShopItem(joes);
-                            entertainmentBookTable.insertItem(ets);
-
-                        }
-
-                    }
-
-                    if (jo.has("EntField")) {
-                        JSONArray EntField = jo.getJSONArray("EntField");
-                        for (int k = 0; k < EntField.length(); k++) {
-                            JSONObject joes = EntField.getJSONObject(k);
-                            EntertainmentFieldItem ets = EntertainmentFieldItem.parseEntertainmentFieldItem(joes);
-                            entertainmentFieldTable.insertItem(ets);
-
-                        }
-
-
-                    }
-
-                    if (jo.has("EntTheatre")) {
-                        JSONArray EntTheatre = jo.getJSONArray("EntTheatre");
-                        for (int l = 0; l < EntTheatre.length(); l++) {
-                            JSONObject joes = EntTheatre.getJSONObject(l);
-                            EntertainmentTheatreItem etc = EntertainmentTheatreItem.parseEntertainmentTheatreItem(joes);
-                            entertainmentTheatreTable.insertItem(etc);
-
-                        }
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return new Long(-1);
-                }
-            }
-            return new Long(0);
-        }
-    }
 
 
     class SavenewEduTask extends GenericSaveDBTask<JSONArray, Integer, Long> {
@@ -1980,4 +1734,6 @@ public class OpeningActivity extends Activity {
         }
     }
 
-}
+
+    }
+

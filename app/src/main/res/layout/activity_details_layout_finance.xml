@@ -6,6 +6,7 @@
     android:layout_marginLeft="8dp"
     android:layout_marginRight="8dp"
     android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
 
     android:background="@color/white"
 
@@ -25,45 +26,60 @@
             android:id="@+id/upper"
             >
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
 
                 android:background="@color/financial_color"
                 android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:layout_height="wrap_content"></LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.6"
+                    android:gravity="center"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+
+                        android:layout_height="wrap_content"
+
+                        android:id="@+id/top_logo"
+                        android:background="@drawable/finance_white"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="0.2"
+                    android:gravity="right"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/close_buttonc"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="@drawable/cross_jb"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentEnd="true"
+                        />
+                </LinearLayout>
 
 
-                <ImageView
-                    android:layout_width="wrap_content"
-
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/top_logo"
-                    android:background="@drawable/finance_t"/>
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/close_buttonc"
-                    android:background="@drawable/cross_jb"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginRight="10dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="29sp"
-                    android:id="@+id/textView19"
-                    android:text="@string/Financial"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true" />
 
 
-            </RelativeLayout>
+
+
+
+
+
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -71,19 +87,7 @@
                 android:background="@color/financial_color"
                 android:layout_height="wrap_content">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_weight="0.25"
-                    android:gravity="center"
-                    android:id="@+id/service_icon_layout"
-                    android:layout_height="match_parent">
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/service_logo"
-                        android:background="@drawable/blank_logo_details"/>
 
-                </LinearLayout>
 
 
                 <LinearLayout
@@ -99,6 +103,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/upperText"
+                        android:layout_marginRight="2dp"
+                        android:layout_marginLeft="2dp"
+                        android:gravity="center"
                         android:orientation="vertical"
                         >
 
@@ -113,29 +120,30 @@
 
                             />
                         <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:orientation="horizontal"
-                            >
+                            android:layout_marginLeft="4dp"
+                            android:gravity="center">
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/white"
-                                android:textSize="20sp"
+                                android:textSize="23sp"
                                 android:id="@+id/ratingText"
-                                android:text="@string/rating"
-                                android:layout_centerVertical="true"
-                               />
+                                android:text="রেটিং: "/>
+
                             <RatingBar
                                 android:id="@+id/ratingBar"
+                                style="?android:attr/ratingBarStyleIndicator"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                style="?android:attr/ratingBarStyleIndicator"
-
+                                android:layout_alignLeft="@+id/artist"
+                                android:layout_below="@+id/artist"
                                 android:numStars="5"
-                                android:stepSize="0"
-                                android:rating="2.3"
-                                />
+                                android:rating="0.0"
+                                android:stepSize="0.1" />
+
 
                         </LinearLayout>
 
@@ -156,11 +164,11 @@
                             android:id="@+id/left_go_process"
                             android:layout_weight="0.3"
                             android:orientation="vertical"
-                            android:gravity="center">
+                            android:gravity="center|right">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
                                 android:id="@+id/distance_left"
                                 android:background="@drawable/direction_icon"/>
 
@@ -177,15 +185,15 @@
 
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_weight="0.3"
+                            android:layout_weight="0.2"
                             android:layout_height="wrap_content"
                             android:id="@+id/middle_phone"
                             android:orientation="vertical"
                             android:gravity="center">
 
                             <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
                                 android:id="@+id/phone_middl"
                                 android:background="@drawable/phone_icon"/>
 
@@ -205,7 +213,7 @@
                             android:id="@+id/right_email"
 
                             android:layout_height="wrap_content"
-                            android:gravity="center">
+                            android:gravity="center|left">
 
                             <ImageView
                                 android:layout_width="50dp"
@@ -243,38 +251,36 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:id="@+id/middle"
-                android:layout_marginBottom="20dp"
                 >
 
-                <ScrollView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:id="@+id/scrollView3"
-                    android:layout_centerInParent="true">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
 
-                    <RelativeLayout
-                        android:layout_width="fill_parent"
+                    <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
+                    <!--android:text="Large Text"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:id="@+id/other_detailsEnt" />-->
+
+
+                    <ListView
+                        android:layout_width="wrap_content"
+                        android:gravity="left"
+                        android:fadeScrollbars="false"
+                        android:scrollbarStyle="outsideInset"
+                        android:paddingRight="5dp"
+                        style="@style/scrollbar_shape_style"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-
-                        android:layout_gravity="top"
-                        android:orientation="vertical">
+                        android:id="@+id/allData" />
 
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:text="Large Text"
-                            android:gravity="top"
-                            android:id="@+id/serviceDetails"
-                            android:layout_gravity="top"
-                            />
-                    </RelativeLayout>
-                </ScrollView>
-
+                </LinearLayout>
 
             </RelativeLayout>
 

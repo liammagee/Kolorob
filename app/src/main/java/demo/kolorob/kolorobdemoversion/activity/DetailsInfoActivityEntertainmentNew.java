@@ -1,24 +1,27 @@
 package demo.kolorob.kolorobdemoversion.activity;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,7 +29,6 @@ import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,53 +39,44 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import demo.kolorob.kolorobdemoversion.R;
-import demo.kolorob.kolorobdemoversion.adapters.EducationCourseAdapter;
-import demo.kolorob.kolorobdemoversion.adapters.EducationCourseFee;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationCourseTable;
-import demo.kolorob.kolorobdemoversion.database.Education.EducationFeeTable;
+import demo.kolorob.kolorobdemoversion.adapters.DefaultAdapter;
 import demo.kolorob.kolorobdemoversion.database.Entertainment.EntertainmetTypeTable;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthPharmacyTable;
-import demo.kolorob.kolorobdemoversion.database.Health.HealthSpecialistTableDetails;
+import demo.kolorob.kolorobdemoversion.fragment.MapFragmentRouteOSM;
 import demo.kolorob.kolorobdemoversion.helpers.Helpes;
-import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationCourseItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationFeeItem;
-import demo.kolorob.kolorobdemoversion.model.Education.EducationServiceProviderItem;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.model.Entertainment.EntertainmentTypeItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItem;
-import demo.kolorob.kolorobdemoversion.model.Health.HealthServiceProviderItemNew;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
 
-import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
-
 /**
  * Created by arafat on 28/05/2016.
  */
 
-public class DetailsInfoActivityEntertainmentNew extends Activity {
+public class DetailsInfoActivityEntertainmentNew extends AppCompatActivity {
     Dialog dialog;
     LinearLayout upperHand,upperText,left_way,middle_phone,right_email,bottom_bar,linearLayout;
     ImageView left_image,middle_image,right_image,email_btn;
     TextView address_text,phone_text,email_text;
     int width,height;
+    String datevalue,datevaluebn;
+
     TextView ups_text,headerx;
     ListView courseListView,listView;
     String username="kolorobapp";
     String password="2Jm!4jFe3WgBZKEN";
     Context con;
+    String[] key;
+    String[] value;
+    int increment=0;
     EntertainmentServiceProviderItemNew entertainmentServiceProviderItemNew;
     ArrayList<EntertainmentTypeItem> entertainmentTypeItems;
     ArrayList<EntertainmentServiceProviderItemNew>entertainmentServiceProviderItemNewsx;
@@ -103,6 +96,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
     EditText feedback_comment;
     Float rating;
     RatingBar ratingBar;
+    ListView alldata;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +107,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         width = displayMetrics.widthPixels;
         con = this;
 
+        Log.d("ccc","######"+width);
 
         Intent intent = getIntent();
 
@@ -147,15 +142,22 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         hostel = (TextView) findViewById(R.id.tv_hostel_fac);
         transport = (TextView) findViewById(R.id.tv_transport_facility);
         ratingText=(TextView)findViewById(R.id.ratingText);
-        detailsEntertainment=(TextView)findViewById(R.id.detailsEntertainment);
-        other_detailsEnt=(TextView)findViewById(R.id.other_detailsEnt);
-        headerx=(TextView)findViewById(R.id.headerx);
+
+        // headerx=(TextView)findViewById(R.id.headerx);
+        alldata=(ListView)findViewById(R.id.allData);
+
+        ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) alldata
+                .getLayoutParams();
+
+        mlp.setMargins(width/100,0,width/990,width/8);
 
         // close_button=(ImageView)findViewById(R.id.close_button);
 
         top_logo=(ImageView)findViewById(R.id.top_logo);
         cross=(ImageView)findViewById(R.id.cross_jb);
-        school_logo_default=(ImageView)findViewById(R.id.service_logo);
+//        school_logo_default=(ImageView)findViewById(R.id.service_logo);
+
+
 
 
 
@@ -164,7 +166,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         feedback = (ImageView) findViewById(R.id.feedback);
         checkBox = (CheckBox) findViewById(R.id.compare);
         ratingBar = (RatingBar) findViewById(R.id.ratingBar);
-        if(width<500)
+        if(width<=400)
             ratingBar = new RatingBar(this, null, android.R.attr.ratingBarStyleSmall);
         setRatingBar();
 
@@ -204,7 +206,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         LinearLayout.LayoutParams params_upperText = (LinearLayout.LayoutParams) upperText.getLayoutParams();
 
 
-      //  params_upperText.setMargins(width/3,0,0,0);
+        //  params_upperText.setMargins(width/3,0,0,0);
         upperText.setLayoutParams(params_upperText);
 
         LinearLayout.LayoutParams params_left_way = (LinearLayout.LayoutParams) left_way.getLayoutParams();
@@ -215,8 +217,8 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 
 
 
-        top_logo.getLayoutParams().height=width/8;
-        top_logo.getLayoutParams().width=width/8;
+        top_logo.getLayoutParams().height = width / 8;
+        top_logo.getLayoutParams().width = width / 8;
 
         middle_image.getLayoutParams().height=width/8;
         middle_image.getLayoutParams().width=width/8;
@@ -230,9 +232,9 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         left_image.getLayoutParams().height =  width/8;
         left_image.getLayoutParams().width =  width/8;
 
-        school_logo_default.getLayoutParams().height =  width/5;
-        school_logo_default.getLayoutParams().width =  width/5;
-
+//        school_logo_default.getLayoutParams().height =  width/5;
+//        school_logo_default.getLayoutParams().width =  width/5;
+        SharedPreferences settings = DetailsInfoActivityEntertainmentNew.this.getSharedPreferences("prefs", 0);
 
         LinearLayout.LayoutParams params_middle_phone = (LinearLayout.LayoutParams) middle_phone.getLayoutParams();
         int vx = params_middle_phone.height = (height * 3) / 24;
@@ -240,7 +242,44 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         middle_phone.setLayoutParams(params_middle_phone);
 
 
+        Date date2 = new Date(settings.getLong("time", 0));
+        Date today=new Date();
+        long diffInMillisec = today.getTime() - date2.getTime();
 
+        long diffInDays = TimeUnit.MILLISECONDS.toDays(diffInMillisec);
+        if (diffInDays==0) datevalue=" আজকের তথ্য";
+        else
+        {
+            datevaluebn=English_to_bengali_number_conversion(String.valueOf(diffInDays));
+            datevalue=""+ datevaluebn + " দিন আগের তথ্য";
+        }
+        LayoutInflater inflater = getLayoutInflater();
+
+        View toastView = inflater.inflate(R.layout.toast_view,null);
+        Toast toast = new Toast(this);
+        // Set the Toast custom layout
+        toast.setView(toastView);
+
+
+        //   View toastView = toast.getView(); //This'll return the default View of the Toast.
+
+        /* And now you can get the TextView of the default View of the Toast. */
+
+
+
+        TextView toastMessage = (TextView) toastView.findViewById(R.id.toasts);
+        toastMessage.setTextSize(25);
+        toastMessage.setText(datevalue);
+
+
+        toastMessage.setTextColor(getResources().getColor(R.color.orange));
+        //  toastMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.kolorob_logo, 0, 0, 0);
+        // toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+
+        toastMessage.setGravity(Gravity.CENTER);
+        toastMessage.setCompoundDrawablePadding(26);
+        //  toastView.setBackgroundColor(getResources().getColor(R.color.orange));
+        toast.show();
 
 
         LinearLayout.LayoutParams params_right_email = (LinearLayout.LayoutParams) right_email.getLayoutParams();
@@ -249,9 +288,9 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         right_email.setLayoutParams(params_right_email);
 
         ups_text = (TextView) findViewById(R.id.ups_text);
-        ups_text.setTextSize(width / 25);
-        ratingText.setTextSize(width / 25);
-        headerx.setTextSize(width / 21);
+        ups_text.setTextSize(27);
+        ratingText.setTextSize(23);
+
 
         LinearLayout.LayoutParams feedbacks = (LinearLayout.LayoutParams) feedback.getLayoutParams();
         feedbacks.height = width / 8;
@@ -263,56 +302,65 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         EntertainmetTypeTable entertainmetTypeTable=new EntertainmetTypeTable(DetailsInfoActivityEntertainmentNew.this);
         entertainmentTypeItems=entertainmetTypeTable.getEntTypeItem(entertainmentServiceProviderItemNew.getNodeId());
         result_concate ="";
-        if(!entertainmentTypeItems.equals("")) {
-         //   other_detailsEnt.setVisibility(View.VISIBLE);
-            for (EntertainmentTypeItem entertainmentTypeItem : entertainmentTypeItems) {
-                CheckConcate("প্রতিষ্ঠানের ধরন", entertainmentTypeItem.getType());
-                CheckConcate("প্রতিষ্ঠানের সেবার ধরন", entertainmentTypeItem.getSub_type());
-                CheckConcate("প্রতিষ্ঠানের সেবার খরচ", entertainmentTypeItem.getRecreation_price());
-                CheckConcate("প্রতিষ্ঠানের সেবা বাবদ অন্যন্য তথ্য", entertainmentTypeItem.getRecreation_remarks());
+
+        key = new String[600];
+
+        value = new String[600];
 
 
-            }
+        //   other_detailsEnt.setVisibility(View.VISIBLE);
+        for (EntertainmentTypeItem entertainmentTypeItem : entertainmentTypeItems) {
+            CheckConcate("প্রতিষ্ঠানের ধরন", entertainmentTypeItem.getType());
+            CheckConcate("সেবার ধরন", entertainmentTypeItem.getSub_type());
+            CheckConcate("সেবার খরচ", English_to_bengali_number_conversion(entertainmentTypeItem.getRecreation_price())+" টাকা");
+            CheckConcate("অন্যন্য তথ্য", entertainmentTypeItem.getRecreation_remarks());
+
+
+
         }
+
 
         CheckConcate("ফ্লোর ", entertainmentServiceProviderItemNew.getFloor());
         CheckConcate("বাসার নাম", entertainmentServiceProviderItemNew.getHouse_name());
         CheckConcate("বাসার নম্বর", entertainmentServiceProviderItemNew.getHouse_no());
-        CheckConcate("রাস্তার ", entertainmentServiceProviderItemNew.getRoad());
+        CheckConcate("রাস্তার নাম", entertainmentServiceProviderItemNew.getRoad());
         CheckConcate("লাইন নম্বর", entertainmentServiceProviderItemNew.getLine());
         CheckConcate("এভিনিউ", entertainmentServiceProviderItemNew.getAvenue());
         CheckConcate("ব্লক", entertainmentServiceProviderItemNew.getBlock());
-        CheckConcate("এলাকা", entertainmentServiceProviderItemNew.getArea());
         CheckConcate("পরিচিত স্থান", entertainmentServiceProviderItemNew.getLandmark());
         CheckConcate("পোস্ট অফিস", entertainmentServiceProviderItemNew.getPost_office());
-        CheckConcate("পুলিশ স্টেশন", entertainmentServiceProviderItemNew.getPolice_station());
+
         CheckConcate("ঠিকানা", entertainmentServiceProviderItemNew.getAddress());
         timeProcessing("খোলার সময়", entertainmentServiceProviderItemNew.getOpeningtime());
         if(!entertainmentServiceProviderItemNew.getBreaktime().equals("null")&&!entertainmentServiceProviderItemNew.getBreaktime().equals(""))
-        breakTimeProcessing("বিরতির সময়", entertainmentServiceProviderItemNew.getBreaktime());
+            breakTimeProcessing("বিরতির সময়", entertainmentServiceProviderItemNew.getBreaktime());
         timeProcessing("বন্ধের সময়", entertainmentServiceProviderItemNew.getClosingtime());
-        CheckConcate("সাপ্তাহিক ছুটির দিন", entertainmentServiceProviderItemNew.getOff_day());
-        CheckConcate("যার মাধ্যমে নিবন্ধন করা হয়েছে", entertainmentServiceProviderItemNew.getNodeRegisteredWith());
-         ups_text.setText(entertainmentServiceProviderItemNew.getNodeNameBn());
+        CheckConcate("ছুটির দিন", entertainmentServiceProviderItemNew.getOff_day());
 
-        detailsEntertainment.setText(result_concate);
+        ups_text.setText(entertainmentServiceProviderItemNew.getNodeNameBn());
 
-
+        // detailsEntertainment.setText(result_concate);
 
 
+        DefaultAdapter defaultAdapter= new DefaultAdapter(this,key,value,increment);
+        alldata.setAdapter(defaultAdapter);
 
 
 
-     //   other_detailsEnt.setText(result_concate);
 
+        //   other_detailsEnt.setText(result_concate);
+
+        Log.d("Entertainment Parsing","###### "+entertainmentServiceProviderItemNew.getNodeWebsite());
 
         right_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (entertainmentServiceProviderItemNew.getNodeWebsite().equals("null")) {
-                    Log.d("Entertainment Parsing","......."+entertainmentServiceProviderItemNew.getNodeWebsite());
+                if (entertainmentServiceProviderItemNew.getNodeWebsite().equals("null")||entertainmentServiceProviderItemNew.getNodeWebsite().equals("")) {
                     AlertMessage.showMessage(con, "ই মেইল করা সম্ভব হচ্ছে না",
                             "ই মেইল আই ডি পাওয়া যায়নি");
+                }
+                else{
+                    Helpes.sendEmail(DetailsInfoActivityEntertainmentNew.this, entertainmentServiceProviderItemNew.getNodeEmail());
                 }
             }
         });
@@ -321,9 +369,9 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
             @Override
             public void onClick(View v) {
                 Intent callIntent1 = new Intent(Intent.ACTION_CALL);
-                if (!entertainmentServiceProviderItemNew.getNodeAdditional().equals("null")) {
-                    Log.d("Entertainment Parsing","......."+entertainmentServiceProviderItemNew.getNodeAdditional());
-                    callIntent1.setData(Uri.parse("tel:" + entertainmentServiceProviderItemNew.getNodeAdditional()));
+                if (!entertainmentServiceProviderItemNew.getNodeContact().equals("null")&&!entertainmentServiceProviderItemNew.getNodeContact().equals("")) {
+                    Log.d("Entertainment Parsing","......."+entertainmentServiceProviderItemNew.getNodeContact());
+                    callIntent1.setData(Uri.parse("tel:" + entertainmentServiceProviderItemNew.getNodeContact()));
                     if (checkPermission())
                         startActivity(callIntent1);
                     else {
@@ -385,54 +433,59 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
             }
         });
 
+        distance_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
 
-//        distance_left.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(AppUtils.isNetConnected(getApplicationContext())  && AppUtils.displayGpsStatus(getApplicationContext())) {
-//
-//
-//                    String lat = educationServiceProviderItem.getLatitude().toString();
-//                    // double latitude = Double.parseDouble(lat);
-//                    String lon = educationServiceProviderItem.getLongitude().toString();
-//                    // double longitude = Double.parseDouble(lon);
-//                    String name= educationServiceProviderItem.getEduNameBan().toString();
-//                    String node=educationServiceProviderItem.getIdentifierId();
-//                    boolean fromornot=true;
-//                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-//                    SharedPreferences.Editor editor = pref.edit();
-//                    editor.putString("Latitude", lat);
-//                    editor.putString("Longitude", lon);
-//                    editor.putString("Name", name);
-//                    editor.putBoolean("Value", fromornot);
-//                    editor.putString("nValue", node);
-//                    editor.commit();
-//
-//
-//                    String Longitude = pref.getString("Longitude", null);
-//                    String Latitude = pref.getString("Latitude", null);
-//
-//                    if (Latitude != null && Longitude != null) {
-//                        Double Lon = Double.parseDouble(Longitude);
-//                        Double Lat = Double.parseDouble(Latitude);
-//                        // implementFragment();
-//                        //username and password are present, do your stuff
-//                    }
-//
-//
-//                    finish();
-//
-//                }
-//                else if(!AppUtils.displayGpsStatus(getApplicationContext())){
-//
-//                    AppUtils.showSettingsAlert(DetailsInfoActivityEducation.this);
-//
-//                }
-//
-//                else
-//                {
-//
-//                    AlertDialog alertDialog = new AlertDialog.Builder(DetailsInfoActivityEducation.this, AlertDialog.THEME_HOLO_LIGHT).create();
+
+                    String lat = entertainmentServiceProviderItemNew.getLatitude().toString();
+                    // double latitude = Double.parseDouble(lat);
+                    String lon = entertainmentServiceProviderItemNew.getLongitude().toString();
+                    // double longitude = Double.parseDouble(lon);
+                    String name= entertainmentServiceProviderItemNew.getNodeNameBn().toString();
+                    String node=String.valueOf(entertainmentServiceProviderItemNew.getNodeId());
+                    boolean fromornot=true;
+                    SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+                    SharedPreferences.Editor editor = pref.edit();
+                    editor.putString("Latitude", lat);
+                    editor.putString("Longitude", lon);
+                    editor.putString("Name", name);
+                    editor.putBoolean("Value", fromornot);
+                    editor.putString("nValue", node);
+                    editor.commit();
+
+
+                    String Longitude = pref.getString("Longitude", null);
+                    String Latitude = pref.getString("Latitude", null);
+
+                    if (Latitude != null && Longitude != null) {
+                        Double Lon = Double.parseDouble(Longitude);
+                        Double Lat = Double.parseDouble(Latitude);
+                        // implementFragment();
+                        //username and password are present, do your stuff
+                    }
+
+                    Intent intentJ = new Intent(DetailsInfoActivityEntertainmentNew.this,MapFragmentRouteOSM.class);
+                    startActivity(intentJ);
+
+                }
+                else if(!AppUtils.displayGpsStatus(getApplicationContext())){
+
+                    AppUtils.showMessage(con, "জিপিএস বন্ধ করা রয়েছে!",
+                            "আপনি কি আপনার মোবাইলের জিপিএস টি চালু করতে চান?");
+
+                }
+
+                else
+                {
+
+
+                    AlertMessage.showMessage(con, "দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়।",
+                            "দিকনির্দেশনা দেখতে চাইলে অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন।  ");
+
+
+//                    AlertDialog alertDialog = new AlertDialog.Builder(DetailsInfoActivityEntertainmentNew.this, AlertDialog.THEME_HOLO_LIGHT).create();
 //                    alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্চিন্ন ");
 //                    alertDialog.setMessage(" দুঃখিত আপনার ইন্টারনেট সংযোগটি সচল নয়। \n পথ দেখতে চাইলে অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি সচল করুন।  ");
 //                    alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -442,13 +495,14 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 //                                }
 //                            });
 //                    alertDialog.show();
-//
-//                }
-//            }
-//        });
-//
-//
-//    }
+
+                }
+
+
+            }
+        });
+
+    }
 //
 //    public void verifyRegistration(View v){
 //
@@ -630,7 +684,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 //            return false;
 //
 //        }
-    }
+
     private void breakTimeProcessing(String value1, String value2) {
         if (!value2.equals("null") || !value2.equals(", ")) {
             String timeInBengali = "";
@@ -675,16 +729,24 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 
         LayoutInflater layoutInflater = LayoutInflater.from(DetailsInfoActivityEntertainmentNew.this);
         final View promptView = layoutInflater.inflate(R.layout.give_feedback_dialogue, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailsInfoActivityEntertainmentNew.this);
-        alertDialogBuilder.setView(promptView);
+        final Dialog alertDialog = new Dialog(DetailsInfoActivityEntertainmentNew.this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(promptView);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
 
         final Button submit = (Button) promptView.findViewById(R.id.submit);
 
+        final Button close = (Button) promptView.findViewById(R.id.btnclose);
 
-        final AlertDialog alert;
-        alert = alertDialogBuilder.create();
 
+        close.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+            }
+        });
 
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -697,50 +759,47 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
                 //  declareRadiobutton();
                 sendReviewToServer();
 
-                alert.cancel();
+                alertDialog.cancel();
 
             }
         });
-        alertDialogBuilder.setCancelable(false);
+        alertDialog.setCancelable(false);
 
 
-        alert.show();
+        alertDialog.show();
     }
 
 
     public void sendReviewToServer() {
-        int rating=0;
-        if (status.equals("খুবই অসন্তুষ্ট"))
-            rating = 1;
-        else if (status.equals("অসন্তুষ্ট"))
-            rating = 2;
-        else if (status.equals("বিশেষ অনুভূতি নেই"))
-
-            rating = 3;
-        else if (status.equals("সন্তুষ্ট "))
-
-            rating =4;
-        else if (status.equals("খুবই সন্তুষ্ট"))
-
-            rating = 5;
+        int rating;
+        if(status.equals(getString(R.string.feedback1)))
+            rating= 1;
+        else if(status.equals(getString(R.string.feedback2)))
+            rating=  2;
+        else if(status.equals(getString(R.string.feedback3)))
+            rating= 3;
+        else if(status.equals(getString(R.string.feedback4)))
+            rating=  4;
+        else
+            rating= 5;
 
         String comment="";
         comment=feedback_comment.getText().toString();
         Log.d("status ","======"+status);
-        String url = "http://kolorob.net/demo/api/sp_rating/"+entertainmentServiceProviderItemNew.getNodeId()+"?"+"phone=" +phone_num +"&review=" +comment+ "&rating="+rating+"&username="+username+"&password="+password+"";
+        String url = "http://kolorob.net/demo/api/sp_rating/"+entertainmentServiceProviderItemNew.getNodeId()+"?"+"phone=" +phone_num +"&review=" +comment.replace(' ','+')+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(DetailsInfoActivityEntertainmentNew.this, response, Toast.LENGTH_SHORT).show();
+
                         Log.d("========", "status " + response);
                         try {
 
 
                             if (response.equals("true")) {
                                 AlertMessage.showMessage(DetailsInfoActivityEntertainmentNew.this, "মতামতটি গ্রহন করা হয়েছে",
-                                        "মতামত প্রদান করার জন্য আপনাকে ধন্যবাদ করার জন্য আপনাকে ধন্যবাদ");
+                                        "মতামত প্রদান করার জন্য আপনাকে ধন্যবাদ");
                             }
                             else
                                 AlertMessage.showMessage(DetailsInfoActivityEntertainmentNew.this, "মতামতটি গ্রহন করা হয় নি",
@@ -777,62 +836,85 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 
     public void setRatingBar()
     {
-        getRequest(DetailsInfoActivityEntertainmentNew.this, "http://kolorob.net/demo/api/get_sp_rating/entertainment?username=kolorobapp&password=2Jm!4jFe3WgBZKEN", new VolleyApiCallback() {
-                    @Override
-                    public void onResponse(int status, String apiContent) {
-                        if (status == AppConstants.SUCCESS_CODE) {
-                            try {
-                                JSONArray jo = new JSONArray(apiContent);
-                                int size= jo.length();
-                                for(int i=0;i<size;i++)
-                                {
-                                    JSONObject ratingH=jo.getJSONObject(i);
-                                    String id= ratingH.getString("id");
-                                    if(id.equals(entertainmentServiceProviderItemNew.getNodeId()))
-                                    {
+//        getRequest(DetailsInfoActivityEntertainmentNew.this, "http://kolorob.net/demo/api/get_sp_rating/entertainment?username=kolorobapp&password=2Jm!4jFe3WgBZKEN", new VolleyApiCallback() {
+//                    @Override
+//                    public void onResponse(int status, String apiContent) {
+//                        if (status == AppConstants.SUCCESS_CODE) {
+//                            try {
+//                                JSONArray jo = new JSONArray(apiContent);
+//                                int size= jo.length();
+//                                for(int i=0;i<size;i++)
+//                                {
+//                                    JSONObject ratingH=jo.getJSONObject(i);
+//                                    String id= ratingH.getString("id");
+//                                    if(id.equals(entertainmentServiceProviderItemNew.getNodeId()))
+//                                    {
+//
+//                                        rating=Float.parseFloat(ratingH.getString("avg"));
+
+        try {
+            float f= Float.parseFloat(entertainmentServiceProviderItemNew.getRating());
+
+            ratingBar.setRating(f);
+            ratingBar.setIsIndicator(true);
 
 
-                                        rating=Float.parseFloat(ratingH.getString("avg"));
-                                        ratingBar.setRating(rating);
-                                        break;
+        }
+        catch (Exception e)
+        {
 
-                                    }
+        }
 
-
-                                }
-
-
-
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-        );
+//                                        break;
+//
+//                                    }
+//
+//
+//                                }
+//
+//
+//
+//
+//
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }
+//        );
     }
 
     public void requestToRegister() {
         LayoutInflater layoutInflater = LayoutInflater.from(DetailsInfoActivityEntertainmentNew.this);
         View promptView = layoutInflater.inflate(R.layout.verify_reg_dialog, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(DetailsInfoActivityEntertainmentNew.this);
-        alertDialogBuilder.setView(promptView);
+
+
+        final Dialog alertDialog = new Dialog(DetailsInfoActivityEntertainmentNew.this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(promptView);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
 
 
         final ImageView yes = (ImageView) promptView.findViewById(R.id.yes);
         final ImageView no = (ImageView) promptView.findViewById(R.id.no);
-
-        final AlertDialog alert = alertDialogBuilder.create();
+        final TextView textAsk=(TextView)promptView.findViewById(R.id.textAsk);
+        String text="  মতামত দেয়ার আগে আপনাকে"+"\n"+"       রেজিস্ট্রেশন করতে হবে"+"\n"+"আপনি কি রেজিস্ট্রেশন করতে চান?";
+        textAsk.setText(text);
+        if(SharedPreferencesHelper.isTabletDevice(DetailsInfoActivityEntertainmentNew.this))
+            textAsk.setTextSize(23);
+        else
+            textAsk.setTextSize(17);
+        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
 
 
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                alertDialog.cancel();
                 Intent intentPhoneRegistration = new Intent(DetailsInfoActivityEntertainmentNew.this, PhoneRegActivity.class);
-                alert.cancel();
+
                 startActivity(intentPhoneRegistration);
 
             }
@@ -842,15 +924,15 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alert.cancel();
+                alertDialog.cancel();
 
             }
         });
         //   setup a dialog window
-        alertDialogBuilder.setCancelable(false);
+        alertDialog.setCancelable(false);
 
 
-        alert.show();
+        alertDialog.show();
     }
 
 
@@ -866,6 +948,8 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 
 
     private String English_to_bengali_number_conversion(String english_number) {
+        if(english_number.equals("null")||english_number.equals(""))
+            return english_number;
         int v = english_number.length();
         String concatResult = "";
         for (int i = 0; i < v; i++) {
@@ -889,6 +973,14 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
                 concatResult = concatResult + "৯";
             else if (english_number.charAt(i) == '0')
                 concatResult = concatResult + "০";
+            else if (english_number.charAt(i) == '.')
+                concatResult = concatResult + ".";
+            else if(english_number.charAt(i) == '/')
+                concatResult = concatResult + "/";
+            else {
+                return english_number;
+            }
+
         }
         return concatResult;
     }
@@ -907,7 +999,9 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
             int hour = Integer.valueOf(separated[0]);
             int times = Integer.valueOf(separated[1]);
 
-            if (hour >= 6 && hour < 12)
+            if (hour ==0 && times==0)
+                timeInBengali = "রাত ১২";
+            else if (hour >= 6 && hour < 12)
                 timeInBengali = "সকাল " + English_to_bengali_number_conversion(String.valueOf(hour));
             else if (hour == 12)
                 timeInBengali = "দুপুর  " + English_to_bengali_number_conversion(String.valueOf(hour));
@@ -932,7 +1026,7 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
         return timeInBengali;
 
     }
-//    public Boolean RegisteredOrNot()
+    //    public Boolean RegisteredOrNot()
 //    {
 //        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
 //        SharedPreferences.Editor editor = pref.edit();
@@ -950,15 +1044,18 @@ public class DetailsInfoActivityEntertainmentNew extends Activity {
 //
     private void CheckConcate(String value1, String value2) {
 
+        if (!value2.equals("null") && !value2.equals("")&& !value2.equals(" টাকা")) {
+            key[increment] = value1;
+            value[increment] = value2;
+            increment++;
 
-    if (!value2.equals("null") && !value2.equals("")) {
+        }
 
-        String value = "      " + value1 + ":  " + value2;
-        result_concate = result_concate + value + "\n";
+
     }
 
 
-}
+
 
 
     private boolean checkPermission() {

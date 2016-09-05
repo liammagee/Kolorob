@@ -19,6 +19,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static  String DB_PATH ;
     public static final int DB_VERSION = 1;
     public static final String RATING = "rating_table";
+    public static final String COMMENT = "comment_table";
     public static final String SERVICE_CATEGORY = "service_category";
     public static final String SUB_CATEGORY = "sub_category";
     public static final String SUB_CATEGORY_NEW = "sub_category_new";
@@ -55,6 +56,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public static final String LEGAL_AID_SERVICE_PROVIDER_TABLE="legal_aid_provider";
     public static final String LEGAL_AID_LEGAL_ADVICE_TABLE="legal_aid_legal_advice";
     public static final String LEGAL_AID_SALISHI_TABLE="legal_aid_salishi";
+
+    //sqls
+    public static String sql=null;
+
     public Context context;
     public boolean mDataBaseExist;
 

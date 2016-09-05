@@ -102,7 +102,7 @@ public class HealthServiceProviderTableNew {
     private static final String KEY_CATEGORY= "category";
     private static final String KEY_REFERENCES= "referencesx";
 
-
+    private static final String KEY_RATING= "_rating";
 
     private Context tContext;
 
@@ -196,7 +196,8 @@ public class HealthServiceProviderTableNew {
                 + KEY_FAMILY_CONTRACEPTIVE + "  TEXT, "
                 + KEY_FAMILY_PRIVACY + "  TEXT, "
                 + KEY_CATEGORY + "  TEXT, "
-                + KEY_REFERENCES + " TEXT, PRIMARY KEY(" + KEY_ID + "))";
+                + KEY_REFERENCES + " TEXT, "
+                + KEY_RATING + " TEXT, PRIMARY KEY(" + KEY_ID + "))";
 
 
         db.execSQL(CREATE_TABLE_SQL);
@@ -295,7 +296,7 @@ public class HealthServiceProviderTableNew {
                 healthServiceProviderItemNew.getFamily_contraceptive(),
                 healthServiceProviderItemNew.getFamily_privacy(),
                 healthServiceProviderItemNew.getCategory(),
-                healthServiceProviderItemNew.getReferences()
+                healthServiceProviderItemNew.getReferences(),healthServiceProviderItemNew.getRating()
 
         );
     }
@@ -380,7 +381,7 @@ public class HealthServiceProviderTableNew {
             String family_contraceptive,
             String family_privacy,
             String category,
-            String references) {
+            String references,String rating) {
         if (isFieldExist(id)) {
             return updateItem(
                     id,
@@ -462,7 +463,7 @@ public class HealthServiceProviderTableNew {
                     family_contraceptive,
                     family_privacy,
                     category,
-                    references);
+                    references,rating);
         }
 
         ContentValues rowValue = new ContentValues();
@@ -547,7 +548,7 @@ public class HealthServiceProviderTableNew {
         rowValue.put(KEY_FAMILY_PRIVACY,  family_privacy  );
         rowValue.put(KEY_CATEGORY,  category  );
         rowValue.put(KEY_REFERENCES,  references  );
-
+        rowValue.put(KEY_RATING,  rating  );
 
         SQLiteDatabase db = openDB();
         long ret = db.insert(TABLE_NAME, null, rowValue);
@@ -558,12 +559,12 @@ public class HealthServiceProviderTableNew {
         return ret;
     }
 
-    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfosearch() {
+    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfosearch(String place) {
         ArrayList<HealthServiceProviderItemNew> subCatList = new ArrayList<>();
 
         //System.out.println(cat_id+"  "+sub_cat_id);
         SQLiteDatabase db = openDB();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +  " ORDER BY " +KEY_NODE_NAME, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+ KEY_AREA+" = '"+place+"' ORDER BY " +KEY_NODE_NAME,null);;
 
         if (cursor.moveToFirst()) {
             do {
@@ -668,7 +669,7 @@ public class HealthServiceProviderTableNew {
                         cursor.getString(76),
                         cursor.getString(77),
                         cursor.getString(78),
-                        cursor.getString(79));
+                        cursor.getString(79), cursor.getString(80));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -796,7 +797,7 @@ public class HealthServiceProviderTableNew {
                              String family_contraceptive,
                              String family_privacy,
                              String category,
-                             String references) {
+                             String references,String rating) {
         ContentValues rowValue = new ContentValues();
         rowValue.put(KEY_ID,  id  );
         rowValue.put(KEY_NODE_NAME,  node_name  );
@@ -878,7 +879,7 @@ public class HealthServiceProviderTableNew {
         rowValue.put(KEY_FAMILY_PRIVACY,  family_privacy  );
         rowValue.put(KEY_CATEGORY,  category  );
         rowValue.put(KEY_REFERENCES,  references  );
-
+        rowValue.put(KEY_RATING,  rating  );
 
         SQLiteDatabase db = openDB();
         long ret = db.update(TABLE_NAME, rowValue, KEY_ID + " = ? ",
@@ -1006,12 +1007,12 @@ public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfo() {
     }
 
 
-    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfoWithHead(int cat_id,String header) {
+    public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfoWithHead(String header,String place) {
         ArrayList<HealthServiceProviderItemNew> subCatList = new ArrayList<>();
         //System.out.println(cat_id+"  "+sub_cat_id);
         SQLiteDatabase db = openDB();
         header=","+header+",";
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY + " LIKE '%"+header+"%'", null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME +" WHERE "+KEY_CATEGORY + " LIKE '%"+header+"%'"+" AND "+ KEY_AREA+" = '"+place+"'", null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -1059,7 +1060,7 @@ public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfo() {
         SQLiteDatabase db = openDB();
 
 
-        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" , null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" , null);
         //Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+place+"'"  , null);
         Log.d("Ref Id","------"+"SELECT * FROM " + TABLE_NAME + " WHERE " +KEY_AREA+" = '"+places+"'"  + " AND "+ KEY_REFERENCES+ " LIKE '%"+refids+"%'" + "=" +refId);
 //        Toast.makeText(this, +cursor,
@@ -1161,7 +1162,7 @@ public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfo() {
         String family_privacy= cursor.getString(77);
         String category= cursor.getString(78);
         String references=cursor.getString(79);
-
+        String rating=cursor.getString(80);
 
         return new HealthServiceProviderItemNew(
                 id,
@@ -1243,7 +1244,7 @@ public ArrayList<HealthServiceProviderItemNew> getAllHealthSubCategoriesInfo() {
                 family_contraceptive,
                 family_privacy,
                 category,
-                references);
+                references,rating);
     }
 
 }
