@@ -10,10 +10,22 @@
         <item name="android:textColorSecondary">@color/orange</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/white</item>
+
+    </style>
+    <style name="AppLoginTheme" parent="Theme.AccountKit">
+        <item name="com_accountkit_primary_color">#FF8040</item>
+        <item name="com_accountkit_primary_text_color">@android:color/white</item>
+        <item name="com_accountkit_secondary_text_color">#000000</item>
+        <item name="com_accountkit_status_bar_color">#FF8040</item>
+
+        <item name="com_accountkit_input_accent_color">?attr/com_accountkit_primary_color</item>
+        <item name="com_accountkit_input_border_color">?attr/com_accountkit_primary_color</item>
     </style>
 
-
-
+    <style name="checkBoxStyle" parent="Base.Theme.AppCompat">
+        <item name="colorAccent">#ffffff</item>
+        <item name="android:textColorSecondary">#ffffff</item>
+    </style>
 
 
     <style name="scrollbar_shape_style">
@@ -29,7 +41,7 @@
     </style>
 
     <style name="style_Spinner">
-        <item name="android:background">@drawable/searchbar</item>
+        <item name="android:background"> @drawable/searchbar</item>
         <item name="android:dropDownSelector">@android:color/transparent</item>
         <item name="android:popupBackground">#000000</item>
         <item name="android:spinnerMode">dropdown</item>

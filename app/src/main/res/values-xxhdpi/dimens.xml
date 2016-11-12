@@ -1,5 +1,19 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="offercounter">50dp</dimen>
+    <dimen name="getmbbuttontop">0dp</dimen>
+    <dimen name="offercountertext">20dp</dimen>
+    <dimen name="offercounterbtn">13dp</dimen>
+    <dimen name="offerpaddingcredittop">20dp</dimen>
+    <dimen name="offerpaddingcreditlr">10dp</dimen>
+    <dimen name="offerbagw">115dp</dimen>
+    <dimen name="offerbagh">150dp</dimen>
+    <dimen name="offerbagtext">13dp</dimen>
+    <dimen name="offerpadding">10dp</dimen>
+    <dimen name="offerpaddinglow">5dp</dimen>
+    <dimen name="offerpaddingcredit">8dp</dimen>
+    <dimen name="offerpaddingbtn">15dp</dimen>
+    <dimen name="offerpaddingbtntop">3dp</dimen>
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="sidebarwidth">55dp</dimen>
     <dimen name="sidebarheight">350dp</dimen>
@@ -7,6 +21,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">0dp</dimen>
     <dimen name="margincheckbox">10dp</dimen>
+    <dimen name="tutobottom">10dp</dimen>
     <dimen name="leftpadding">25dp</dimen>
     <dimen name="transportscroll">100dp</dimen>
     <dimen name="comparelogoleft">30dp</dimen>
@@ -17,9 +32,14 @@
     <dimen name="catlayouttop">10dp</dimen>
     <dimen name="transportlayout">200dp</dimen>
     <dimen name="subcatlayouttop">00dp</dimen>
-    <dimen name="searchbar">230dp</dimen>
+
     <dimen name="catbuttonheight">55dp</dimen>
-    <dimen name="listheight">120dp</dimen>
+
+    <dimen name="searchbar">270dp</dimen>
+    <dimen name="listheight">170dp</dimen>
+    <dimen name="filterheight">170dp</dimen>
+    <dimen name="searchlisttextsize">16dp</dimen>
+    <dimen name="searchlisttextpadding">16dp</dimen>
     <dimen name="fab_marginforsearch">20dp</dimen>
     <dimen name="fab_marginforsearch2">20dp</dimen>
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
@@ -39,7 +59,7 @@
     <dimen name="feedbackalltext">25dp</dimen>
     <dimen name="bwidth">50dp</dimen>
     <dimen name="bheight">50dp</dimen>
-
+    <dimen name="icon_gaph">7dp</dimen>
     <dimen name="aboutusupheight">60dp</dimen>
     <dimen name="aboutuslowerheight">70dp</dimen>
     <dimen name="aboutuscenterheight">100dp</dimen>
@@ -48,6 +68,9 @@
     <dimen name="aboutusallpadding">5dp</dimen>
     <dimen name="aboutustoppadding">10dp</dimen>
     <dimen name="aboutusbottompadding">10dp</dimen>
+    <dimen name="bazar_distance">12dp</dimen>
 
     <dimen name="abttext">19dp</dimen>
+    <dimen name="regtext">25dp</dimen>
+    <dimen name="regpadding">10dp</dimen>
 </resources>

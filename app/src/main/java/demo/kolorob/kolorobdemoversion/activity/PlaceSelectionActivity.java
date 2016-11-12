@@ -9,13 +9,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -27,9 +27,9 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -38,6 +38,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -52,18 +54,25 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import demo.kolorob.kolorobdemoversion.R;
 import demo.kolorob.kolorobdemoversion.interfaces.VolleyApiCallback;
-import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
+import demo.kolorob.kolorobdemoversion.utils.ToastMessageDisplay;
 
 import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
 
@@ -72,22 +81,27 @@ public class PlaceSelectionActivity extends AppCompatActivity implements View.On
     ImageButton img;
     Toolbar toolbar;
     private String comment = "";
+    String areaname=null;
     String usernames = "kolorobapp";
     String password = "2Jm!4jFe3WgBZKEN";
     NotificationManager manager;
     private Notification myNotication;
-    Boolean doubleBackToExitPressedOnce;
+    final private int REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS = 124;
     Toast t = null;
     Intent i;
     String IMEINumber;
-
+    private  boolean Reviewsent=false;
+    boolean radioclicked=false;
+    boolean doubleBackToExitPressedOnce = false;
     private int height;
     private int width;
     Float  ratings;
+    Boolean Reviewgiven=false;
     Boolean click=false;
     private static final int REQUEST_PHONE_STATE = 0;
     InterstitialAd mInterstitialAd;
-
+    Date date2,today;
+    long diffInMillisec,diffInDays;
     float[][] mirpur10Coords = {
             {42, 267},
             {80, 420},
@@ -138,12 +152,24 @@ public class PlaceSelectionActivity extends AppCompatActivity implements View.On
     };
 
     private GoogleApiClient client;
+    FrameLayout mImageMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.place_selection_activity);
 
+        setContentView(R.layout.place_selection_activity);
+        mImageMap=(FrameLayout)findViewById(R.id.holder);
+        ImageButton placeimage=(ImageButton)findViewById(R.id.placeselectionholder);
+        Picasso.with(this)
+                .load(R.drawable.place_choice_screen3)
+                .fit()
+                .into(placeimage);
+        placeimage.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                popup();
+            }
+        });
 
         manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -153,9 +179,7 @@ public class PlaceSelectionActivity extends AppCompatActivity implements View.On
         height = metrics.heightPixels;
         width = metrics.widthPixels;
 
-        //   int relativeWidthOfImage = (int)(width * 0.1);
-        final int coordsHeight = 800;
-        final int coordsWidth = 480;
+
         final String comment = "";
         String app_ver = "";
         NotificationManager manager;
@@ -166,7 +190,8 @@ public class PlaceSelectionActivity extends AppCompatActivity implements View.On
 
         AdRequest adRequest = new AdRequest.Builder()
                 .build();
-loadIMEI();
+
+
         // Load ads into Interstitial Ads
         mInterstitialAd.loadAd(adRequest);
 
@@ -193,69 +218,21 @@ loadIMEI();
         });
 
 
-        manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        FrameLayout holder = (FrameLayout) findViewById(R.id.holder);
-        holder.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
 
-                width = v.getWidth();
-                height = v.getHeight();
 
-                float x = event.getX();
-                float y = event.getY();
-                // Hack to deal with issue in original image source
 
-                x = x * ((float) coordsWidth / (float) width);
-                y = y * ((float) coordsHeight / (float) height);
-                y = y + 37;
-                t=Toast.makeText(getApplicationContext(),"value ", Toast.LENGTH_SHORT);
-                boolean mirpur10Hit = isPointInPolygon(x, y, mirpur10Coords);
-                boolean mirpur11Hit = isPointInPolygon(x, y, mirpur11Coords);
-                boolean anyHit = false;
-                if (t != null)
-                    t.cancel();
-//                if (y < ((float)height) / 2.0) {
-            if (mirpur10Hit) {
-                    if(click==false)
-                    {
-                        Intent intent = new Intent(PlaceSelectionActivity.this, PlaceDetailsActivityNewLayout.class);
-                        intent.putExtra(AppConstants.KEY_PLACE, 1);
-                        startActivity(intent);
-                        click=true;
-                    }
 
-                    Log.d("BAUNIABHAD", "********" );
-                    t = Toast.makeText(getApplicationContext(), "মিরপুর-১১ ", Toast.LENGTH_SHORT);
-                    anyHit = true;
-                }
-                else if (mirpur11Hit) {
 
-                    if(click==false)
-                    {
-                        Intent intent = new Intent(PlaceSelectionActivity.this, PlaceDetailsActivityNewLayout.class);
-                        intent.putExtra(AppConstants.KEY_PLACE, 2);
-                        startActivity(intent);
-                        click=true;
-                    }
+        // find the image map in the view
 
-                    Log.d("PARIS ROAD", "********" );
-                    t = Toast.makeText(getApplicationContext(), "মিরপুর-১০", Toast.LENGTH_SHORT);
-                    anyHit = true;
 
-                }
-                if (anyHit)
-                    t.show();
-                return true;
-            }
-        });
-
+        // add a click handler to react when areas are tapped
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        else
 //           toolbar = (Toolbar) findViewById(R.id.toolbars);
 
-        // toolbar.setBackgroundResource(android.R.color.transparent);
+
         setSupportActionBar(toolbar);
 
         ActionBar ab = getSupportActionBar();
@@ -284,7 +261,7 @@ loadIMEI();
         getSupportActionBar().setHomeButtonEnabled(true);
         toggle.setDrawerIndicatorEnabled(true);
         drawer.setDrawerListener(toggle);
-        //toggle.syncState();
+        toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -314,6 +291,10 @@ loadIMEI();
     }
 
 
+
+
+
+
     public void checkVersion(final double current_version) {
         getRequest(PlaceSelectionActivity.this, "http://kolorob.net/app_version.json", new VolleyApiCallback() {
                     @Override
@@ -325,8 +306,9 @@ loadIMEI();
                             Double remote_version = jo.getDouble("version");
 
                             if (remote_version > current_version) {
-                                Toast.makeText(PlaceSelectionActivity.this, "কলরবের নতুন ভার্সন পাওয়া যাচ্ছে",
-                                        Toast.LENGTH_LONG).show();
+                                ToastMessageDisplay.setText(PlaceSelectionActivity.this,"কলরবের নতুন ভার্সন পাওয়া যাচ্ছে");
+                                ToastMessageDisplay.showText(PlaceSelectionActivity.this);
+
                                 generateNotification();
                             }
 
@@ -339,6 +321,93 @@ loadIMEI();
         );
     }
 
+    public void popup() {
+
+        LayoutInflater layoutInflater = LayoutInflater.from(PlaceSelectionActivity.this);
+        final View promptView = layoutInflater.inflate(R.layout.place_selection_popup, null);
+        final Dialog alertDialog = new Dialog(PlaceSelectionActivity.this);
+        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        alertDialog.setContentView(promptView);
+        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        alertDialog.show();
+
+        List<String> temp = new ArrayList<String>(Arrays.asList("মিরপুর ১০", "মিরপুর ১১","মিরপুর ১২"));
+
+        RadioGroup rg = (RadioGroup) alertDialog.findViewById(R.id.radio_group);
+
+        for(int i=0;i<temp.size();i++){
+            RadioButton rb=new RadioButton(this); // dynamically creating RadioButton and adding to RadioGroup.
+            rb.setText(temp.get(i));
+            if (SharedPreferencesHelper.isTabletDevice(PlaceSelectionActivity.this)){
+
+                rb.setTextSize(25);}
+            else rb.setTextSize(15);
+            rb.setTextColor(Color.parseColor("#FF8040"));
+
+            rg.addView(rb);
+
+        }
+        rg.setGravity(Gravity.CENTER);
+
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                int childCount = group.getChildCount();
+                for (int x = 0; x < childCount; x++) {
+                    RadioButton btn = (RadioButton) group.getChildAt(x);
+                    if (btn.getId() == checkedId) {
+                        areaname=btn.getText().toString();
+                        radioclicked=true;
+
+
+                    }
+                }
+            }
+        });
+        final Button submit = (Button) promptView.findViewById(R.id.btnSubmit);
+
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (radioclicked) {
+
+
+                    if (areaname.equals("মিরপুর ১০")) {
+                        Intent intent = new Intent(PlaceSelectionActivity.this, PlaceDetailsActivityNewLayout.class);
+                        intent.putExtra(AppConstants.KEY_PLACE, 2);
+                        startActivity(intent);
+
+                    } else if (areaname.equals("মিরপুর ১১")) {
+                        Intent intent = new Intent(PlaceSelectionActivity.this, PlaceDetailsActivityNewLayout.class);
+                        intent.putExtra(AppConstants.KEY_PLACE, 1);
+                        startActivity(intent);
+
+                    } else if (areaname.equals("মিরপুর ১২")) {
+                        Intent intent = new Intent(PlaceSelectionActivity.this, PlaceDetailsActivityNewLayout.class);
+                        intent.putExtra(AppConstants.KEY_PLACE, 3);
+                        startActivity(intent);
+
+                    }
+                    alertDialog.cancel();
+                } else {
+                    ToastMessageDisplay.setText(PlaceSelectionActivity.this, "দয়া করে এলাকা নির্বাচন করুন");
+                    ToastMessageDisplay.showText(PlaceSelectionActivity.this);
+                }
+            }
+        });
+
+
+
+        alertDialog.setCancelable(true);
+        WindowManager.LayoutParams lp = alertDialog.getWindow().getAttributes();
+        lp.dimAmount=0.0f; // Dim level. 0.0 - no dim, 1.0 - completely opaque
+        alertDialog.getWindow().setAttributes(lp);
+//		else
+//			textAsk.setTextSize(17);
+        alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
+        alertDialog.show();
+    }
 
     public void generateNotification() {
         String url = "https://play.google.com/store/apps/details?id=demo.kolorob.kolorobdemoversion&hl=en";
@@ -349,7 +418,7 @@ loadIMEI();
 
 
 
-      //  startActivity(i);
+        //  startActivity(i);
         // i.setData(Uri.parse("package:demo.kolorob.kolorobdemoversion"));
 
         //Intent intent = new Intent(this,NotificationView.class);
@@ -369,6 +438,8 @@ loadIMEI();
         //  builder.setSubText("Click here to update");   //API level 16
         builder.setNumber(100);
         //   builder.build();
+        builder.setAutoCancel(true);
+        builder.setOngoing(false);
 
         builder.setContentTitle("কলরব আপডেট করুন").setContentText("কলরবের নতুন ভার্সন পাওয়া যাচ্ছে")
                 .setSmallIcon(R.drawable.notify_logo_1).getNotification();
@@ -380,44 +451,44 @@ loadIMEI();
     @Override
     public void onBackPressed() {
 
-        help();
 
-//        if (doubleBackToExitPressedOnce) {
-//            new AlertDialog.Builder(this)
-//                    .setTitle("Close")
-//                    .setMessage("Are you sure you want to close Kolorob")
-//                    .setPositiveButton("Yes", new DialogInterface.OnClickListener()
-//                    {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            finish();
-//                        }
+        SharedPreferences settings = PlaceSelectionActivity.this.getSharedPreferences("prefs", 0);
+
+   /*    if(settings.getBoolean("Reviewsent",false)==true && diffInDays>=30)
+       {
+           SharedPreferences.Editor editor = settings.edit();
+           editor.putBoolean("Reviewsent", false);
+           Reviewgiven=false;
+           editor.apply();
+       }*/
+        if (!settings.getBoolean("Reviewsent", false)) help();
+
+        else {
+            if (doubleBackToExitPressedOnce) {
 //
-//                    })
-//                    .setNegativeButton("No", null)
-//                    .show();
-//        }
-//searchmain.setVisibility(View.GONE);
-//        placemain.setVisibility(View.VISIBLE);
-//        this.doubleBackToExitPressedOnce = true;
-//
-//
-//        new Handler().postDelayed(new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                doubleBackToExitPressedOnce=false;
-//            }
-//        }, 2000);
+                super.onBackPressed();
+
+                //    finish();
+                return;
+            }
+
+            ToastMessageDisplay.setText(this, "এখান থেকে বের হতে চাইলে আরেকবার চাপ দিন ");
+
+
+            this.doubleBackToExitPressedOnce = true;
+
+
+        }
     }
+
 
     public void help() {
         LayoutInflater layoutInflater = LayoutInflater.from(PlaceSelectionActivity.this);
         View promptView = layoutInflater.inflate(R.layout.app_feedback_dialog, null);
-     //   final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PlaceSelectionActivity.this);
-      //  final AlertDialog alert = alertDialogBuilder.create();
+        //   final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(PlaceSelectionActivity.this);
+        //  final AlertDialog alert = alertDialogBuilder.create();
 
-     //   alertDialogBuilder.setView(promptView);
+        //   alertDialogBuilder.setView(promptView);
 
         final Dialog alertDialog = new Dialog(PlaceSelectionActivity.this);
         alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -466,8 +537,13 @@ loadIMEI();
 
                 ratings = ratingBar.getRating();
                 comment=submit_review.getText().toString();
-
+                if(ratings==0)ratings = (float) 0.0001;
                 sendDataToserver(ratings, comment);
+                SharedPreferences settings = PlaceSelectionActivity.this.getSharedPreferences("prefs", 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putBoolean("Reviewsent", true);
+                editor.apply();
+                Reviewgiven=true;
                 alertDialog.cancel();
                 finish();
                 //   back();
@@ -498,7 +574,7 @@ loadIMEI();
 
         // create an alert dialog
         alertDialog.show();
-     //   alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLUE));
+        //   alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLUE));
 //        alerts.getWindow().setLayout((height*3/7), (height*4/7));
 
 
@@ -530,24 +606,28 @@ loadIMEI();
         SharedPreferencesHelper.setFeedback(PlaceSelectionActivity.this, username);
         String phone = SharedPreferencesHelper.getNumber(PlaceSelectionActivity.this);
         TelephonyManager telephonyManager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-       if(phone.equals("")) phone=IMEINumber;
+        if(phone.equals("")) phone=IMEINumber;
 
-        if (phone.equals("")) {
-            AlertMessage.showMessage(PlaceSelectionActivity.this, "ফোন নম্বরটি নিবন্ধন করা হয়নি",
-                    "অনুগ্রহ পূর্বক ফোন নম্বরটি নিবন্ধন করুন");
-        } else {
-            String url = "http://kolorob.net/demo/api/app_rating?phone=" + phone + "&review=" + comment + "&rating=" + rating + "&username=" + this.usernames + "&password=" + this.password;
+        if (phone.equals(""))phone.replace("","0");
+        else {
+            String comment2="";
+            try {
+                comment2=   URLEncoder.encode(comment.replace(" ", "%20"), "utf-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            String url = "http://kolorob.net/demo/api/app_rating?phone=" + phone + "&review=" + comment2 + "&rating=" + rating + "&username=" + this.usernames + "&password=" + this.password;
 
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
-                            Toast.makeText(PlaceSelectionActivity.this, "ধন্যবাদ", Toast.LENGTH_SHORT).show();
+                            //   ToastMessageDisplay.ShowToast(PlaceSelectionActivity.this,"ধন্যবাদ");
+
 
                             try {
-
-                                Toast.makeText(PlaceSelectionActivity.this, "ধন্যবাদ", Toast.LENGTH_LONG).show();
-
+                                ToastMessageDisplay.setText(PlaceSelectionActivity.this,"ধন্যবাদ");
+                                ToastMessageDisplay.showText(PlaceSelectionActivity.this);
 //                                if(response.toString().trim().equalsIgnoreCase("true"))
 //                                {
 //
@@ -568,7 +648,8 @@ loadIMEI();
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(PlaceSelectionActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                            ToastMessageDisplay.setText(PlaceSelectionActivity.this,error.toString());
+                            ToastMessageDisplay.showText(PlaceSelectionActivity.this);
                         }
                     }) {
 
@@ -609,20 +690,37 @@ loadIMEI();
         } else if (id == R.id.emergency_info) {
 
             //  Toast.makeText(con,"emergency",Toast.LENGTH_LONG).show();
-            Intent em = new Intent(this, NewEmergency.class);
+            Intent em = new Intent(this, EmergencyActivity.class);
             startActivity(em);
             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
         }
-     else if (id == R.id.about_us) {
+        else if (id == R.id.about_us) {
 
             Intent em = new Intent(this, AboutUs.class);
-           startActivity(em);
+            startActivity(em);
             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
-       }
+        }
         else if (id == R.id.disclaimer) {
 
             Intent em = new Intent(this, Disclaimer.class);
+            startActivity(em);
+            overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+
+        }
+        else if (id == R.id.about_offer) {
+
+            Intent em = new Intent(this, OfferActivity.class);
+            startActivity(em);
+            overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
+
+        }
+        else if (id == R.id.tutorial) {
+            int mapdetail=2;
+
+            Intent em = new Intent(this, ViewPagerDemo.class);
+            em.putExtra("YourValueKey", mapdetail);
+
             startActivity(em);
             overridePendingTransition(R.anim.slide_in, R.anim.slide_out);
 
@@ -692,17 +790,7 @@ loadIMEI();
     /**
      * Called when the 'loadIMEI' function is triggered.
      */
-    public void loadIMEI() {
-        // Check if the READ_PHONE_STATE permission is already available.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
-                != PackageManager.PERMISSION_GRANTED) {
-            // READ_PHONE_STATE permission has not been granted.
-            requestReadPhoneStatePermission();
-        } else {
-            // READ_PHONE_STATE permission is already been granted.
-            doPermissionGrantedStuffs();
-        }
-    }
+
     /**
      * Requests the READ_PHONE_STATE permission.
      * If the permission has been denied previously, a dialog will prompt the user to grant the
@@ -737,12 +825,7 @@ loadIMEI();
     /**
      * Callback received when a permissions request has been completed.
      */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
 
-
-    }
 
     private void alertAlert(String msg) {
         new AlertDialog.Builder(PlaceSelectionActivity.this)
@@ -758,13 +841,5 @@ loadIMEI();
     }
 
 
-    public void doPermissionGrantedStuffs() {
-        //Have an  object of TelephonyManager
-        TelephonyManager tm =(TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        //Get IMEI Number of Phone  //////////////// for this example i only need the IMEI
-        IMEINumber=tm.getDeviceId();
-
-
-    }
 
 }

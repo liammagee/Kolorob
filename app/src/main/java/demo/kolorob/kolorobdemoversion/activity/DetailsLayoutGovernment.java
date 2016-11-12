@@ -14,14 +14,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -39,6 +37,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,16 +46,20 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import demo.kolorob.kolorobdemoversion.R;
+import demo.kolorob.kolorobdemoversion.adapters.Comment_layout_adapter;
 import demo.kolorob.kolorobdemoversion.adapters.DefaultAdapter;
+import demo.kolorob.kolorobdemoversion.database.CommentTable;
 import demo.kolorob.kolorobdemoversion.database.Government.GovernmentServiceDetailsTable;
 import demo.kolorob.kolorobdemoversion.fragment.MapFragmentRouteOSM;
 import demo.kolorob.kolorobdemoversion.helpers.Helpes;
+import demo.kolorob.kolorobdemoversion.model.CommentItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentNewItem;
 import demo.kolorob.kolorobdemoversion.model.Government.GovernmentServiceDetailsItem;
 import demo.kolorob.kolorobdemoversion.utils.AlertMessage;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
+import demo.kolorob.kolorobdemoversion.utils.ToastMessageDisplay;
 
 /**
  * Created by israt.jahan on 7/17/2016.
@@ -64,34 +68,36 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
     Dialog dialog;
     LinearLayout upperHand, upperText, left_way, middle_phone, right_email, bottom_bar, linearLayout;
     ImageView left_image, middle_image, right_image, email_btn;
-    TextView address_text, phone_text, email_text;
+
     int width, height;
     TextView ups_text;
     EditText feedback_comment;
-    ListView courseListView, listView;
+    ArrayList<CommentItem> commentItems;
+    ImageView comments;
+    int inc;
+
     Context con;
     String[] key;
     String[] value;
     int increment=0;
     ListView alldata;
     GovernmentNewItem governmentNewItem;
-    String user="kolorobapp";
-    String pass="2Jm!4jFe3WgBZKEN";
+
     String datevalue,datevaluebn;
     ArrayList<GovernmentServiceDetailsItem> governmentServiceDetailsItems;
 
     String username="kolorobapp";
     String password="2Jm!4jFe3WgBZKEN";
     private TextView ratingText;
-    private TextView result, training, tuition;
-    private ImageView close_button, phone_mid, distance_left, feedback, top_logo, cross, school_logo_default;
+
+    private ImageView close_button, distance_left, feedback, top_logo;
     RadioGroup feedRadio;
-    RadioButton rb1, rb2, rb3;
-    String status = "", phone_num = "", registered = "";
-    String result_concate = "";
-    private CheckBox checkBox;
+    RadioButton rb1;
+    String status = "", phone_num = "",uname="";
+
+
     RatingBar ratingBar;
-    Float rating;
+
 
 
     @Override
@@ -113,12 +119,9 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
         }
 
 
-        GovernmentServiceDetailsTable governmentServiceDetailsTable = new GovernmentServiceDetailsTable(DetailsLayoutGovernment.this);
+        final GovernmentServiceDetailsTable governmentServiceDetailsTable = new GovernmentServiceDetailsTable(DetailsLayoutGovernment.this);
 
 
-        courseListView = (ListView) findViewById(R.id.courseListView);
-        listView = (ListView) findViewById(R.id.listView5);
-        linearLayout = (LinearLayout) findViewById(R.id.lll);
         upperHand = (LinearLayout) findViewById(R.id.upper_part);
         upperText = (LinearLayout) findViewById(R.id.upperText);
         left_way = (LinearLayout) findViewById(R.id.left_go_process);
@@ -128,9 +131,7 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
         bottom_bar = (LinearLayout) findViewById(R.id.bottom_bar);
         middle_image = (ImageView) findViewById(R.id.phone_middl);
         right_image = (ImageView) findViewById(R.id.right_side_email);
-        address_text = (TextView) findViewById(R.id.address_text);
-        phone_text = (TextView) findViewById(R.id.phone_text);
-        email_text = (TextView) findViewById(R.id.email_text);
+
 
         ratingText = (TextView) findViewById(R.id.ratingText);
 
@@ -161,16 +162,18 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
 
         setRatingBar();
 
-        CheckConcate("পরিচিত স্থান  ", governmentNewItem.getLandmark());
+
         CheckConcate("ঠিকানা  ", governmentNewItem.getAddress());
-        CheckConcate("ফ্লোর  ", governmentNewItem.getFloor());
-        CheckConcate("বাড়ির নাম  ", governmentNewItem.getHousename());
+
         CheckConcate("রাস্তা   ", governmentNewItem.getRoad());
         CheckConcate("লাইন    ", governmentNewItem.getLine());
         CheckConcate("এভিনিউ  ", governmentNewItem.getAvenue());
         CheckConcate("পোস্ট অফিস  ", governmentNewItem.getPostoffice());
         CheckConcate("পুলিশ স্টেশন ", governmentNewItem.getPolicestation());
+        CheckConcate("পরিচিত স্থান  ", governmentNewItem.getLandmark());
 
+        CheckConcate("বাড়ির নাম  ", governmentNewItem.getHousename());
+        CheckConcate("ফ্লোর  ", governmentNewItem.getFloor());
         CheckConcate("যোগাযোগ  ", governmentNewItem.getNode_contact());
         CheckConcate("যোগাযোগ  ", governmentNewItem.getNode_contact2());
         CheckConcate("ইমেইল  ", governmentNewItem.getNode_email());
@@ -270,36 +273,9 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
             datevalue=""+ datevaluebn + " দিন আগের তথ্য";
         }
 
-      //  Toast toast = Toast.makeText(this, datevalue, Toast.LENGTH_LONG);
-        LayoutInflater inflater = getLayoutInflater();
 
-        View toastView = inflater.inflate(R.layout.toast_view,null);
-        Toast toast = new Toast(this);
-        // Set the Toast custom layout
-        toast.setView(toastView);
-
-
-     //   View toastView = toast.getView(); //This'll return the default View of the Toast.
-
-        /* And now you can get the TextView of the default View of the Toast. */
-
-
-
-        TextView toastMessage = (TextView) toastView.findViewById(R.id.toasts);
-        toastMessage.setTextSize(25);
-        toastMessage.setText(datevalue);
-
-
-        toastMessage.setTextColor(getResources().getColor(R.color.orange));
-      //  toastMessage.setCompoundDrawablesWithIntrinsicBounds(R.drawable.kolorob_logo, 0, 0, 0);
-       // toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-
-        toastMessage.setGravity(Gravity.CENTER);
-        toastMessage.setCompoundDrawablePadding(26);
-      //  toastView.setBackgroundColor(getResources().getColor(R.color.orange));
-        toast.show();
-
-
+        ToastMessageDisplay.setText(this,datevalue);
+        ToastMessageDisplay.showText(this);
 
 
 
@@ -325,6 +301,185 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
         feedbacks.width = width / 8;
         feedback.setLayoutParams(feedbacks);
 
+        comments = (ImageView)findViewById(R.id.comments);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width/8, width/8);
+        lp.setMargins(width/24, 0, 0, 0);
+        comments.setLayoutParams(lp);
+        CommentTable commentTable = new CommentTable(DetailsLayoutGovernment.this);
+
+
+        commentItems=commentTable.getAllFinancialSubCategoriesInfo(String.valueOf(governmentNewItem.getFinId()));
+        int size= commentItems.size();
+        String[] phone = new String[size];
+        String[] date = new String[size];
+        String[] comment = new String[size];
+        final String[] rating = new String[size];
+
+
+        for (CommentItem commentItem:commentItems)
+        {
+            Log.d("Rating","$$$$$$"+commentItem.getRating());
+
+            if(!commentItem.getRating().equals(""))
+            {
+                phone[inc]= commentItem.getUser_name();
+                if(commentItem.getComment().equals(""))date[inc]="কমেন্ট করা হয় নি ";
+                else {date[inc]= commentItem.getComment();}
+                comment[inc]= English_to_bengali_number_conversion(commentItem.getDate());
+                rating[inc]= commentItem.getRating();
+                inc++;
+            }
+
+        }
+
+
+
+        final Comment_layout_adapter comment_layout_adapter = new Comment_layout_adapter(this,phone,date,comment,rating);
+
+
+        comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(SharedPreferencesHelper.getifcommentedalready(DetailsLayoutGovernment.this, String.valueOf(governmentNewItem.getFinId()),uname).equals("yes")||inc>0) {
+                    if (SharedPreferencesHelper.getifcommentedalready(DetailsLayoutGovernment.this, String.valueOf(governmentNewItem.getFinId()), uname).equals("yes")&&inc==0) {
+                        AlertMessage.showMessage(con, "দুঃখিত",
+                                "কমেন্ট দেখতে দয়া করে তথ্য আপডেট করুন");
+
+                    } else {
+                        if (SharedPreferencesHelper.getifcommentedalready(DetailsLayoutGovernment.this, String.valueOf(governmentNewItem.getFinId()), uname).equals("yes") ) {
+                            ToastMessageDisplay.setText(con,
+                                    "আপনার করা কমেন্ট দেখতে দয়া করে তথ্য আপডেট করুন");
+                            ToastMessageDisplay.showText(con);
+                        }
+                        LayoutInflater layoutInflater = LayoutInflater.from(DetailsLayoutGovernment.this);
+                        final View promptView = layoutInflater.inflate(R.layout.comment_popup, null);
+                        final Dialog alertDialog = new Dialog(DetailsLayoutGovernment.this);
+                        alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        alertDialog.setContentView(promptView);
+                        alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        alertDialog.show();
+                        Log.d("Value of Inc1", "======");
+
+
+//                    final TextView textView=(TextView)promptView.findViewById(R.id.header);
+                        final ListView listView = (ListView) promptView.findViewById(R.id.comment_list);
+
+                        final ImageView close = (ImageView) promptView.findViewById(R.id.closex);
+                        // ratingBars = (RatingBar)promptView.findViewById(R.id.ratingBar_dialogue);
+                        final TextView review = (TextView) promptView.findViewById(R.id.review);
+
+                        final ImageView ratingbarz = (ImageView) promptView.findViewById(R.id.ratingBarz);
+
+                        try {
+                            int ratings = Integer.parseInt(governmentNewItem.getRating());
+
+                            if (ratings == 1) {
+                                ratingbarz.setBackgroundResource(R.drawable.one);
+                            } else if (ratings == 2)
+                                ratingbarz.setBackgroundResource(R.drawable.two);
+
+                            else if (ratings == 3)
+                                ratingbarz.setBackgroundResource(R.drawable.three);
+
+                            else if (ratings == 4)
+                                ratingbarz.setBackgroundResource(R.drawable.four);
+
+                            else if (ratings == 5)
+                                ratingbarz.setBackgroundResource(R.drawable.five);
+                        } catch (Exception e) {
+
+                        }
+
+
+                        review.setText(English_to_bengali_number_conversion(Integer.toString(inc)) + " রিভিউ");
+                        Double screenSize = AppUtils.ScreenSize(DetailsLayoutGovernment.this);
+                        if (screenSize > 6.5) {
+                            review.setTextSize(20);
+                        } else {
+                            review.setTextSize(16);
+
+
+                        }
+
+
+                        listView.setAdapter(comment_layout_adapter);
+//                    textView.setVisibility(View.GONE);
+
+                        alertDialog.getWindow().setLayout((width * 5) / 6, (height * 2) / 3);
+
+                        close.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                alertDialog.dismiss();
+                            }
+                        });
+
+
+                        alertDialog.setCancelable(false);
+
+
+                        alertDialog.show();
+
+                    }
+                }
+                else  if(inc==0)
+                {
+                    LayoutInflater layoutInflater = LayoutInflater.from(DetailsLayoutGovernment.this);
+                    View promptView = layoutInflater.inflate(R.layout.verify_reg_dialog, null);
+                    final Dialog alertDialog = new Dialog(DetailsLayoutGovernment.this);
+                    alertDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    alertDialog.setContentView(promptView);
+                    alertDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    alertDialog.show();
+                    final ImageView yes = (ImageView) promptView.findViewById(R.id.yes);
+                    final ImageView no = (ImageView) promptView.findViewById(R.id.no);
+                    final TextView textAsk=(TextView)promptView.findViewById(R.id.textAsk);
+                    String text="এই সেবা সম্পর্কে কেউ এখনো মন্তব্য করেনি "+"\n"+"আপনি কি আপনার মতামত জানাতে চান?";
+                    textAsk.setText(text);
+                    alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
+
+                    if(SharedPreferencesHelper.isTabletDevice(DetailsLayoutGovernment.this))
+                        textAsk.setTextSize(23);
+                    else
+                        textAsk.setTextSize(17);
+                    //  alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+                    yes.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.cancel();
+                            String  register = SharedPreferencesHelper.getNumber(DetailsLayoutGovernment.this);
+                            phone_num=register;
+
+                            if (register.equals("")) {
+                                requestToRegister();
+                            } else {
+
+                                feedBackAlert();
+                                //  sendReviewToServer();
+                            }
+
+                        }
+                    });
+                    no.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.cancel();
+                        }
+                    });
+                    //   setup a dialog window
+                    alertDialog.setCancelable(false);
+                    alertDialog.show();                }
+
+
+
+            }
+        });
+
+
+
+
         middle_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -336,17 +491,13 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
                     else {
                         AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
                                 "ফোন নম্বর পাওয়া যায়নি");
-                        Toast.makeText(getApplicationContext(),
-                                "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
-                                .show();
+
                     }
                 } else {
 
                     AlertMessage.showMessage(con, "ফোনে কল দেয়া সম্ভব হচ্ছে না",
                             "ফোন নম্বর পাওয়া যায়নি");
-                    Toast.makeText(getApplicationContext(),
-                            "Sorry, Phone call is not possible now. ", Toast.LENGTH_LONG)
-                            .show();
+
                 }
             }
         });
@@ -497,9 +648,17 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
                 rb1 = (RadioButton)promptView.findViewById(selected);
                 status = rb1.getText().toString();
                 //  declareRadiobutton();
-                sendReviewToServer();
-
-                alertDialog.cancel();
+                if(AppUtils.isNetConnected(getApplicationContext()))
+                {
+                    sendReviewToServer();
+                    alertDialog.cancel();
+                }
+                else {
+                    ToastMessageDisplay.setText(DetailsLayoutGovernment.this,"দয়া করে ইন্টারনেট চালু করুন।");
+//                    Toast.makeText(this, "আপনার ফোনে ইন্টারনেট সংযোগ নেই। অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন। ...",
+//                            Toast.LENGTH_LONG).show();
+                    ToastMessageDisplay.showText(DetailsLayoutGovernment.this);
+                }
 
             }
         });
@@ -524,9 +683,16 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
         else
             rating= 5;
 
-        String comment="";
-        comment=feedback_comment.getText().toString();
-        String url = "http://kolorob.net/demo/api/sp_rating/"+governmentNewItem.getFinId()+"?"+"phone=" +phone_num +"&review=" +comment.replace(' ','+')+ "&rating="+rating+"&username="+username+"&password="+password+"";
+        String comment="",comment2="";
+        comment=feedback_comment.getText().toString().trim();
+        String  uname2 = SharedPreferencesHelper.getUname(DetailsLayoutGovernment.this);
+        uname=uname2.replace(' ','+');
+        try {
+            comment2=   URLEncoder.encode(comment.replace(" ", "%20"), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        String url = "http://kolorob.net/demo/api/sp_rating/"+governmentNewItem.getFinId()+"?"+"phone=" +phone_num +"&name=" +uname +"&review=" +comment2+ "&rating="+rating+"&username="+username+"&password="+password+"";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -538,6 +704,8 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
 
 
                             if (response.equals("true")) {
+                                SharedPreferencesHelper.setifcommentedalready(DetailsLayoutGovernment.this,String.valueOf(governmentNewItem.getFinId()),uname,"yes");
+
                                 AlertMessage.showMessage(DetailsLayoutGovernment.this, "মতামতটি গ্রহন করা হয়েছে",
                                         "মতামত প্রদান করার জন্য আপনাকে ধন্যবাদ");
                             }
@@ -597,7 +765,7 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
             textAsk.setTextSize(23);
         else
             textAsk.setTextSize(17);
-        alertDialog.getWindow().setLayout(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
 
 
         yes.setOnClickListener(new View.OnClickListener() {
@@ -706,6 +874,8 @@ public class DetailsLayoutGovernment extends AppCompatActivity {
                 concatResult = concatResult + ".";
             else if(english_number.charAt(i) == '/')
                 concatResult = concatResult + "/";
+            else if(english_number.charAt(i) == '-')
+                concatResult = concatResult + "-";
             else {
                 return english_number;
             }

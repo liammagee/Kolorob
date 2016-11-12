@@ -1,10 +1,12 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="regpadding">15dp</dimen>
     <dimen name="sidebarwidth">55dp</dimen>
     <dimen name="sidebarheight">270dp</dimen>
     <dimen name="sidebarmargintop">10dp</dimen>
     <dimen name="siderighttop">43dp</dimen>
+    <dimen name="tutobottom">10dp</dimen>
     <dimen name="nav_header_heightcat2">5dp</dimen>
     <dimen name="leftpadding">28dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
@@ -18,9 +20,9 @@
     <dimen name="catlayouttop">10dp</dimen>
     <dimen name="transportlayout">120dp</dimen>
     <dimen name="subcatlayouttop">00dp</dimen>
-    <dimen name="searchbar">230dp</dimen>
+
     <dimen name="catbuttonheight">55dp</dimen>
-    <dimen name="listheight">120dp</dimen>
+
     <dimen name="fab_marginforsearch">20dp</dimen>
     <dimen name="fab_marginforsearch2">20dp</dimen>
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
@@ -29,8 +31,23 @@
     <dimen name="nav_header_height2">50dp</dimen>
     <dimen name="search_top">20dp</dimen>
     <dimen name="nav_header_height3">80dp</dimen>
+    <dimen name="offercounter">40dp</dimen>
+    <dimen name="offercountertext">15dp</dimen>
+    <dimen name="offercounterbtn">15dp</dimen>
+    <dimen name="offerbagw">103dp</dimen>
+    <dimen name="offerbagh">130dp</dimen>
+    <dimen name="offerbagtext">14dp</dimen>
+    <dimen name="offerpadding">10dp</dimen>
+    <dimen name="offerpaddingcredit">8dp</dimen>
+    <dimen name="offerpaddinglow">6dp</dimen>
+    <dimen name="offerpaddingbtn">10dp</dimen>
+    <dimen name="offerpaddingbtntop">6dp</dimen>
+    <dimen name="offerpaddingcredittop">13dp</dimen>
+    <dimen name="offerpaddingcreditlr">15dp</dimen>
+    <dimen name="getmbbuttontop">0dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     //feedbackstars
+
     <dimen name="firststarspace">16dp</dimen>
     <dimen name="secondstarspace">53dp</dimen>
     <dimen name="thirdstarspace">30dp</dimen>
@@ -40,7 +57,12 @@
     <dimen name="feedbackalltext">25dp</dimen>
     <dimen name="bwidth">40dp</dimen>
     <dimen name="bheight">40dp</dimen>
-
+    <dimen name="icon_gaph">5dp</dimen>
+    <dimen name="searchbar">230dp</dimen>
+    <dimen name="listheight">120dp</dimen>
+    <dimen name="filterheight">150dp</dimen>
+    <dimen name="searchlisttextsize">14dp</dimen>
+    <dimen name="searchlisttextpadding">13dp</dimen>
     <dimen name="abttext">15dp</dimen>
     <dimen name="aboutusupheight">65dp</dimen>
     <dimen name="aboutuslowerheight">80dp</dimen>
@@ -50,4 +72,5 @@
     <dimen name="aboutusallpadding">5dp</dimen>
     <dimen name="aboutustoppadding">5dp</dimen>
     <dimen name="aboutusbottompadding">5dp</dimen>
+    <dimen name="bazar_distance">8dp</dimen>
 </resources>

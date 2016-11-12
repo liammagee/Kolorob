@@ -76,6 +76,7 @@ public class MyInfoWindow extends InfoWindow {
     }
 
     public void onOpen(Object arg0) {
+        MyInfoWindow.closeAllInfoWindowsOn(mMapView);
 
         final LinearLayout layout = (LinearLayout) mView.findViewById(R.id.bubble_layout);
         Button btnMoreInfo = (Button) mView.findViewById(R.id.bubble_moreinfo);
@@ -86,7 +87,7 @@ public class MyInfoWindow extends InfoWindow {
         final TextView txtSubdescription = (TextView) mView.findViewById(R.id.bubble_subdescription);
 
         txtTitle.setText(titlemarker);
-        txtSubdescription.setText("রেটিং : " + address +"\n"+ "\n"  +" (বিস্তারিত দেখুন)");
+        txtSubdescription.setText("রেটিং : " + address +"\n");
         adddescription.setText("যোগাযোগ: " + contact2);
         // contact.setText(contact2);
 

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -18,8 +17,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -105,6 +106,7 @@ import demo.kolorob.kolorobdemoversion.model.SubCategoryItemNew;
 import demo.kolorob.kolorobdemoversion.utils.AppConstants;
 import demo.kolorob.kolorobdemoversion.utils.AppUtils;
 import demo.kolorob.kolorobdemoversion.utils.SharedPreferencesHelper;
+import demo.kolorob.kolorobdemoversion.utils.ToastMessageDisplay;
 
 import static demo.kolorob.kolorobdemoversion.parser.VolleyApiParser.getRequest;
 
@@ -125,6 +127,7 @@ public class OpeningActivity extends Activity {
     String app_ver="";
     Boolean drop=false;
     String first=null;
+    Boolean REG=false;
 
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -154,7 +157,7 @@ public class OpeningActivity extends Activity {
     static int countOfDBLocal = 0;
     byte[] bytes;
     RelativeLayout mainLayout;
-
+    long oldinstalltime;
 
     public int getCountofDb() {
         return countofDb;
@@ -172,106 +175,45 @@ public class OpeningActivity extends Activity {
     int in = 0;
     View view=null;
     Float currentVersion;
-
+    long install=0;
+    File filesDir;
     //==========================================================Code for Bazar Starts==========================================
     //bazar items
     ArrayList<BazarItem> allBazar = new ArrayList<BazarItem>();
     //loads the bazar items into arrays
-    private void loadBazar(){
-        getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/getadvsql?username=" + user + "&password=" + pass + " ", new VolleyApiCallback() {
-                    @Override
-                    public void onResponse(int status, String apiContent) {
 
-                        if (status == AppConstants.SUCCESS_CODE) {
-                            //ge the db instance
-                            SQLiteDatabase db = DatabaseManager.getInstance(OpeningActivity.this).openDatabase();
-
-                            //split into single sql queries
-                            String[] sql = apiContent.split("~");
-
-                            //run the sqls one by one
-                            for (int i = 0; i<sql.length;i++)
-                            {
-                                db.execSQL(sql[i]);
-                            }
-
-                            //now reload the data taht has beed saved
-
-                            //get all data from db
-                            Cursor cursor =  db.rawQuery("select * from custom_advertisement", null);
-                            allBazar = new ArrayList<BazarItem>();
-                            while (cursor.moveToNext()) {
-                                allBazar.add(new BazarItem(cursor));
-                            }
-
-                            //tester. You may delete this portion
-                            Context context = getApplicationContext();
-                            CharSequence text = allBazar.get(0).toString();
-                            int duration = Toast.LENGTH_SHORT;
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                            //tester ends======
-
-                        }
-                    }
-                }
-        );
-    }
-    private void saveBazar(BazarItem b){
-        getRequest(OpeningActivity.this, "http://kolorob.net/demo/api/post_advertise?username=" + user +"&password="+ pass
-                +"&description=" + b.description +
-                "&type=" + b.type +
-                "&phone=" + b.phone +
-                "&contact=" + b.contact +
-                "&condition=" + b.condition +
-                "&contact_person=" + b.contact_person +
-                "&price=" + b.price,
-                new VolleyApiCallback() {
-                    @Override
-                    public void onResponse(int status, String apiContent) {
-
-                        if (status == AppConstants.SUCCESS_CODE) {
-                            //tester. You may delete this portion
-                            Context context = getApplicationContext();
-                            CharSequence text = apiContent;
-                            int duration = Toast.LENGTH_SHORT;
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                            //tester ends======
-                        }
-                    }
-                }
-        );
-
-
-
-    }
     //==========================================================Code for Bazar Ends==========================================
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //=========================================Bazar Calling starts here============================================
-       /* //load the bazar
-        loadBazar();
-        //save a bazar
-        BazarItem b = new BazarItem();
-        b.description="descriptions";
-        b.type = "Sell";
-        b.phone = "01711310912"; //MUST BE REGISTERED
-        b.contact = "2342352523";
-        b.condition = "qwdadasd";
-        b.contact_person = "ASDsdSDS";
-        b.price = 50;
-        saveBazar(b);*/
-        //=========================================Bazar Calling Ends here============================================
 
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_opening);
+      setContentView(R.layout.activity_opening);
+        mainLayout =(RelativeLayout)findViewById(R.id.mainLayout);
+        mainLayout.setBackgroundResource(R.drawable.bg);
+        SharedPreferences settings = getSharedPreferences("prefs", 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Snackbar snackbar = Snackbar.make(mainLayout,"Please allow all the permission so that app works smoothly",Snackbar.LENGTH_LONG);
 
-        ImageView kolorobLogo = (ImageView) findViewById(R.id.iv_kolorob_logo);//need to add bengali
+
+            snackbar.show();
+        }
+
+        String state = Environment.getExternalStorageState();
+
+
+// Make sure it's available
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            filesDir = getExternalFilesDir(null);
+        } else {
+            // Load another directory, probably local memory
+            filesDir = getFilesDir();
+        }
+
         try
         {
             app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
@@ -280,22 +222,15 @@ public class OpeningActivity extends Activity {
             Float previousVersion=Float.parseFloat(SharedPreferencesHelper.getVersion(OpeningActivity.this));
             if(currentVersion >previousVersion)
             {
-                File path = OpeningActivity.this.getApplicationContext().getExternalFilesDir(null);
 
+                File path = filesDir;
                 File file = new File(path, "kolorob.txt");
                 if(file.exists())
                 {
+
                     file.delete();
                 }
-             /*  File dir = new File(Environment.getExternalStorageDirectory()+"/osmdroid");
-                if (dir.isDirectory())
-                {
-                    String[] children = dir.list();
-                    for (int i = 0; i < children.length; i++)
-                    {
-                        new File(dir, children[i]).delete();
-                    }
-                }*/
+
             }
             if(currentVersion>=previousVersion)
                 drop=true;
@@ -310,13 +245,13 @@ public class OpeningActivity extends Activity {
 
 
         context = this;
-        mainLayout =(RelativeLayout)findViewById(R.id.mainLayout);
-        mainLayout.setBackgroundResource(R.drawable.bg);
+
         DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
         width=displayMetrics.widthPixels;
         height=displayMetrics.heightPixels;
 
-        File path = context.getExternalFilesDir(null);
+
+        File path = filesDir;
 
         File file = new File(path, "kolorob.txt");
         if(! new File(path, "kolorob.txt").exists()) {
@@ -328,6 +263,7 @@ public class OpeningActivity extends Activity {
             }
             try {
                 try {
+
                     String body = app_ver + ",yes";
                     if (stream!=null){
                     stream.write(body.getBytes());}
@@ -373,7 +309,8 @@ public class OpeningActivity extends Activity {
             String contents = new String(bytes);
             String delims = "[,]";
             String[] tokens = contents.split(delims);
-            first=tokens[1];
+             first=tokens[1];
+            //    first="yes";
         }
         else {
             int length = (int) file.length();
@@ -406,10 +343,11 @@ public class OpeningActivity extends Activity {
             String delims = "[,]";
             String[] tokens = contents.split(delims);
 
-            first=tokens[1];
+             first=tokens[1];
+            //      first="yes";
         }
 
-        SharedPreferences settings = getSharedPreferences("prefs", 0);
+
         firstRun = settings.getBoolean("firstRun", false);
         if (first.equals("yes"))//if running for first time
         {
@@ -460,26 +398,14 @@ public class OpeningActivity extends Activity {
 //			textAsk.setTextSize(17);
                 alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
 
-
-
-
-//                alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
-//                alertDialog.setTitle("ইন্টারনেট সংযোগ বিচ্ছিন্ন");
-//                alertDialog.setCanceledOnTouchOutside(false);
-//                alertDialog.setMessage(" কলরব প্রথমবারের মত শুরু হতে যাচ্ছে। অনুগ্রহ পূর্বক ইন্টারনেট সংযোগটি চালু করুন ।  ");
-//                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
-//                        new DialogInterface.OnClickListener() {
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                dialog.dismiss();
-//
-//                            }
-//                        });
-//                alertDialog.show();
             }
             else
 
-            {
-
+            {   install=System.currentTimeMillis();
+                long check=settings.getLong("timefirstinstall",Long.valueOf(2));
+if(check==2) {
+    settings.edit().putLong("timefirstinstall", install).apply();
+}
                 settings.edit().putLong("time", System.currentTimeMillis()).apply();
 // get the time and make a date out of it
 
@@ -583,10 +509,7 @@ public class OpeningActivity extends Activity {
                         });
 
                         alertDialog.setCancelable(false);
-//		if(SharedPreferencesHelper.isTabletDevice(c))
-//			textAsk.setTextSize(23);
-//		else
-//			textAsk.setTextSize(17);
+
                         alertDialog.getWindow().setLayout((width*5)/6, WindowManager.LayoutParams.WRAP_CONTENT);
 
                     }
@@ -618,67 +541,12 @@ public class OpeningActivity extends Activity {
 
             alertDialog.show();
 
-
-
-
-
-
-
-
-
-//
-//            AlertDialog alertDialog = new AlertDialog.Builder(OpeningActivity.this).create();
-//            alertDialog.setTitle("আপনি কি তথ্য আপডেট করতে চান? ");
-//            alertDialog.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-//            alertDialog.setCanceledOnTouchOutside(false);
-//            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "না",
-//                    new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//
-//
-//                        }
-//                    });
-//            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "হ্যাঁ",
-//                    new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            dialog.dismiss();
-//                        }
-//                    });
-//
-//            alertDialog.show();
-//            alertDialog.setCanceledOnTouchOutside(false);
         }
     }
     public void LoadData()
     {
 
-        /*
-        @@@@ arafat, you have to control wheel from here
-        moving wheel while loading data into local database
-         */
 
-
-
-
-
-
-
-//        Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                                  /* start the activity */
-//
-////                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-//                overridePendingTransition(0, 0);
-//                Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
-//                startActivity(a);
-//
-//                //  finish();
-//            }
-//        }, 60000);
-//        //setImage();
-//
         final Handler handler = new Handler();
         Runnable runner = new Runnable() {
             int timeCounter = 0;
@@ -692,10 +560,31 @@ public class OpeningActivity extends Activity {
 
                     editor.apply();
                     handler.removeCallbacks(this);
+                    if (first.equals("yes")) {
+                        int mapdetail = 0;
+                        REG = settings.getBoolean("IFREGISTERED", false);
+                        if (REG) {
+                            Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
+                            a.putExtra("YourValueKey", mapdetail);
+                            frameAnimation.stop();
+                            startActivity(a);
+                            return;
+
+                        } else {
+                            Intent a = new Intent(OpeningActivity.this, PhoneRegActivity.class); // Default Activity
+                            a.putExtra("YourValueKey", mapdetail);
+                            frameAnimation.stop();
+                            startActivity(a);
+                            return;
+                        }
+                    }else {
+                        SharedPreferencesHelper.setifcommentedalready(OpeningActivity.this,null,SharedPreferencesHelper.getUname(OpeningActivity.this),"no");
                     Intent a = new Intent(OpeningActivity.this, PlaceSelectionActivity.class); // Default Activity
+
                     frameAnimation.stop();
                     startActivity(a);
                     return;
+                }
                 }
                 //Create a loop
                 handler.postDelayed(this, 1000);
@@ -973,8 +862,13 @@ public class OpeningActivity extends Activity {
                     this.finish();
                 }
                 else {
-                    Toast.makeText(this, "আপনার ফোনে ইন্টারনেট সংযোগ নেই। অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন। ...",
-                            Toast.LENGTH_LONG).show();
+                    ToastMessageDisplay.setText(OpeningActivity.this,"আপনার ফোনে ইন্টারনেট সংযোগ নেই। অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন। ...");
+//                    Toast.makeText(this, "আপনার ফোনে ইন্টারনেট সংযোগ নেই। অনুগ্রহপূর্বক ইন্টারনেট সংযোগটি চালু করুন। ...",
+//                            Toast.LENGTH_LONG).show();
+                    ToastMessageDisplay.showText(OpeningActivity.this);
+
+
+
                 }
 
             } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET)!= PackageManager.PERMISSION_GRANTED )
@@ -1077,9 +971,13 @@ public class OpeningActivity extends Activity {
         if (requestCode == INTERNET_PERMISSION) {
             if (grantResults.length == 1 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Internet permission granted", Toast.LENGTH_SHORT).show();
+                ToastMessageDisplay.setText(this,"Internet permission granted");
+                ToastMessageDisplay.showText(this);
+
             } else {
-                Toast.makeText(this, "Inter permission denied", Toast.LENGTH_SHORT).show();
+                ToastMessageDisplay.setText(this,"Inter permission denied");
+                ToastMessageDisplay.showText(this);
+
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1112,7 +1010,8 @@ public class OpeningActivity extends Activity {
                 editor.putInt("KValue", countofDb);
                 editor.apply();
                 Log.d("tasks", "Tasks remaining: " + (NUMBER_OF_TASKS - countofDb));
-                makeToastWithShortbread("তথ্য সংগ্রহ চলছে");
+                ToastMessageDisplay.setText(OpeningActivity.this,"তথ্য সংগ্রহ চলছে");
+                ToastMessageDisplay.showText(OpeningActivity.this);
             }
         }
 
@@ -1734,6 +1633,10 @@ public class OpeningActivity extends Activity {
         }
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Runtime.getRuntime().gc();
+    }
     }
 

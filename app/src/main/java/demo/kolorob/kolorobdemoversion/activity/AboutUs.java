@@ -1,7 +1,6 @@
 package demo.kolorob.kolorobdemoversion.activity;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -10,9 +9,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import demo.kolorob.kolorobdemoversion.R;
+import demo.kolorob.kolorobdemoversion.utils.ToastMessageDisplay;
 
 public class AboutUs extends AppCompatActivity implements View.OnClickListener {
     ImageButton fb, tw, wb, insta, phnus, emailus;
@@ -21,9 +20,10 @@ public class AboutUs extends AppCompatActivity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_us);
-        fb = (ImageButton) findViewById(R.id.btnfb);
         tw = (ImageButton) findViewById(R.id.btntwt);
         wb = (ImageButton) findViewById(R.id.btnweb);
+        fb = (ImageButton) findViewById(R.id.btnfb);
+
         insta = (ImageButton) findViewById(R.id.btninsta);
         phnus = (ImageButton) findViewById(R.id.btnphn);
         emailus = (ImageButton) findViewById(R.id.btnemail);
@@ -76,7 +76,9 @@ public class AboutUs extends AppCompatActivity implements View.OnClickListener {
                 try {
                     startActivity(Intent.createChooser(i, "Send mail..."));
                 } catch (android.content.ActivityNotFoundException ex) {
-                    Toast.makeText(AboutUs.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+                    ToastMessageDisplay.setText(AboutUs.this,"দুঃখিত! ইমেইল করা যাচ্ছে না");
+                    ToastMessageDisplay.showText(AboutUs.this);
+
                 }
                 break;
             case R.id.btnphn:

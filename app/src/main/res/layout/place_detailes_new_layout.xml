@@ -36,777 +36,34 @@
             </FrameLayout>
 
 
-            <include layout="@layout/compare_screen" />
+            <include layout="@layout/compare_screen_education" />
+            <include layout="@layout/health_compare_tool"/>
+            <include layout="@layout/bazar_layout" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:background="@color/health_color"
-                android:id="@+id/compare_layout"
-                android:visibility="gone"
-                android:orientation="vertical"
 
-                android:layout_height="match_parent">
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:id="@+id/header_compare"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
 
+            <!--<LinearLayout-->
+                <!--android:layout_width="wrap_content"-->
 
+                <!--android:id="@+id/explist"-->
 
+                <!--android:layout_height="wrap_content">-->
+                <!--<ExpandableListView-->
+                    <!--android:id="@+id/listView"-->
+                    <!--android:visibility="gone"-->
+                    <!--android:layout_marginBottom="50dp"-->
+                    <!--android:childDivider="#00000000"-->
 
-                    <ImageView
-                        android:layout_width="65dp"
-                        android:layout_height="80dp"
-                        android:background="@drawable/compare_logo_default"
 
-                        android:id="@+id/compare_logo_image"
-                        />
+                    <!--android:background="@color/white"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content" >-->
+                <!--</ExpandableListView>-->
 
 
 
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_marginTop="5dp"
-
-
-                    android:background="@drawable/border"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:id="@+id/school_name">
-
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:layout_width="0dp"
-                        android:layout_weight="0.5"
-                        android:gravity="center"
-                        android:id="@+id/left_school_name"
-
-                        android:layout_height="match_parent">
-                        <android.support.v7.widget.AppCompatCheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/compared"
-                            android:buttonTint="@color/white"
-                            android:layout_marginLeft="5dp"
-                            android:textSize="30dp"
-                            android:scaleX="1.2"
-                            android:scaleY="1.2"
-                            android:paddingLeft="7dp"
-
-                            android:textColor="@color/white"
-                            />
-
-                        <TextView
-                            android:id="@+id/health_name2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-                            android:padding="5dp"
-                            android:text="@string/edu_name_ban"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:orientation="horizontal"
-                        android:gravity="center"
-
-                        android:id="@+id/right_school_name"
-
-                        android:layout_width="0dp"
-                        android:layout_weight="0.5"
-
-                        android:layout_height="match_parent">
-
-                        <android.support.v7.widget.AppCompatCheckBox
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/compared2"
-
-
-
-                            android:buttonTint="@color/white"
-                            android:layout_marginLeft="5dp"
-                            android:textSize="30dp"
-                            android:scaleX="1.2"
-                            android:scaleY="1.2"
-                            android:paddingLeft="7dp"
-
-                            android:textColor="@color/white"
-                            />
-
-                        <TextView
-                            android:id="@+id/health_name3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/white"
-
-                            android:padding="5dp"
-                            android:text="@string/edu_name_ban"
-                            android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-
-
-                        >
-
-
-
-
-
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:id="@+id/number_of_students"
-                            android:layout_height="40dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:textAppearance="?android:attr/textAppearanceMedium"
-                                android:id="@+id/clean_facilities1" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/clean_facilities2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:padding="5dp"
-                                    android:textColor="@color/white"
-
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/clean_facilities3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:id="@+id/edtype1"
-                            android:layout_marginTop="15dp"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/opening_time1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:padding="5dp"
-                                android:textColor="@color/white"
-                                android:text="@string/edtype"
-
-
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/opening_time2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/opening_time3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_marginTop="15dp"
-                            android:id="@+id/hostel_facility_l"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/language_spoken1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:padding="5dp"
-
-
-                                android:textColor="@color/white"
-                                android:text="@string/hostel_facility"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/language_spoken2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/language_spoken3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                            </LinearLayout>
-
-
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_marginTop="15dp"
-
-                            android:id="@+id/service_type1_l"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/service_type1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:padding="5dp"
-
-                                android:text="@string/transport_facility"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_marginTop="12dp"
-
-                            android:layout_width="match_parent"
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/service_type2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/service_type3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_marginTop="15dp"
-                            android:id="@+id/specialist_available1_l"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/specialist_available1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-
-
-                                android:padding="5dp"
-                                android:text="@string/playground"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/specialist_available2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/specialist_available3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-
-
-                        </LinearLayout>
-
-
-
-
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:id="@+id/privacy_l"
-                            android:layout_marginTop="15dp"
-
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/privacy1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:padding="5dp"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/privacy2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/privacy3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_marginTop="15dp"
-
-                            android:id="@+id/quality_equipment1_1"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/quality_equipment1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-
-                                android:textColor="@color/white"
-                                android:padding="5dp"
-                                android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/quality_equipment2"
-                                    android:layout_width="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:layout_height="wrap_content"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/quality_equipment3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-
-
-                        </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:gravity="center"
-                            android:layout_marginTop="15dp"
-
-                            android:id="@+id/cost111_1"
-                            android:layout_height="wrap_content">
-                            <TextView
-                                android:id="@+id/cost1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/white"
-                                android:padding="5dp"
-                                android:text="@string/course_provided"
-                                android:textAppearance="?android:attr/textAppearanceMedium">
-
-
-                            </TextView>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="match_parent"
-                            android:layout_marginTop="12dp"
-                            android:layout_marginBottom="34dp"
-                            android:layout_height="60dp">
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:background="@drawable/custom_border"
-                                android:gravity="center"
-
-                                android:layout_weight="0.5"
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/cost2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:orientation="vertical"
-                                android:layout_width="0dp"
-                                android:layout_weight="0.5"
-                                android:background="@drawable/custom_border2"
-                                android:gravity="center"
-
-                                android:layout_height="match_parent">
-                                <TextView
-                                    android:id="@+id/cost3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textColor="@color/white"
-                                    android:padding="5dp"
-                                    android:text="TextView"
-                                    android:textAppearance="?android:attr/textAppearanceMedium"></TextView>
-
-                            </LinearLayout>
-
-
-
-
-
-
-
-
-                        </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
-
-                    </LinearLayout>
-
-                </ScrollView>
-
-
-
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-
-                android:id="@+id/explist"
-
-                android:layout_height="wrap_content">
-                <ExpandableListView
-                    android:id="@+id/listView"
-                    android:visibility="gone"
-                    android:layout_marginBottom="50dp"
-                    android:childDivider="#00000000"
-
-
-                    android:background="@color/white"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-                </ExpandableListView>
-
-
-
-            </LinearLayout>
+            <!--</LinearLayout>-->
 
 
             <RelativeLayout
@@ -839,6 +96,7 @@
                     android:maxHeight="80dp"
                     android:minHeight="80dp"
                     android:background="#F7941E"
+
                     android:layout_marginTop="20dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_below="@+id/searchall"
@@ -854,15 +112,15 @@
                     android:layout_marginTop="@dimen/fab_marginforsearch2"
                     android:layout_marginLeft="@dimen/nav_header_height2"
 
-                    android:layout_height="450dp"
+                    android:layout_height="@dimen/filterheight"
                     android:layout_gravity="center_horizontal"
                     android:layout_below="@+id/allitem"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true"
                     android:layout_marginRight="@dimen/search_margin">
                     <ImageButton
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="@dimen/bwidth"
+                        android:layout_height="@dimen/bwidth"
                         android:id="@+id/morebutton"
                         android:background="@drawable/filter"
                         android:layout_alignParentTop="true"
@@ -961,9 +219,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:layout_above="@+id/toggle"
-                    android:layout_marginTop="@dimen/nav_header_heightcat2"
+                android:layout_marginTop="@dimen/nav_header_heightcat2"
                 android:layout_marginBottom="@dimen/nav_header_heightcat"
-                    android:layout_gravity="center|top">
+                android:layout_gravity="center|top">
 
                 <LinearLayout
                     android:id="@+id/llCategoryListHolder"
@@ -1054,23 +312,26 @@
                 android:id="@+id/linearLayout8">
 
                 <ImageButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/mapbutton"
-                    android:scaleType="center"
+                  android:background="@null"
+                    android:elevation="2dp"
+                    android:layout_weight="1"
 
-                    android:background="@drawable/map"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentBottom="true"
                     android:layout_gravity="bottom" />
                 <ImageButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/listbutton"
+                    android:elevation="2dp"
+                    android:background="@null"
+                    android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:layout_alignParentBottom="true"
-                    android:scaleType="fitCenter"
-                    android:background="@drawable/list"
+
 
 
                     android:layout_toRightOf="@+id/mapbutton"
@@ -1079,32 +340,37 @@
 
 
                 <ImageButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/searchbutton"
-
+                    android:elevation="2dp"
+                    android:background="@null"
+                    android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:layout_alignParentBottom="true"
-                    android:scaleType="fitCenter"
-                    android:background="@drawable/search"
+
+
                     android:layout_toRightOf="@+id/listbutton"
                     android:layout_toEndOf="@+id/listbutton"
                     android:layout_gravity="bottom" />
 
                 <ImageButton
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:scaleType="fitCenter"
+                    android:background="@null"
                     android:id="@+id/compare"
+                    android:layout_weight="1"
                     android:adjustViewBounds="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/compare"
 
+                    android:elevation="2dp"
                     android:layout_alignParentBottom="true"
                     android:layout_toRightOf="@+id/searchbutton"
                     android:layout_toEndOf="@+id/searchbutton"
                     android:layout_gravity="bottom" />
+
+
 
 
             </LinearLayout>

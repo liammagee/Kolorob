@@ -2,6 +2,8 @@ package demo.kolorob.kolorobdemoversion.adapters;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
+import android.text.Html;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,6 +69,7 @@ public class DisplayAllJobList extends BaseAdapter
         TextView address;
         TextView contact_number;
         TextView positions;
+        LinearLayout job_item;
 
 
     }
@@ -87,6 +90,7 @@ public class DisplayAllJobList extends BaseAdapter
             holder.address = (TextView) convertView.findViewById(R.id.address);
             holder.contact_number = (TextView) convertView.findViewById(R.id.contact_number);
             holder.positions = (TextView) convertView.findViewById(R.id.positions);
+            holder.job_item = (LinearLayout)convertView.findViewById(R.id.job_item);
 
 
             convertView.setTag(holder);
@@ -111,11 +115,44 @@ public class DisplayAllJobList extends BaseAdapter
 
         holder.title.setText("" + positions[position]);
         holder.title.setTextSize(26);
-        holder.salary_range.setText("স্যালারি : " + salary_range[position]+" টাকা");
-        holder.remaining_date.setText("শেষ সময়: " + English_to_bengali_number_conversion(remaing_date[position]));
-        holder.address.setText("ঠিকানা: " + address[position]);
-        holder.contact_number.setText("যোগাযোগের নম্বর: " + contract_number[position]);
-        holder.positions.setText("কোম্পানি: " + title[position]);
+
+        String salary="<b>" + "স্যালারি: "+ "</b> " + salary_range[position]+" টাকা";
+        String last_date="<b>" + "আবেদনের শেষ সময়: "+ "</b> " + English_to_bengali_number_conversion(remaing_date[position]);
+        String addres="<b>" + "ঠিকানা: "+ "</b> " + address[position];
+        String number="<b>" + "ফোন নম্বর: "+ "</b> " + contract_number[position];
+        String company="<b>" + "কোম্পানি: "+ "</b> " + title[position];
+
+        holder.salary_range.setText(Html.fromHtml(company));
+        holder.remaining_date.setText(Html.fromHtml(salary));
+        holder.address.setText(Html.fromHtml(last_date));
+        holder.contact_number.setText(Html.fromHtml(addres));
+        holder.positions.setText(Html.fromHtml(number));
+
+        if(position%2==0)
+        {
+            holder.job_item.setBackgroundColor(ContextCompat.getColor(context,R.color.white));
+            holder.title.setTextColor(ContextCompat.getColor(context,R.color.job_portal));
+            holder.salary_range.setTextColor(ContextCompat.getColor(context,R.color.job_portal));
+            holder.remaining_date.setTextColor(ContextCompat.getColor(context,R.color.job_portal));
+            holder.address.setTextColor(ContextCompat.getColor(context,R.color.job_portal));
+            holder.contact_number.setTextColor(ContextCompat.getColor(context,R.color.job_portal));
+            holder.positions.setTextColor(ContextCompat.getColor(context,R.color.job_portal));
+        }
+
+        else
+        {
+            holder.job_item.setBackgroundColor(ContextCompat.getColor(context,R.color.job_portal));
+            holder.title.setTextColor(ContextCompat.getColor(context,R.color.white));
+            holder.salary_range.setTextColor(ContextCompat.getColor(context,R.color.white));
+            holder.remaining_date.setTextColor(ContextCompat.getColor(context,R.color.white));
+            holder.address.setTextColor(ContextCompat.getColor(context,R.color.white));
+            holder.contact_number.setTextColor(ContextCompat.getColor(context,R.color.white));
+            holder.positions.setTextColor(ContextCompat.getColor(context,R.color.white));
+        }
+
+
+
+
 
         return convertView;
     }
