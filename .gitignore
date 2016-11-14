@@ -7,6 +7,9 @@
 /build
 /captures
 /*.orig
-#libraries/**/*.class
-#libraries/**/generated/source/*
+libraries/**/*.class
+libraries/**/generated/source/*
+libraries/ViewPagerIndicator-Library/build/*
+libraries/ViewPagerIndicator-Library/build/intermediates/*
+libraries/ViewPagerIndicator-Library/src/*
 #libraries/ViewPagerIndicator-Library/*
